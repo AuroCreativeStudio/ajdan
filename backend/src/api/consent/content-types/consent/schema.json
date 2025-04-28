@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "consents",
+  "info": {
+    "singularName": "consent",
+    "pluralName": "consents",
+    "displayName": "consents",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "ip_address": {
+      "type": "string",
+      "required": true
+    },
+    "accepted_categories": {
+      "type": "json",
+      "required": true
+    },
+    "consent_given_at": {
+      "type": "datetime",
+      "required": true
+    },
+    "user_agent": {
+      "type": "string"
+    },
+    "consentGiven": {
+      "type": "boolean"
+    }
+  }
+}
