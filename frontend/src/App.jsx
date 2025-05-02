@@ -7,6 +7,9 @@ import Home from './components/pages/Home';
 import './index.css';
 import { detectLanguageByLocation } from './utils/geoLanguage';
 import { useEffect } from 'react';
+import List from './components/pages/List';
+import Search from './components/pages/Search';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
   const { i18n } = useTranslation();
@@ -24,14 +27,20 @@ function App() {
   }, [i18n]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <Header />
-      <main style={{ flex: 1 }}>
-        <Home />
-      </main>
-      <ConsentBanner />
-      <Footer />
-    </div>
+    <Router>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Header />
+        <main style={{ flex: 1 }}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/list" element={<List />} />
+            <Route path="/search" element={<Search />} />
+          </Routes>
+        </main>
+        <ConsentBanner />
+        <Footer />
+      </div>
+    </Router>
   );
 }
 

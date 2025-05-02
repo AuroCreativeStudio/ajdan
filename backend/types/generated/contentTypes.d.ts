@@ -440,6 +440,58 @@ export interface ApiConsentConsent extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiListList extends Struct.CollectionTypeSchema {
+  collectionName: 'lists';
+  info: {
+    displayName: 'list';
+    pluralName: 'lists';
+    singularName: 'list';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    building: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::list.list'>;
+    place: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    publishedAt: Schema.Attribute.DateTime;
+    square_feet: Schema.Attribute.BigInteger &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiListingListing extends Struct.CollectionTypeSchema {
   collectionName: 'listings';
   info: {
@@ -1137,6 +1189,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::amenity.amenity': ApiAmenityAmenity;
       'api::consent.consent': ApiConsentConsent;
+      'api::list.list': ApiListList;
       'api::listing.listing': ApiListingListing;
       'api::location.location': ApiLocationLocation;
       'api::payment-plan.payment-plan': ApiPaymentPlanPaymentPlan;
