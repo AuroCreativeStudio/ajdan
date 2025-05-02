@@ -1,4 +1,6 @@
 {
-    "welcome": "Welcome to Real Estate"
+    "hello": "Hello World",
+    "tailwind_working": "Tailwind CSS is working if you see styled text and background color."
+
   }
   
