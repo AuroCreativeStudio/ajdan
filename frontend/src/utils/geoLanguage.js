@@ -12,27 +12,24 @@ export async function detectLanguageByLocation() {
     return 'en';
   }
 
-// export async function detectLanguageByLocation() {
-//     try {
-//       const response = await fetch('https://ipapi.co/json/');
-//       const data = await response.json();
-//       const countryCode = data.country_code;
+
+  // export async function detectLanguageByLocation() {
+  //   try {
+  //     const response = await fetch('https://ipapi.co/json/');
+  //     const data = await response.json();
+  //     const countryCode = data.country_code;
   
-//       console.log("Detected Country Code:", countryCode);
+  //     console.log("Detected Country Code:", countryCode);
   
-//       if (countryCode === 'SA' || countryCode === 'AE' || countryCode === 'KW') {
-//         return 'ar'; // Arabic-speaking countries
-//       } else {
-//         return 'en';
-//       }
-//     } catch (error) {
-//       console.error("Failed to detect location. Defaulting to English.", error);
-//       return 'en';
-//     }
-//   }
+  //     if (countryCode === 'SA' || countryCode === 'AE' || countryCode === 'KW') {
+  //       return 'ar'; // Arabic-speaking countries
+  //     } else {
+  //       return 'en';
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to detect location. Defaulting to English.", error);
+  //     return 'en';
+  //   }
+  // }
 
 
-// export async function detectLanguageByLocation() {
-//     return 'ar'; // Simulate Arabic region
-//   }
-  

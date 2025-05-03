@@ -43,10 +43,6 @@ function Contact() {
   return (
     <>
      
-
-
-   
-
       {/* User Form */}
       <div className="container mx-auto max-w-md p-6 bg-blue-200 rounded shadow-md mt-10">
         <h2 className="text-xl font-bold mb-4">User Form</h2>

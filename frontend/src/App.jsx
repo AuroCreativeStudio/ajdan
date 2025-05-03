@@ -9,6 +9,7 @@ import { detectLanguageByLocation } from './utils/geoLanguage';
 import { useEffect } from 'react';
 import List from './components/pages/List';
 import Search from './components/pages/Search';
+import Contact from './components/pages/Contact';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/list" element={<List />} />
             <Route path="/search" element={<Search />} />
+            <Route path="/contact" element={<Contact />} />
           </Routes>
         </main>
         <ConsentBanner />
