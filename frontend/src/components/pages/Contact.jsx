@@ -1,7 +1,8 @@
-import { useState} from 'react';
-
+import { useState ,useEffect } from 'react';
+import { fetchContactList } from '../../services/contactService';
 
 function Contact() {
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -11,7 +12,20 @@ function Contact() {
   });
 
  
-
+ useEffect(() => {
+      const fetchContact = async () => {
+        try {
+          const data = await fetchContactList();
+          setFormData(data);
+        } catch (error) {
+          // Already logged inside service
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchContact();
+    }, []);
 
   // Submit user form
   const handleSubmit = async (e) => {

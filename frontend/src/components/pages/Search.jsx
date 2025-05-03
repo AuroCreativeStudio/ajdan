@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { fetchApartmentList } from '../../services/listService';
 
 const Search = () => {
     const [apartmentList, setApartmentList] = useState([]);
@@ -12,10 +12,10 @@ const Search = () => {
     useEffect(() => {
       const fetchApartments = async () => {
         try {
-          const response = await axios.get('http://localhost:1337/api/lists');
-          setApartmentList(response.data.data || []);
+          const data = await fetchApartmentList();
+          setApartmentList(data);
         } catch (error) {
-          console.error('Error fetching apartment list:', error);
+          // Already logged inside service
         } finally {
           setLoading(false);
         }
