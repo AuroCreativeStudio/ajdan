@@ -1,9 +1,6 @@
-import { useState ,useEffect } from 'react';
-import { fetchContactList } from '../../services/contactService';
+import { useState } from 'react';
 
 function Contact() {
-  const [loading, setLoading] = useState(true);
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,33 +8,22 @@ function Contact() {
     termsaved: 'rejected',
   });
 
- 
- useEffect(() => {
-      const fetchContact = async () => {
-        try {
-          const data = await fetchContactList();
-          setFormData(data);
-        } catch (error) {
-          // Already logged inside service
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      fetchContact();
-    }, []);
-
   // Submit user form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+
+      const { termsaved, ...payload } = formData;
+
+      console.log('Request Payload:', { data: payload });
+
       const response = await fetch('http://localhost:1337/api/userdetails', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ data: formData }),
+        body: JSON.stringify({ data: payload }),
       });
 
       const result = await response.json();
@@ -46,6 +32,7 @@ function Contact() {
       if (response.ok) {
         alert('Form submitted successfully!');
       } else {
+        console.error(`Error: ${response.status} - ${result.message || JSON.stringify(result) || 'Unknown error'}`);
         alert(`Error: ${result.message || 'Something went wrong.'}`);
       }
     } catch (error) {
@@ -56,7 +43,6 @@ function Contact() {
 
   return (
     <>
-     
       {/* User Form */}
       <div className="container mx-auto max-w-md p-6 bg-blue-200 rounded shadow-md mt-10">
         <h2 className="text-xl font-bold mb-4">User Form</h2>

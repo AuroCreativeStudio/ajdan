@@ -12,6 +12,7 @@ const Header = () => (
                 <li> <a href="/list" className="text-white-600 hover:text-blue-600 transition">Lists</a></li>
             <li><a href="/search" className="text-white-600 hover:text-blue-600 transition">Search</a></li>
             <li><a href="/Contact" style={{ color: '#fff', textDecoration: 'none' }}>Contact</a></li>
+            <li><a href="/blogs" style={{ color: '#fff', textDecoration: 'none' }}>Blogs</a></li>
         </ul>
     </nav>
     </header>
