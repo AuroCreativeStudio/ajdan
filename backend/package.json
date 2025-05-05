@@ -9,15 +9,18 @@
     "deploy": "strapi deploy",
     "dev": "strapi develop",
     "develop": "strapi develop",
+    "seed:example": "node ./scripts/seed.js",
     "start": "strapi start",
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry"
   },
   "dependencies": {
-    "@strapi/plugin-cloud": "5.12.6",
-    "@strapi/plugin-users-permissions": "5.12.6",
-    "@strapi/strapi": "5.12.6",
+    "@strapi/plugin-cloud": "5.12.7",
+    "@strapi/plugin-users-permissions": "5.12.7",
+    "@strapi/strapi": "5.12.7",
+    "fs-extra": "^10.0.0",
+    "mime-types": "^2.1.27",
     "mysql2": "3.9.8",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
@@ -30,6 +33,7 @@
     "npm": ">=6.0.0"
   },
   "strapi": {
-    "uuid": "1efbd414-9474-44cb-aa40-52786dd80e5f"
+    "uuid": "8a407e2e-7a51-43fc-b0b8-4e1b472e1cad",
+    "installId": "5900081a95e446ea1ab3112d128a3ef5ad18cd5365e06f0dd9e19b638c334791"
   }
 }
