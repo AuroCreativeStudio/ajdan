@@ -14,12 +14,17 @@ export const fetchBlogs = async (locale) => {
   }
 };
 
-export const fetchBlogBySlug = (slug, locale = 'en') =>
+export const fetchBlogByDocumentId = (documentId, locale = 'en') =>
   axios.get(`${API_URL}/api/blogs-and-news`, {
     params: {
       locale,
-      filters: { slug: { $eq: slug } },
+      filters: {
+        documentId: {
+          $eq: documentId,
+        },
+      },
       populate: '*',
     },
   });
+
 

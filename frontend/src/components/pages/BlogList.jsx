@@ -14,16 +14,19 @@ function BlogList() {
         const sanitizedBlogs = (data?.data || []).map(blog => {
           console.log('description_1 field:', blog.description_1); // Debugging log
           return {
-            id: blog.id,
+            id: blog.documentId,
             title: blog.title || 'Untitled',
             descriptionBlocks: Array.isArray(blog.description_1)
               ? blog.description_1
               : [], // Handle description_1 as an array
             imageUrl: blog.featured_image?.url || null, // Ensure image URL is accessed correctly
             altText: blog.alt_text_image || 'No description',
+            
           };
+         
         });
         setBlogs(sanitizedBlogs);
+        console.log("the docId is:",blogs.documentId);
       })
       .catch(error => {
         console.error('Error fetching blogs:', error);
@@ -53,7 +56,7 @@ function BlogList() {
               />
             )}
             <p>{getExcerpt(blog.descriptionBlocks)}</p>
-            <Link to={`/blog/${blog.id}`} style={{ textDecoration: 'none', color: 'white' }}>
+            <Link to={`/blog/${blog.documentId}`} style={{ textDecoration: 'none', color: 'white' }}>
               <button style={{ marginTop: '10px', padding: '10px 15px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
                 Read More
               </button>
