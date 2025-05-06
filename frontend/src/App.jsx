@@ -10,6 +10,8 @@ import { useEffect } from 'react';
 import List from './components/pages/List';
 import Search from './components/pages/Search';
 import Contact from './components/pages/Contact';
+import Sample from './components/pages/Test';
+import ParallaxScroll from './components/pages/animation';
 import BlogList from './components/pages/BlogList';
 import BlogSingle from './components/pages/BlogSingle';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -20,9 +22,9 @@ function App() {
   useEffect(() => {
     const detectLanguage = async () => {
       const detectedLang = await detectLanguageByLocation();
-      // Change language based on location
+
       i18n.changeLanguage(detectedLang);
-      // Set document direction based on the detected language
+
       document.dir = detectedLang === 'ar' ? 'rtl' : 'ltr';
     };
 
@@ -39,11 +41,12 @@ function App() {
             <Route path="/list" element={<List />} />
             <Route path="/search" element={<Search />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/test" element={<Sample />} />
+            <Route path="/animation" element={<ParallaxScroll />} />
             <Route path="/blogs" element={<BlogList locale="en" />} />
             <Route path="/blogs/:slug" element={<BlogSingle locale="en" />} />
             <Route path="/ar/blogs" element={<BlogList locale="ar" />} />
             <Route path="/ar/blogs/:slug" element={<BlogSingle locale="ar" />} />
-
           </Routes>
         </main>
         <ConsentBanner />

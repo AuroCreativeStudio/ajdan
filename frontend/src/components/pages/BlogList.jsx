@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { fetchBlogs } from '../../services/blogService';
 import { Link } from 'react-router-dom'; // Import Link for navigation
-import parse from 'html-react-parser'; // Import html-react-parser
 
 function BlogList() {
   const { i18n } = useTranslation();
