@@ -540,12 +540,7 @@ export interface ApiBlogsAndNewBlogsAndNew extends Struct.CollectionTypeSchema {
       }>;
     publish: Schema.Attribute.Boolean;
     publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.String &
-      Schema.Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
+    slug: Schema.Attribute.UID<'title'>;
     title: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {

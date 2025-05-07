@@ -105,16 +105,12 @@
         }
       }
     },
-    "slug": {
-      "type": "string",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      }
-    },
     "publish": {
       "type": "boolean"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title"
     }
   }
 }

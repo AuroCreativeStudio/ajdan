@@ -11,10 +11,12 @@ import List from './components/pages/List';
 import Search from './components/pages/Search';
 import Contact from './components/pages/Contact';
 import Sample from './components/pages/Test';
-import ParallaxScroll from './components/pages/animation';
+import SmoothScrollHero from './components/pages/animation';
 import BlogList from './components/pages/BlogList';
 import BlogSingle from './components/pages/BlogSingle';
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 
 function App() {
   const { i18n } = useTranslation();
@@ -42,7 +44,7 @@ function App() {
             <Route path="/search" element={<Search />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/test" element={<Sample />} />
-            <Route path="/animation" element={<ParallaxScroll />} />
+            <Route path="/animation" element={<SmoothScrollHero />} />
             <Route path="/blogs" element={<BlogList locale="en" />} />
             <Route path="/blogs/:slug" element={<BlogSingle locale="en" />} />
             <Route path="/ar/blogs" element={<BlogList locale="ar" />} />

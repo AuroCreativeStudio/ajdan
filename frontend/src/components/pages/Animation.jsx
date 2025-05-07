@@ -24,11 +24,10 @@ const ParallaxScroll = () => {
   }, []);
 
   const images = [
-    'https://source.unsplash.com/random/1920x1080?nature',
-    'https://source.unsplash.com/random/1920x1080?water',
-    'https://source.unsplash.com/random/1920x1080?forest',
-    'https://source.unsplash.com/random/1920x1080?mountain',
-    'https://source.unsplash.com/random/1920x1080?sky'
+    'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+    'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+    'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+    'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
   ];
 
   return (

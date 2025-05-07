@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import slider1 from '../../assets/image/slider1.jpeg'; 
-import slider2 from '../../assets/image/slider2.jpeg'; 
+import slider1 from '../../assets/image/slider1.jpeg';
+import slider2 from '../../assets/image/slider2.jpeg';
 import imageone from '../../assets/image/one.jpg';
 import imagetwo from '../../assets/image/two.jpg';
 import imagethree from '../../assets/image/three.jpg';
@@ -110,9 +110,8 @@ const Sample = () => {
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                currentIndex === index ? "bg-blue-500" : "bg-gray-400"
-              }`}
+              className={`w-3 h-3 rounded-full transition-colors duration-300 ${currentIndex === index ? "bg-blue-500" : "bg-gray-400"
+                }`}
             ></button>
           ))}
         </div>
@@ -268,25 +267,24 @@ const Sample = () => {
             <div
               key={index}
               onMouseEnter={() => setActiveIndex(index)}
-              className={`transition-all duration-300 cursor-pointer rounded-lg overflow-hidden bg-white shadow-md ${
-                activeIndex === index ? "flex-[3]" : "flex-[1]"
-              }`}
+              className={`transition-all duration-300 cursor-pointer rounded-lg overflow-hidden bg-white shadow-md ${activeIndex === index || (activeIndex === 0 && index === 0) ? "flex-[3]" : "flex-[1]"
+                }`}
             >
-              <div className="relative">
+              <div className="relative h-full">
                 <img
                   src={panel.image}
                   alt={`Panel ${index + 1}`}
-                  className={`w-full object-cover rounded-lg ${
-                    activeIndex === 0 && activeIndex !== index ? "h-full" : "h-42"
-                  }`}
+                  className={`w-full object-cover rounded-lg h-full transition-transform duration-300 ${activeIndex === index || (activeIndex === 0 && index === 0) ? "scale-100" : "scale-110"
+                    }`}
                 />
-                {activeIndex !== index && (
-                  <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <p className="text-white text-sm px-4">{panel.content}</p>
-                  </div>
-                )}
+                <div
+                  className={`absolute inset-0 bg-black bg-opacity-50 transition-opacity duration-300 flex items-center justify-center ${activeIndex === index || (activeIndex === 0 && index === 0) ? "opacity-100" : "opacity-0 hover:opacity-100"
+                    }`}
+                >
+                </div>
+                <p className="text-white text-sm px-4">{panel.content}</p>
               </div>
-              {activeIndex === index && (
+              {(activeIndex === index || (activeIndex === 0 && index === 0)) && (
                 <div className="p-4 text-sm text-gray-600">{panel.content}</div>
               )}
             </div>
