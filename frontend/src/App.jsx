@@ -14,8 +14,11 @@ import Sample from './components/pages/Test';
 import SmoothScrollHero from './components/pages/animation';
 import BlogList from './components/pages/BlogList';
 import BlogSingle from './components/pages/BlogSingle';
-
+import CmsRoutes from './cms/cmsRoutes';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from './cms/pages/LoginPage';
+import DashboardPage from './cms/pages/DashboardPage';
+import ProtectedRoute from './cms/components/ProtectedRoute';
 
 
 function App() {
@@ -46,7 +49,9 @@ function App() {
             <Route path="/test" element={<Sample />} />
             <Route path="/animation" element={<SmoothScrollHero />} />
             <Route path="/blogs" element={<BlogList locale="en" />} />
-            <Route path="/blog/:slug" element={<BlogSingle />} />
+            <Route path="/blogs/:slug" element={<BlogSingle locale="en" />} />
+            <Route path="/ar/blogs" element={<BlogList locale="ar" />} />
+            <Route path="/ar/blogs/:slug" element={<BlogSingle locale="ar" />} />
           </Routes>
         </main>
         <ConsentBanner />
