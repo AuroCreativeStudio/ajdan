@@ -28,3 +28,12 @@ export const fetchBlogByDocumentId = (documentId, locale = 'en') =>
   });
 
 
+
+export const createBlogPost = (formData) => {
+  return axios.post('http://localhost:1337/api/blogs-and-news', {
+    data: formData
+  });
+};
+
+  
+
