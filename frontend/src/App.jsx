@@ -52,6 +52,15 @@ function App() {
             <Route path="/blogs/:slug" element={<BlogSingle locale="en" />} />
             <Route path="/ar/blogs" element={<BlogList locale="ar" />} />
             <Route path="/ar/blogs/:slug" element={<BlogSingle locale="ar" />} />
+            <Route path="/admin/login" element={<LoginPage />} />
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </main>
         <ConsentBanner />
