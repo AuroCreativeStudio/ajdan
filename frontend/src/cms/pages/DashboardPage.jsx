@@ -52,7 +52,7 @@ function Dashboard({ token, user }) {
           <a href="#" className="flex items-center gap-2 text-gray-700 hover:text-blue-600">
             <HiChartPie /> Overview
           </a>
-          <a href="#" className="flex items-center gap-2 text-gray-700 hover:text-blue-600">
+          <a href="/create" className="flex items-center gap-2 text-gray-700 hover:text-blue-600">
             <HiUser /> Blogs
           </a>
           <button
