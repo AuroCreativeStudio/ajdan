@@ -1,21 +1,37 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { fetchBlogByDocumentId } from '../../services/blogService';
 
 function BlogSingle() {
-  const { id } = useParams(); // here `id` is actually documentId in the URL
+  const { slug } = useParams(); // URL param
+  const location = useLocation();
+  const documentIdFromState = location.state?.documentId;
   const [blog, setBlog] = useState(null);
 
   useEffect(() => {
-    if (id) {
-      fetchBlogByDocumentId(id)
-        .then((res) => {
+    const fetchData = async () => {
+      try {
+        // Try to fetch by documentId first if it's passed via navigation
+        if (documentIdFromState) {
+          const res = await fetchBlogByDocumentId(documentIdFromState);
           const data = res.data?.data?.[0];
-          setBlog(data);
-        })
-        .catch((err) => console.error(err));
-    }
-  }, [id]);
+          if (data) {
+            setBlog(data);
+            return;
+          }
+        }
+
+        // Fallback: try to fetch by slug
+        const res = await fetchBlogByDocumentId(slug);
+        const data = res.data?.data?.[0];
+        setBlog(data);
+      } catch (err) {
+        console.error('Error fetching blog:', err);
+      }
+    };
+
+    fetchData();
+  }, [slug, documentIdFromState]);
 
   if (!blog) return <div>Loading...</div>;
 

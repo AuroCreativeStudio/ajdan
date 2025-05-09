@@ -46,9 +46,7 @@ function App() {
             <Route path="/test" element={<Sample />} />
             <Route path="/animation" element={<SmoothScrollHero />} />
             <Route path="/blogs" element={<BlogList locale="en" />} />
-            <Route path="/blogs/:slug" element={<BlogSingle locale="en" />} />
-            <Route path="/ar/blogs" element={<BlogList locale="ar" />} />
-            <Route path="/ar/blogs/:slug" element={<BlogSingle locale="ar" />} />
+            <Route path="/blog/:slug" element={<BlogSingle />} />
           </Routes>
         </main>
         <ConsentBanner />

@@ -6,27 +6,24 @@ import { Link } from 'react-router-dom'; // Import Link for navigation
 function BlogList() {
   const { i18n } = useTranslation();
   const [blogs, setBlogs] = useState([]);
-
+  
   useEffect(() => {
     fetchBlogs(i18n.language)
       .then(data => {
         console.log('Fetched blog data:', data);
         const sanitizedBlogs = (data?.data || []).map(blog => {
-          console.log('description_1 field:', blog.description_1); // Debugging log
           return {
             id: blog.documentId,
+            slug: blog.slug, // Make sure this field exists in your API
             title: blog.title || 'Untitled',
-            descriptionBlocks: Array.isArray(blog.description_1)
-              ? blog.description_1
-              : [], // Handle description_1 as an array
-            imageUrl: blog.featured_image?.url || null, // Ensure image URL is accessed correctly
+            descriptionBlocks: Array.isArray(blog.description_1) ? blog.description_1 : [],
+            imageUrl: blog.featured_image?.url || null,
             altText: blog.alt_text_image || 'No description',
-            
           };
-         
         });
+        
         setBlogs(sanitizedBlogs);
-        console.log("the docId is:",blogs.documentId);
+       
       })
       .catch(error => {
         console.error('Error fetching blogs:', error);
@@ -56,11 +53,15 @@ function BlogList() {
               />
             )}
             <p>{getExcerpt(blog.descriptionBlocks)}</p>
-            <Link to={`/blog/${blog.documentId}`} style={{ textDecoration: 'none', color: 'white' }}>
-              <button style={{ marginTop: '10px', padding: '10px 15px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
-                Read More
-              </button>
-            </Link>
+            <Link  to={`/blog/${blog.slug}`}
+             state={{ documentId: blog.id }}
+             style={{ textDecoration: 'none', color: 'white' }}>
+            <button style={{ marginTop: '10px', padding: '10px 15px', backgroundColor: '#007BFF', color: 'white', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
+               Read More
+          </button>
+           </Link>
+
+
           </div>
         ))
       ) : (
