@@ -35,7 +35,7 @@ function BlogCreate() {
       return;
     }
 
-    const data = new FormData();
+    
 
     // Wrap all fields inside a "data" object with the required format
     const payload = {
