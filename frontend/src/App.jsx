@@ -23,10 +23,15 @@ import Dashboard from './cms/pages/DashboardPage';
 import ProtectedRoute from './cms/components/ProtectedRoute';
 import BlogListingCms from './cms/pages/BlogListingCms';
 import BlogCreate from './cms/pages/BlogCreate';
+import EditBlog from './cms/pages/Editblog';
 
 function LayoutWrapper({ children }) {
   const location = useLocation();
-  const isCmsRoute = location.pathname.startsWith('/login') || location.pathname.startsWith('/dashboard');
+  const isCmsRoute = location.pathname.startsWith('/login') ||
+    location.pathname.startsWith('/dashboard') ||
+    location.pathname.startsWith('/create') ||
+    location.pathname.startsWith('/bloglist') ||
+    location.pathname.startsWith('/edit');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -41,7 +46,7 @@ function LayoutWrapper({ children }) {
 function AppRoutes({ setToken, setUser }) {
   return (
     <Routes>
-      {/* Site Routes */}
+
       <Route path="/" element={<Home />} />
       <Route path="/list" element={<List />} />
       <Route path="/search" element={<Search />} />
@@ -54,11 +59,12 @@ function AppRoutes({ setToken, setUser }) {
       <Route path="/ar/blogs/:slug" element={<BlogSingle locale="ar" />} />
       <Route path="/blog/:slug" element={<BlogSingle />} />
 
-      {/* CMS Routes */}
+
       <Route path="/login" element={<Login setToken={setToken} setUser={setUser} />} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/bloglist" element={<BlogListingCms />} />
-      <Route path="/create" element={<BlogCreate />} />
+      <Route path="/bloglist" element={<ProtectedRoute><BlogListingCms /></ProtectedRoute>} />
+      <Route path="/create" element={<ProtectedRoute><BlogCreate /></ProtectedRoute>} />
+      <Route path="/edit/:id" element={<ProtectedRoute><EditBlog /></ProtectedRoute>} />
 
     </Routes>
   );

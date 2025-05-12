@@ -32,53 +32,53 @@ function Login({ setToken, setUser }) {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative bg-gray-900">
- 
-    <div className="absolute inset-0 z-0">
-      <img
-        src={twoImage} 
-        alt="Background"
-        className="w-full h-full object-cover"
-      />
-      <div className="absolute inset-0 bg-black opacity-40">      
+
+      <div className="absolute inset-0 z-0">
         <img
-        src={logo}
-        alt="Logo"
-        className="mx-auto mt-10 border-gray-100 shadow"
-      />
+          src={twoImage}
+          alt="Background"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black opacity-40">
+          <img
+            src={logo}
+            alt="Logo"
+            className="mx-auto mt-10 border-gray-100 shadow"
+          />
+        </div>
+      </div>
+
+      <div className="relative z-10 max-w-md w-full mx-4 bg-white bg-opacity-10 backdrop-blur-md rounded-xl shadow-2xl flex flex-col items-center p-8">
+
+        <form onSubmit={handleLogin} className="w-full flex flex-col gap-4">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">Login</h2>
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            type="email"
+            autoComplete="username"
+            className="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-gray-100 text-gray-700"
+            required
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            autoComplete="current-password"
+            className="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-gray-100 text-gray-700"
+            required
+          />
+          <button
+            type="submit"
+            className="mt-2 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition shadow-lg"
+          >
+            Login
+          </button>
+        </form>
       </div>
     </div>
- 
-    <div className="relative z-10 max-w-md w-full mx-4 bg-white bg-opacity-10 backdrop-blur-md rounded-xl shadow-2xl flex flex-col items-center p-8">
-
-      <form onSubmit={handleLogin} className="w-full flex flex-col gap-4">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">Login</h2>
-        <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          type="email"
-          autoComplete="username"
-          className="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-gray-100 text-gray-700"
-          required
-        />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Password"
-          autoComplete="current-password"
-          className="px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition bg-gray-100 text-gray-700"
-          required
-        />
-        <button
-          type="submit"
-          className="mt-2 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition shadow-lg"
-        >
-          Login
-        </button>
-      </form>
-    </div>
-  </div>
   );
 }
 
@@ -137,4 +137,3 @@ export default Login;
       </div>
     </div> */}
 
-    
