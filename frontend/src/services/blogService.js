@@ -14,18 +14,21 @@ export const fetchBlogs = async (locale) => {
   }
 };
 
-export const fetchBlogByDocumentId = (documentId, locale = 'en') =>
-  axios.get(`${API_URL}/api/blogs-and-news`, {
-    params: {
-      locale,
-      filters: {
-        documentId: {
-          $eq: documentId,
-        },
+export const fetchBlogByDocumentId = async (documentId, locale = 'en') => {
+  try {
+    const response = await axios.get(`${API_URL}/api/blogs-and-news/${documentId}`, {
+      params: {
+        locale,
+        populate: '*',
       },
-      populate: '*',
-    },
-  });
+    });
+    console.log('API Response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching blog by documentId:', error);
+    throw error;
+  }
+};
 
 export const createBlogPost = async (formData) => {
   return axios.post(`${API_URL}/api/blogs-and-news`, {
@@ -34,6 +37,19 @@ export const createBlogPost = async (formData) => {
 };
 
 
+export const updateBlog = async (documentId, blogData) => {
+  return axios.put(`${API_URL}/api/blogs-and-news/${documentId}`, {
+    data: blogData, // MUST wrap in `data`
+  });
+};
 
+
+ ///api/blogs-and-news/:id
+
+export const deleteBlog = async (documentId, blogData) => {
+  return axios.delete(`${API_URL}/api/blogs-and-news/${documentId}`, {
+    data: blogData, 
+  });
+};
 
 

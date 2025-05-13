@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchBlogs } from '../../services/blogService';
+import { fetchBlogs,deleteBlog } from '../../services/blogService';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
@@ -39,6 +39,19 @@ export default function BlogListingCms() {
         setBlogs([]);
       });
   }, [i18n.language]);
+
+    const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this blog?')) {
+      try {
+        await deleteBlog(id); // Call the delete API
+        setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id)); // Update the state
+        alert('Blog deleted successfully!');
+      } catch (error) {
+        console.error('Error deleting blog:', error);
+        alert('Failed to delete blog.');
+      }
+    }
+  };
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -86,7 +99,9 @@ export default function BlogListingCms() {
                       </Link>
 
 
-                      <button className="text-red-600 hover:underline">Delete</button>
+                      <button 
+                      onClick={() => handleDelete(blog.id)}
+                      className="text-red-600 hover:underline">Delete</button>
                     </td>
                   </tr>
                 ))
