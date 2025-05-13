@@ -14,7 +14,7 @@ function BlogSingle() {
         // Try to fetch by documentId first if it's passed via navigation
         if (documentIdFromState) {
           const res = await fetchBlogByDocumentId(documentIdFromState);
-          const data = res.data?.data?.[0];
+          const data = res?.data;
           if (data) {
             setBlog(data);
             return;
@@ -22,8 +22,8 @@ function BlogSingle() {
         }
 
         // Fallback: try to fetch by slug
-        const res = await fetchBlogByDocumentId(slug);
-        const data = res.data?.data?.[0];
+        const res = await fetchBlogByDocumentId(null, slug); // Pass slug as a query parameter
+        const data = res?.data;
         setBlog(data);
       } catch (err) {
         console.error('Error fetching blog:', err);

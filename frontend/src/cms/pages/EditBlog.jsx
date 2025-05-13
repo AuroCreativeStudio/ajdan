@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { fetchBlogByDocumentId, updateBlog } from '../../services/blogService';
+import { useNavigate } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
+import { logout } from '../../services/authService';
+
+const API_URL = 'http://localhost:1337/';
 
 const EditBlog = () => {
   const location = useLocation();
@@ -16,11 +21,29 @@ const EditBlog = () => {
     meta_keywords: '',
     alt_text_image: '',
     slug: '',
+    image_1: null,
+    image_2: null,
+    featured_image: null,
+  });
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    logout();
+    navigate('/login'); // Redirect to login on logout
+  };
+  const [existingImages, setExistingImages] = useState({
+    image_1: null,
+    image_2: null,
+    featured_image: null,
+  });
+
+  const [existingImageIds, setExistingImageIds] = useState({
+    image_1: null,
+    image_2: null,
+    featured_image: null,
   });
 
   const [loading, setLoading] = useState(true);
 
-  // Utility to extract plain text from block structure
   const extractText = (blocks) => {
     return Array.isArray(blocks)
       ? blocks.map(block =>
@@ -32,6 +55,7 @@ const EditBlog = () => {
   };
 
   const convertToBlock = (text) => {
+    if (!text || typeof text !== 'string') return [];
     return text
       .split('\n')
       .filter(line => line.trim() !== '')
@@ -62,9 +86,36 @@ const EditBlog = () => {
           meta_keywords: blog.meta_keywords || '',
           alt_text_image: blog.alt_text_image || '',
           slug: blog.slug || '',
+          image_1: null,
+          image_2: null,
+          featured_image: null,
+        });
+
+        setExistingImages({
+          image_1: blog.image_1?.url
+            ? blog.image_1.url.startsWith('http')
+              ? blog.image_1.url
+              : `${API_URL.replace(/\/$/, '')}/${blog.image_1.url.replace(/^\//, '')}`
+            : null,
+          image_2: blog.image_2?.url
+            ? blog.image_2.url.startsWith('http')
+              ? blog.image_2.url
+              : `${API_URL.replace(/\/$/, '')}/${blog.image_2.url.replace(/^\//, '')}`
+            : null,
+          featured_image: blog.featured_image?.url
+            ? blog.featured_image.url.startsWith('http')
+              ? blog.featured_image.url
+              : `${API_URL.replace(/\/$/, '')}/${blog.featured_image.url.replace(/^\//, '')}`
+            : null,
+        });
+
+        setExistingImageIds({
+          image_1: blog.image_1?.id || null,
+          image_2: blog.image_2?.id || null,
+          featured_image: blog.featured_image?.id || null,
         });
       } catch (error) {
-        console.error("Failed to fetch blog:", error);
+        console.error('Failed to fetch blog:', error);
       } finally {
         setLoading(false);
       }
@@ -81,40 +132,82 @@ const EditBlog = () => {
     }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append('files', file);
 
-  const payload = {
-    title: formData.title,
-    slug: formData.slug,
-    meta_description: formData.meta_description,
-    meta_keywords: formData.meta_keywords,
-    // alt_text_image: formData.alt_text_image,
-    description_1: convertToBlock(formData.description_1),
-    description_2: convertToBlock(formData.description_2 || ''),
-    description_3: convertToBlock(formData.description_3 || ''),
+    try {
+      const response = await fetch(`${API_URL}api/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      return data[0]?.id;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      throw error;
+    }
   };
 
-  try {
-    console.log('Payload being submitted:', { data: payload });
-    await updateBlog(documentId, payload);
-    alert('Blog updated successfully!');
-  } catch (error) {
-    console.error('Error updating blog:', error.response?.data || error.message);
-    alert('Failed to update blog.');
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
+    try {
+      const uploadedImages = {};
 
+      // Upload new images if selected
+      if (formData.image_1) {
+        uploadedImages.image_1 = await uploadImage(formData.image_1);
+      } else {
+        uploadedImages.image_1 = existingImageIds.image_1;
+      }
+
+      if (formData.image_2) {
+        uploadedImages.image_2 = await uploadImage(formData.image_2);
+      } else {
+        uploadedImages.image_2 = existingImageIds.image_2;
+      }
+
+      if (formData.featured_image) {
+        uploadedImages.featured_image = await uploadImage(formData.featured_image);
+      } else {
+        uploadedImages.featured_image = existingImageIds.featured_image;
+      }
+
+      const payload = {
+        title: formData.title,
+        slug: formData.slug,
+        meta_description: formData.meta_description,
+        meta_keywords: formData.meta_keywords,
+        description_1: convertToBlock(formData.description_1),
+        description_2: convertToBlock(formData.description_2 || ''),
+        description_3: convertToBlock(formData.description_3 || ''),
+        image_1: uploadedImages.image_1,
+        image_2: uploadedImages.image_2,
+        featured_image: uploadedImages.featured_image,
+      };
+
+      console.log('Payload being submitted:', payload);
+
+      await updateBlog(documentId, payload);
+      alert('Blog updated successfully!');
+    } catch (error) {
+      console.error('Error updating blog:', error.response?.data || error.message);
+      alert('Failed to update blog.');
+    }
+  };
 
   if (loading) return <div className="text-center py-10">Loading...</div>;
 
   return (
+    <div className="flex h-screen bg-gray-100">
+      
+      <Sidebar handleLogout={handleLogout} /> {/* Use the Sidebar component */}
     <form onSubmit={handleSubmit} className="p-6 space-y-4 max-w-3xl mx-auto">
       <h2 className="text-2xl font-semibold mb-4">Edit Blog</h2>
 
-      {[
-        { label: 'Title', name: 'title', type: 'text' },
+      {/* Text fields */}
+      {[{ label: 'Title', name: 'title', type: 'text' },
         { label: 'Description 1', name: 'description_1', type: 'textarea' },
         { label: 'Description 2', name: 'description_2', type: 'textarea' },
         { label: 'Description 3', name: 'description_3', type: 'textarea' },
@@ -155,6 +248,25 @@ const handleSubmit = async (e) => {
         />
       </label>
 
+      {/* Image fields */}
+      {['image_1', 'image_2', 'featured_image'].map((field) => (
+        <label key={field} className="block">
+          {field.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}:
+          {existingImages[field] && (
+            <div className="mb-2">
+              <img src={existingImages[field]} alt={`Existing ${field}`} className="w-32 h-32 object-cover rounded" />
+            </div>
+          )}
+          <input
+            type="file"
+            name={field}
+            accept="image/*"
+            onChange={(e) => setFormData({ ...formData, [field]: e.target.files[0] })}
+            className="w-full border p-2"
+          />
+        </label>
+      ))}
+
       <button
         type="submit"
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -162,6 +274,7 @@ const handleSubmit = async (e) => {
         Update Blog
       </button>
     </form>
+    </div>
   );
 };
 

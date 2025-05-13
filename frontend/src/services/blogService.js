@@ -14,9 +14,12 @@ export const fetchBlogs = async (locale) => {
   }
 };
 
-export const fetchBlogByDocumentId = async (documentId, locale = 'en') => {
+export const fetchBlogByDocumentId = async (documentId, slug = null, locale = 'en') => {
   try {
-    const response = await axios.get(`${API_URL}/api/blogs-and-news/${documentId}`, {
+    const url = documentId
+      ? `${API_URL}/api/blogs-and-news/${documentId}`
+      : `${API_URL}/api/blogs-and-news?filters[slug][$eq]=${slug}`;
+    const response = await axios.get(url, {
       params: {
         locale,
         populate: '*',

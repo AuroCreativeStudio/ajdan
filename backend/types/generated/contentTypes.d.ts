@@ -514,13 +514,9 @@ export interface ApiBlogsAndNewBlogsAndNew extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
-    featured_image: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios'
-    >;
-    images: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
+    featured_image: Schema.Attribute.Media<'images' | 'files'>;
+    image_1: Schema.Attribute.Media<'images' | 'files'>;
+    image_2: Schema.Attribute.Media<'images' | 'files' | 'audios'>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -540,7 +536,12 @@ export interface ApiBlogsAndNewBlogsAndNew extends Struct.CollectionTypeSchema {
       }>;
     publish: Schema.Attribute.Boolean;
     publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.UID<'title'>;
+    slug: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     title: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -550,10 +551,6 @@ export interface ApiBlogsAndNewBlogsAndNew extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    videos: Schema.Attribute.Media<
-      'images' | 'files' | 'videos' | 'audios',
-      true
-    >;
   };
 }
 
