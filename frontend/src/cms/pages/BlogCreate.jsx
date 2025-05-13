@@ -77,6 +77,8 @@ function BlogCreate() {
       if (error.response) {
         console.error('Response data:', error.response.data);
      
+
+        
       }
 
       alert('Error creating blog. Please check the input and try again.');

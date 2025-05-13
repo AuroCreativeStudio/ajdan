@@ -9,9 +9,9 @@ const LanguageToggle = () => {
   };
 
   return (
-    <div style={{ marginBottom: '20px' }}>
-      <button onClick={() => changeLanguage('en')}>English</button>
-      <button onClick={() => changeLanguage('ar')}>Arabic</button>
+    <div style={{ marginBottom: '5px' }}>
+      <button onClick={() => changeLanguage('en')}>EN/</button>
+      <button onClick={() => changeLanguage('ar')}>AR</button>
     </div>
   );
 };
