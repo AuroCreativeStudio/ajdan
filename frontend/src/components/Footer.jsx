@@ -1,29 +1,21 @@
-// src/components/Footer.js
-// import LanguageToggle from './LanguageToggle';
-
-// const Footer = () => (
-//   <footer style={{ backgroundColor: '#333', color: '#fff', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-  
-//     <LanguageToggle />
-
- 
-//     <div>© {new Date().getFullYear()} Your Company. All rights reserved.</div>
-//   </footer>
-// );
-
-// export default Footer;
-
-"use client";
-
 import React, { useState } from "react";
+import { Button, Input, Typography } from "@material-tailwind/react";
+import { subscribeToNewsletter } from "../services/newsletterService"; // Import the newsletter service
 
 function Footer() {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Subscribing email:", email);
-    setEmail("");
+    try {
+      await subscribeToNewsletter({ email }); // Call the API service
+      console.log("Subscribed successfully:", email);
+      alert("Thank you for subscribing!");
+      setEmail("");
+    } catch (error) {
+      console.error("Error subscribing to newsletter:", error.response?.data || error.message);
+      alert("Failed to subscribe. Please try again.");
+    }
   };
 
   const navigationLinks = [
@@ -31,88 +23,97 @@ function Footer() {
     "Residential",
     "Commercial",
     "Residential & Commercial",
-    "Contact Us"
+    "Contact Us",
   ];
 
   const partners = Array(5).fill(null);
 
   return (
-    <footer className="flex flex-col pt-10 bg-slate-900 text-stone-200 text-sm">
-      <div className="flex flex-col items-end px-6 w-full  max-md:px-4">
-        <div className="flex flex-wrap gap-5 justify-between self-stretch">
-          {/* Navigation */}
-          <nav className="text-sm">
-            <img
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/bc76ab510b473c2fd62f1ab0acc9a3488adee8ba?placeholderIfAbsent=true&apiKey=15fc2f5d6dad43d5af0854bebe07a404"
-              alt="Ajdan Logo"
-              className="object-contain w-42 mb-4"
-            />
-            <ul className=" text-xl space-y-1">
-              {navigationLinks.map((link, index) => (
-                <li key={index}>
-                  <a href="#" className="hover:text-white transition-colors">
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          {/* Partners */}
-          <section className="flex flex-col items-start mt-4">
-            <h2 className="text-xl mb-2">Our Partners</h2>
-            <div className="flex mr-44 flex-wrap gap-3">
-              {partners.map((_, index) => (
-                <div
-                  key={index}
-                  className="bg-black mr-2 h-10 w-10"
-                  aria-label={`Partner logo ${index + 1}`}
-                />
-              ))}
-            </div>
-          </section>
-        </div>
-
-        {/* Newsletter */}
-        <section className="mt-6 mr-24 w-full max-w-md">
-          <h3 className="text-base mb-2">Subscribe to our newsletter</h3>
-          <form
-            onSubmit={handleSubmit}
-            className="flex text-sm"
-          >
-            <input
-              type="email"
-              placeholder="Your Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-grow px-4 py-1 text-black bg-white"
-              required
-            />
-            <button
-              type="submit"
-              className="px-4 py-1 border border-stone-200 text-stone-200 hover:bg-stone-200 hover:text-slate-900 transition-colors"
+    <>
+      {/* Pre-Footer Section */}
+      <div
+        className="bg-gray-800 text-white flex items-center justify-center"
+        style={{ height: "150px", backgroundColor: "#000000" }}
+      >
+        <section className="py-20 mx-auto container max-w-4xl px-8">
+          <div className="grid lg:grid-cols-2 grid-cols-1 gap-4 !items-center">
+            <Typography className="text-gray-500 !font-semibold">
+              Stay in the Know: Subscribe for Exclusive Updates
+            </Typography>
+            <form
+              onSubmit={handleSubmit}
+              className="flex items-start flex-col gap-4 md:flex-row"
             >
-              Subscribe
-            </button>
-          </form>
+              <Input
+                label="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <Button type="submit" className="flex-shrink-0 md:w-fit w-full">
+                Subscribe
+              </Button>
+            </form>
+          </div>
         </section>
       </div>
 
-      {/* Copyright */}
-      <section className="flex flex-wrap justify-center gap-4 items-center mt-6 px-4 text-xs">
-        <p>© {new Date().getFullYear()} Ajdan. All rights reserved.</p>
-        <a href="/privacy" className="hover:underline">Privacy Policy</a>
-        <a href="/terms" className="hover:underline">Terms and Conditions</a>
-      </section>
+      <footer
+        className="flex flex-col pt-10 text-stone-200 text-sm"
+        style={{ backgroundColor: "#14202e" }}
+      >
+        <div className="flex flex-col items-end px-6 w-full  max-md:px-4">
+          <div className="flex flex-wrap gap-5 justify-between self-stretch">
+            {/* Navigation */}
+            <nav className="text-sm">
+              <img
+                src="https://cdn.builder.io/api/v1/image/assets/TEMP/bc76ab510b473c2fd62f1ab0acc9a3488adee8ba?placeholderIfAbsent=true&apiKey=15fc2f5d6dad43d5af0854bebe07a404"
+                alt="Ajdan Logo"
+                className="object-contain mb-4"
+                style={{ width: "100px", height: "" }}
+              />
+              <ul className=" text-xl space-y-1">
+                {navigationLinks.map((link, index) => (
+                  <li key={index}>
+                    <a href="#" className="hover:text-white transition-colors">
+                      {link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
 
-      {/* Discover Marquee */}
-      <div className="mt-6 w-full bg-black overflow-hidden">
-        <div className="whitespace-nowrap animate-marquee text-4xl text-slate-700 font-bold py-2">
-          <span className="inline-block px-4">Discover new horizon</span>
-         
+            {/* Partners */}
+            <section className="flex flex-col items-start mt-4">
+              <h2 className="text-xl mb-2">Our Partners</h2>
+              <div className="flex mr-44 flex-wrap gap-3">
+                {partners.map((_, index) => (
+                  <div
+                    key={index}
+                    className="bg-black mr-2 h-10 w-10"
+                    aria-label={`Partner logo ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </section>
+          </div>
         </div>
-      </div>
-    </footer>
+
+        {/* Copyright */}
+        <section
+          className="flex flex-wrap justify-center gap-4 items-center mt-6 px-4 text-xs"
+          style={{ marginBottom: "20px" }}
+        >
+          <p>© {new Date().getFullYear()} Ajdan. All rights reserved.</p>
+          <a href="/privacy" className="hover:underline">
+            Privacy Policy
+          </a>
+          <a href="/terms" className="hover:underline">
+            Terms and Conditions
+          </a>
+        </section>
+      </footer>
+    </>
   );
 }
 

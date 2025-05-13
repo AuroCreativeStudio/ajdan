@@ -1,11 +1,16 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-    content: [
-      "./index.html",
-      "./src/**/*.{js,ts,jsx,tsx}",
-    ],
-      theme: {
+const withMT = require("@material-tailwind/react/utils/withMT");
+
+module.exports = withMT({
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
     extend: {
+          fontFamily: {
+      proxima: ['"Proxima Nova"', 'sans-serif'], // Add your custom font
+    },
       animation: {
         marquee: 'marquee 40s linear infinite',
       },
@@ -16,8 +21,7 @@ module.exports = {
         },
       },
     },
-  
-    },
-    plugins: [],
-  };
+  },
+  plugins: [],
+});
   

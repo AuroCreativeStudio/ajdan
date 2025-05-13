@@ -17,9 +17,6 @@ import Sample from './components/pages/Test';
 import SmoothScrollHero from './components/pages/animation';
 import BlogList from './components/pages/BlogList';
 import BlogSingle from './components/pages/BlogSingle';
-import PrivacyPolicy from './components/pages/PrivacyPolicy';
-import TermsConditions from './components/pages/TermsConditions';
-import Aboutus from './components/pages/Aboutus';
 
 import Login from './cms/pages/Login';
 import Dashboard from './cms/pages/DashboardPage';
@@ -40,7 +37,7 @@ function LayoutWrapper({ children }) {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {!isCmsRoute && <Header />}
       <main style={{ flex: 1 }}>{children}</main>
-      {!isCmsRoute && <ConsentBanner />}
+      {/* {!isCmsRoute && <ConsentBanner />} */}
       {!isCmsRoute && <Footer />}
     </div>
   );
@@ -57,13 +54,10 @@ function AppRoutes({ setToken, setUser }) {
       <Route path="/test" element={<Sample />} />
       <Route path="/animation" element={<SmoothScrollHero />} />
       <Route path="/blogs" element={<BlogList locale="en" />} />
-      {/* <Route path="/blogs/:slug" element={<BlogSingle locale="en" />} /> */}
+      <Route path="/blogs/:slug" element={<BlogSingle locale="en" />} />
       <Route path="/ar/blogs" element={<BlogList locale="ar" />} />
-      {/* <Route path="/ar/blogs/:slug" element={<BlogSingle locale="ar" />} /> */}
+      <Route path="/ar/blogs/:slug" element={<BlogSingle locale="ar" />} />
       <Route path="/blog/:slug" element={<BlogSingle />} />
-      <Route path="/terms" element={<TermsConditions/>} />
-      <Route path="/privacy"element={<PrivacyPolicy/>} />
-      <Route path="/aboutus" element={<Aboutus/>} />
 
 
       <Route path="/login" element={<Login setToken={setToken} setUser={setUser} />} />
