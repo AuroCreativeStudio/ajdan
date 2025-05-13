@@ -77,6 +77,9 @@ const Header = () => {
           <li>
             <a href="/blogs" className="block py-2 px-4 hover:bg-gray-200 rounded-md">Blogs</a>
           </li>
+          <li>
+            <a href="/aboutus" className="Block py-2 px-4 hover:bg-gray-200 rounded-md">About Us</a>
+            </li>
         </ul>
       </div>
     </header>
