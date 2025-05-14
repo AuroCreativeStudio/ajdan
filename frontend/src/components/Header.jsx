@@ -31,7 +31,9 @@ const Header = () => {
 
         {/* Center: Logo */}
         <div className="absolute left-1/2 transform -translate-x-1/2">
+        <a href="/">
           <img src={logo} alt="Logo" className="h-24 w-32 object-contain" />
+          </a>
         </div>
 
         {/* Right: Language Selector */}
@@ -42,7 +44,7 @@ const Header = () => {
 
       {/* Sliding Menu */}
       <div
-        className={`fixed top-0 left-0 h-full bg-gray-50 shadow-lg z-20 transform ${
+        className={`fixed top-0 left-0 h-full w-full bg-gray-50 shadow-lg z-20 transform ${
           menuOpen ? 'translate-x-0' : '-translate-x-full'
         } transition-transform duration-300 ease-in-out w-64`}
       >
