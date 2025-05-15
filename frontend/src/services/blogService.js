@@ -4,7 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export const fetchBlogs = async (locale) => {
   try {
-    const response = await axios.get(`${API_URL}/api/blogs-and-news`, {
+    const response = await axios.get(`${API_URL}/api/blogs-and-news?populate=featured_image`, {
       params: { locale },
     });
     return response.data;

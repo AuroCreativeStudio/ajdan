@@ -12,12 +12,24 @@ function BlogList() {
       .then(data => {
         console.log('Fetched blog data:', data);
         const sanitizedBlogs = (data?.data || []).map(blog => {
+                    console.log('Full blog object:', blog); // Add this line to inspect structure
+          // If featured_image is present and is an array/object with a url
+          let imageUrl = null;
+          if (Array.isArray(blog.featured_image) && blog.featured_image[0]?.url) {
+            imageUrl = blog.featured_image[0].url.startsWith('http')
+              ? blog.featured_image[0].url
+              : `http://localhost:1337${blog.featured_image[0].url}`;
+          } else if (blog.featured_image?.url) {
+            imageUrl = blog.featured_image.url.startsWith('http')
+              ? blog.featured_image.url
+              : `http://localhost:1337${blog.featured_image.url}`;
+          }
           return {
             id: blog.documentId,
             slug: blog.slug, // Make sure this field exists in your API
             title: blog.title || 'Untitled',
             descriptionBlocks: Array.isArray(blog.description_1) ? blog.description_1 : [],
-            imageUrl: blog.featured_image?.url || null,
+            imageUrl,
             altText: blog.alt_text_image || 'No description',
           };
         });
@@ -45,7 +57,7 @@ function BlogList() {
       {blogs.length > 0 ? (
         blogs.map(blog => (
           <div key={blog.id} style={{ flex: '1 1 calc(33.333% - 20px)', boxSizing: 'border-box', border: '1px solid #ddd', padding: '10px' }}>
-            <h2>{blog.title}</h2>
+        
             {blog.imageUrl && (
               <img
                 src={blog.imageUrl} // Use the URL from featured_image
@@ -53,6 +65,7 @@ function BlogList() {
                 style={{ width: '100%', height: 'auto', marginBottom: '10px' }}
               />
             )}
+                <h2>{blog.title}</h2>
             <p>{getExcerpt(blog.descriptionBlocks)}</p>
             <Link  to={`/blog/${blog.slug}`}
              state={{ documentId: blog.id }}
