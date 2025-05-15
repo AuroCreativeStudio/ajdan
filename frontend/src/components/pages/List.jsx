@@ -40,43 +40,43 @@ const List = () => {
 
   return (
     <>
-    <div className="mt-24 p-6 max-w-3xl mx-auto">
-      {/* Filters */}
-      <div className="bg-red-200 p-6 rounded shadow mb-6 space-y-4">
-        <Dropdown
-          label="Choose a Place:"
-          value={selectedPlace}
-          onChange={setSelectedPlace}
-          options={uniquePlaces}
-        />
-        <Dropdown
-          label="Choose a Building:"
-          value={selectedBuilding}
-          onChange={setSelectedBuilding}
-          options={uniqueBuildings}
-        />
-        <Dropdown
-          label="Choose Square Feet:"
-          value={selectedSquareFeet}
-          onChange={setSelectedSquareFeet}
-          options={uniqueSquareFeet}
-        />
-      </div>
+      <div className="mt-24 p-6 max-w-3xl mx-auto">
+        {/* Filters */}
+        <div className="bg-red-200 p-6 rounded shadow mb-6 space-y-4">
+          <Dropdown
+            label="Choose a Place:"
+            value={selectedPlace}
+            onChange={setSelectedPlace}
+            options={uniquePlaces}
+          />
+          <Dropdown
+            label="Choose a Building:"
+            value={selectedBuilding}
+            onChange={setSelectedBuilding}
+            options={uniqueBuildings}
+          />
+          <Dropdown
+            label="Choose Square Feet:"
+            value={selectedSquareFeet}
+            onChange={setSelectedSquareFeet}
+            options={uniqueSquareFeet}
+          />
+        </div>
 
-      {/* Results */}
-      <div className="bg-white p-6 rounded shadow">
-        {loading ? (
-          <p>Loading apartments...</p>
-        ) : filteredApartments.length > 0 ? (
-          <ul className="space-y-4">
-           
-          </ul>
-        ) : (
-          <p>No apartment matches your filters.</p>
-        )}
+        {/* Results */}
+        <div className="bg-white p-6 rounded shadow">
+          {loading ? (
+            <p>Loading apartments...</p>
+          ) : filteredApartments.length > 0 ? (
+            <ul className="space-y-4">
+
+            </ul>
+          ) : (
+            <p>No apartment matches your filters.</p>
+          )}
+        </div>
       </div>
-    </div>
-       <div className="bg-white p-6 rounded shadow">
+      <div className="bg-white p-6 rounded shadow">
         {loading ? (
           <p>Loading apartments...</p>
         ) : filteredApartments.length > 0 ? (
@@ -96,9 +96,12 @@ const List = () => {
                 <div className="p-5">
                   <a href="#">
                     <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                      {item.title}
+                      {item.title || 'No Title'}
                     </h5>
                   </a>
+                  <p className="mb-2 text-2lg font-normal text-gray-700 dark:text-gray-400">
+                    {item.place}
+                  </p>
                   <p className="mb-2 font-normal text-gray-700 dark:text-gray-400">
                     {item.description}
                   </p>
