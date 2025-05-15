@@ -40,6 +40,7 @@ function BlogList() {
   };
 
   return (
+    <>
     <div className="blog-list" dir={i18n.language === 'ar' ? 'rtl' : 'ltr'} style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
       {blogs.length > 0 ? (
         blogs.map(blog => (
@@ -68,6 +69,9 @@ function BlogList() {
         <p>No blogs available.</p>
       )}
     </div>
+
+    
+    </>
   );
 }
 
