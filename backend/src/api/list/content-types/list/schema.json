@@ -52,6 +52,14 @@
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::project-list.project-list"
+    },
+    "slug": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
   }
 }

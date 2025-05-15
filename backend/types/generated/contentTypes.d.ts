@@ -555,6 +555,12 @@ export interface ApiListList extends Struct.CollectionTypeSchema {
         };
       }>;
     publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     square_feet: Schema.Attribute.BigInteger &
       Schema.Attribute.SetPluginOptions<{
         i18n: {

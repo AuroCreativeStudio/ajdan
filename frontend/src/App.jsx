@@ -46,6 +46,7 @@ import DarahAlwajhah from './components/landing/darah-alwajhah/LandingPage';
 import DarahMakkah from './components/landing/darah-makkah/LandingPage';
 import DarahQomrah from './components/landing/darah-qomrah/LandingPage';
 import DarahSadayem from './components/landing/darah-sadayem/LandingPage';
+import Infiniti from './components/landing/infiniti/LandingPage';
 
 
 
@@ -75,7 +76,8 @@ function LayoutWrapper({ children }) {
     location.pathname.startsWith('/darah-alwajhah') ||
     location.pathname.startsWith('/darah-makkah') ||
     location.pathname.startsWith('/darah-qomrah') ||
-    location.pathname.startsWith('/darah-sadayem');
+    location.pathname.startsWith('/darah-sadayem') ||
+    location.pathname.startsWith('/infiniti');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -122,6 +124,7 @@ function AppRoutes({ setToken, setUser }) {
       <Route path="/darah-makkah" element={<DarahMakkah />} />
       <Route path="/darah-qomrah" element={<DarahQomrah />} />
       <Route path="/darah-sadayem" element={<DarahSadayem />} />
+      <Route path="/infiniti" element={<Infiniti />} />
 
 
       <Route path="/login" element={<Login setToken={setToken} setUser={setUser} />} />

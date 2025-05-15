@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchApartmentList } from '../../services/listService';
 import image from '../../assets/image/one.jpg'; // fallback image
+import { Link } from 'react-router-dom';
 
 const List = () => {
   const [apartmentList, setApartmentList] = useState([]);
@@ -108,8 +109,8 @@ const List = () => {
                   <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                     <strong>Size:</strong> {item.square_feet} sq ft
                   </p>
-                  <a
-                    href="#"
+               <Link
+                    to={`/${item.slug}`}
                     className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                   >
                     View More
@@ -128,7 +129,7 @@ const List = () => {
                         d="M1 5h12m0 0L9 1m4 4L9 9"
                       />
                     </svg>
-                  </a>
+                  </Link>
                 </div>
               </div>
             ))}
