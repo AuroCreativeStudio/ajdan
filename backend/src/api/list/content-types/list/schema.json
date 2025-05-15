@@ -4,7 +4,8 @@
   "info": {
     "singularName": "list",
     "pluralName": "lists",
-    "displayName": "list"
+    "displayName": "list",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -46,6 +47,11 @@
           "localized": true
         }
       }
+    },
+    "title": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::project-list.project-list"
     }
   }
 }

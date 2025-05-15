@@ -1,11 +1,10 @@
 {
   "kind": "collectionType",
-  "collectionName": "newsletters",
+  "collectionName": "project_lists",
   "info": {
-    "singularName": "newsletter",
-    "pluralName": "newsletters",
-    "displayName": "newsletter",
-    "description": ""
+    "singularName": "project-list",
+    "pluralName": "project-lists",
+    "displayName": "ProjectList"
   },
   "options": {
     "draftAndPublish": true
@@ -16,9 +15,8 @@
     }
   },
   "attributes": {
-    "email": {
-      "type": "email",
-      "required": false,
+    "Property_Title": {
+      "type": "string",
       "pluginOptions": {
         "i18n": {
           "localized": true
