@@ -1,19 +1,44 @@
-import React from 'react';
-import BayfrontHeader from './Header'; // Ensure this path is correct
-import BayfrontFooter from './Footer'; // Updated path for Footer
+import React, { useEffect, useState } from 'react';
+import BayfrontHeader from './Header';
+import BayfrontFooter from './Footer';
+import { getListingByIdentifier } from '../../../services/getListingByIdentifier';
+import ContactForm from '../PopupContactForm';
 
 const AjdanBayfront = () => {
-    console.log("Ajdan2Page rendered"); // Debugging log
+    const [data, setData] = useState(null);
+    const [showForm, setShowForm] = useState(false);
+
+    useEffect(() => {
+        const loadData = async () => {
+            const result = await getListingByIdentifier('bayfront');
+            setData(result);
+        };
+
+        loadData();
+    }, []);
+
+    if (!data) return <p>Loading...</p>;
     return (
         <>
-            <BayfrontHeader /> 
+            <BayfrontHeader />
             <div style={{ textAlign: 'center', padding: '50px' }}>
                 <section style={{ backgroundColor: '#f4f4f4', padding: '20px', borderRadius: '8px' }}>
-                    <h1>Welcome to Bayfront</h1>
-                    <p>Your journey to excellence starts here!</p>
+                    <h1>{data.title}</h1>
+                    <p><strong>Place:</strong> {data.place}</p>
+                    <p><strong>Building:</strong> {data.building}</p>
+                    <p><strong>Size:</strong> {data.square_feet} sq ft</p>
+                    <p>{data.description}</p>
+                      <button
+            onClick={() => setShowForm(true)}
+            style={{ borderRadius: '70px', padding: '10px 24px', border: 'none', background: '#007bff', color: '#fff', cursor: 'pointer' }}
+          >
+            Enquire Now
+          </button>
+
                 </section>
             </div>
             <BayfrontFooter />
+            <ContactForm show={showForm} onClose={() => setShowForm(false)} listingTitle={data.title} />
         </>
     );
 };

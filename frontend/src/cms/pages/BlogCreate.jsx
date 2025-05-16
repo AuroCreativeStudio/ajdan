@@ -53,6 +53,15 @@ function BlogCreate() {
     }
   };
 
+  const generateSlug = (title) => {
+    return title
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, '') 
+      .replace(/\s+/g, '-')         
+      .replace(/-+/g, '-');          
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -116,7 +125,28 @@ function BlogCreate() {
             </div>
             <div>
               <label className="block mb-2 text-sm font-medium text-gray-900">Slug</label>
-              <input type="text" name="slug" value={formData.slug} onChange={handleChange} required className="form-input" />
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input
+                  type="text"
+                  name="slug"
+                  value={formData.slug}
+                  onChange={handleChange}
+                  required
+                  className="form-input"
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData(prev => ({
+                      ...prev,
+                      slug: generateSlug(formData.title)
+                    }))
+                  }
+                  className="text-xs px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                >
+                  Autogenerate
+                </button>
+              </div>
             </div>
             <div>
               <label className="block mb-2 text-sm font-medium text-gray-900">Meta Description</label>

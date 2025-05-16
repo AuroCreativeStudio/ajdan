@@ -615,6 +615,69 @@ export interface ApiNewsletterNewsletter extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiProjectContactFormProjectContactForm
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'project_contact_forms';
+  info: {
+    description: '';
+    displayName: 'ProjectContactForm';
+    pluralName: 'project-contact-forms';
+    singularName: 'project-contact-form';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::project-contact-form.project-contact-form'
+    >;
+    message: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    phone: Schema.Attribute.BigInteger &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    username: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+  };
+}
+
 export interface ApiProjectListProjectList extends Struct.CollectionTypeSchema {
   collectionName: 'project_lists';
   info: {
@@ -1216,6 +1279,7 @@ declare module '@strapi/strapi' {
       'api::global.global': ApiGlobalGlobal;
       'api::list.list': ApiListList;
       'api::newsletter.newsletter': ApiNewsletterNewsletter;
+      'api::project-contact-form.project-contact-form': ApiProjectContactFormProjectContactForm;
       'api::project-list.project-list': ApiProjectListProjectList;
       'api::userdetail.userdetail': ApiUserdetailUserdetail;
       'plugin::content-releases.release': PluginContentReleasesRelease;

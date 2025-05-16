@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import InfinitiHeader from './Header';
 import InfinitiFooter from './Footer';
 import { getListingByIdentifier } from '../../../services/getListingByIdentifier';
+import ContactForm from '../PopupContactForm';
+
 
 const Infiniti = () => {
   const [data, setData] = useState(null);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -27,9 +30,17 @@ const Infiniti = () => {
           <p><strong>Building:</strong> {data.building}</p>
           <p><strong>Size:</strong> {data.square_feet} sq ft</p>
           <p>{data.description}</p>
+          <button
+            onClick={() => setShowForm(true)}
+            style={{ borderRadius: '70px', padding: '10px 24px', border: 'none', background: '#007bff', color: '#fff', cursor: 'pointer' }}
+          >
+            Enquire Now
+          </button>
+
         </section>
       </div>
       <InfinitiFooter />
+       <ContactForm show={showForm} onClose={() => setShowForm(false)} listingTitle={data.title} />
     </>
   );
 };

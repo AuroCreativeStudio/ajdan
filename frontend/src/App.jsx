@@ -26,7 +26,9 @@ import BlogCreate from './cms/pages/BlogCreate';
 import EditBlog from './cms/pages/Editblog';
 import Aboutus from './components/pages/Aboutus';
 import NewsletterCms from './cms/pages/NewsletterCms';
-import ContactListing from './cms/pages/ContactListing'
+import ContactListing from './cms/pages/ContactListing';
+import ProjectList from './cms/pages/ProjectList';
+import ProjectUpdate from './cms/pages/ProjectUpdate';
 
 import Ajdan2Page from './components/landing/ajdan-II/LandingPage';
 import AjdanIsland from './components/landing/ajdan-island/LandingPage';
@@ -77,7 +79,9 @@ function LayoutWrapper({ children }) {
     location.pathname.startsWith('/darah-makkah') ||
     location.pathname.startsWith('/darah-qomrah') ||
     location.pathname.startsWith('/darah-sadayem') ||
-    location.pathname.startsWith('/infiniti');
+    location.pathname.startsWith('/infiniti') ||
+    location.pathname.startsWith('/projectlist') ||
+    location.pathname.startsWith('/projectupdate');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -134,6 +138,8 @@ function AppRoutes({ setToken, setUser }) {
       <Route path="/edit/:id" element={<ProtectedRoute><EditBlog /></ProtectedRoute>} />
       <Route path="/newsletter" element={<ProtectedRoute><NewsletterCms /></ProtectedRoute>} />
       <Route path="/contactlist" element={<ProtectedRoute><ContactListing /></ProtectedRoute>} />
+      <Route path="/projectlist" element={<ProtectedRoute><ProjectList /></ProtectedRoute>} />
+      <Route path="/projectUpdate" element={<ProtectedRoute><ProjectUpdate /></ProtectedRoute>} />
 
     </Routes>
   );
