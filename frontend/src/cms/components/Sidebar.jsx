@@ -18,6 +18,10 @@ function Sidebar({ handleLogout }) {
         <a href="/contactlist" className="flex items-center gap-2 text-gray-700 hover:text-blue-600">
         <HiUser /> ContactListing
         </a>
+         <a href="/projectlist" className="flex items-center gap-2 text-gray-700 hover:text-blue-600">
+        <HiUser /> ProjectListing
+        </a>
+
         <button
           onClick={handleLogout}
           className="flex items-center gap-2 text-red-500 hover:text-red-700 mt-8"

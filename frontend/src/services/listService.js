@@ -15,3 +15,26 @@ export const fetchApartmentList = async () => {
   }
 };
 
+export const updateProjectList = async (documentId, updateFields) => {
+  try {
+    const payload = {
+      data: {
+        ...updateFields,
+        locale: 'en', // 👈 ADD THIS LINE
+      },
+    };
+
+    console.log('Payload for update:', payload);
+
+    const response = await axios.put(`${API_URL}/api/lists/${documentId}`, payload);
+
+    return response.data;
+  } catch (error) {
+    console.error('Error updating project:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+
+
+
