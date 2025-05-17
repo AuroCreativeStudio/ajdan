@@ -746,7 +746,19 @@ export interface ApiUserdetailUserdetail extends Struct.CollectionTypeSchema {
       'oneToMany',
       'api::userdetail.userdetail'
     >;
+    message: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     name: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    phone: Schema.Attribute.BigInteger &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;

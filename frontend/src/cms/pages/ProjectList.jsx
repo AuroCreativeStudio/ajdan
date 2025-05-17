@@ -1,26 +1,30 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import { fetchApartmentList } from '../../services/listService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
+import { logout } from '../../services/authService';
+
+const ITEMS_PER_PAGE = 5; // Change as needed
 
 function ProjectList() {
   const [projectList, setProjectList] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const currentPage = parseInt(searchParams.get('page')) || 1;
   const navigate = useNavigate();
 
- useEffect(() => {
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  useEffect(() => {
     async function fetchProjectList() {
       try {
         const data = await fetchApartmentList();
         const projects = Array.isArray(data) ? data : data.data;
-
-  
-        const projectsWithDocId = projects.map(project => ({
-          ...project,
-         
-        }));
-
-        setProjectList(projectsWithDocId);
+        setProjectList(projects);
       } catch (error) {
         console.error('Error Fetching ProjectList', error);
       } finally {
@@ -30,53 +34,81 @@ function ProjectList() {
     fetchProjectList();
   }, []);
 
+  const totalPages = Math.ceil(projectList.length / ITEMS_PER_PAGE);
+  const paginatedProjects = projectList.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const handlePageChange = (page) => {
+    setSearchParams({ page: page.toString() });
+  };
+
+  const handleUpdate = (project) => {
+    navigate('/projectupdate', { state: { project } });
+  };
+
   if (loading) return <div>Loading...</div>;
 
-
-
-  if (loading) return <div>Loading...</div>
-const handleUpdate = (project) => {
-  navigate('/projectupdate', { state: { project } });
-};
-
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">ProjectList Subscriptions</h2>
-      {projectList.length === 0 ? (
-        <p>No ProjectList found.</p>
-      ) : (
-        <table className="min-w-full bg-white border border-gray-300">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="py-2 px-4 border-b">#</th>
-              <th className="py-2 px-4 border-b">Title</th>
-              <th className="py-2 px-4 border-b">Place</th>
-              <th className="py-2 px-4 border-b">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {projectList.map((project, index) => (
-              <tr key={project.id || index}>
-                <td className="py-2 px-4 border-b">{index + 1}</td>
-                <td className="py-2 px-4 border-b">{project.title}</td>
-                <td className="py-2 px-4 border-b">{project.place}</td>
-                <td className="py-2 px-4 border-b">
-               <button
-  onClick={() => handleUpdate(project)}
-  className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
->
-  Update
-</button>
+    <div className="flex h-screen bg-gray-100">
+      <Sidebar handleLogout={handleLogout} />
+      <div className="p-4 w-full">
+        <h2 className="text-xl font-bold mb-4">ProjectList Subscriptions</h2>
 
+        {paginatedProjects.length === 0 ? (
+          <p>No projects found.</p>
+        ) : (
+          <>
+            <table className="min-w-full bg-white border border-gray-300">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="py-2 px-4 border-b">#</th>
+                  <th className="py-2 px-4 border-b">Title</th>
+                  <th className="py-2 px-4 border-b">Place</th>
+                  <th className="py-2 px-4 border-b">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedProjects.map((project, index) => (
+                  <tr key={project.id || index}>
+                    <td className="py-2 px-4 border-b">
+                      {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
+                    </td>
+                    <td className="py-2 px-4 border-b">{project.title}</td>
+                    <td className="py-2 px-4 border-b">{project.place}</td>
+                    <td className="py-2 px-4 border-b">
+                      <button
+                        onClick={() => handleUpdate(project)}
+                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            {/* Pagination Controls */}
+            <div className="mt-4 flex space-x-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`px-3 py-1 rounded ${
+                    currentPage === page ? 'bg-blue-600 text-white' : 'bg-gray-200'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
     </div>
-  )
+  );
 }
 
-export default ProjectList
+export default ProjectList;
