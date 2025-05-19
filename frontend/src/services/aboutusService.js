@@ -25,10 +25,12 @@ export const createTeam = async (teamData) => {
   }
 };
 
-export const updateTeam = async (documentId, data) => {
-  const API_URL = import.meta.env.VITE_API_URL;
+export const updateTeam = async (id, data, locale) => {
+  const url = locale
+    ? `${API_URL}/api/aboutus-teams/${id}?locale=${locale}`
+    : `${API_URL}/api/aboutus-teams/${id}`;
   try {
-    const response = await axios.put(`${API_URL}/api/aboutus-teams/${documentId}`, {
+    const response = await axios.put(url, {
       data: { ...data }
     });
     return response.data;
