@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { fetchteam } from '../../services/aboutusService';
 
+function getImageUrl(image) {
+  if (!image) return "https://docs.material-tailwind.com/img/team-3.jpg";
+  if (typeof image === "string") return image;
+  if (image.url) return image.url.startsWith("http") ? image.url : `http://localhost:1337${image.url}`;
+  return "https://docs.material-tailwind.com/img/team-3.jpg";
+}
+
 function Aboutus() {
   const [team, setTeam] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +43,7 @@ function Aboutus() {
             <div key={member.id || idx} className="w-64 m-12 bg-white rounded-lg shadow-md overflow-hidden">
               <div className="h-80 overflow-hidden">
                 <img
-                  src={member.image || "https://docs.material-tailwind.com/img/team-3.jpg"}
+                  src={getImageUrl(member.image)}
                   alt={member.name || "profile"}
                   className="w-full h-full object-cover"
                 />

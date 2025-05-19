@@ -3,16 +3,16 @@ import { createTeam } from '../../services/aboutusService';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
 
 function TeamCreate() {
   const [form, setForm] = useState({
     member: '',
     role: '',
-    // image: '',
-    // facebook: '',
-    // twitter: '',
-    // instagram: '',
+    image: null, // Store uploaded image file info
   });
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -24,13 +24,42 @@ function TeamCreate() {
     }));
   };
 
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    setImagePreview(URL.createObjectURL(file));
+    try {
+      const formData = new FormData();
+      formData.append('files', file);
+      const res = await axios.post('http://localhost:1337/api/upload', formData);
+      if (res.data && res.data[0]) {
+        setForm((prev) => ({
+          ...prev,
+          image: res.data[0],
+        }));
+        toast.success('Image uploaded!');
+      } else {
+        toast.error('Image upload failed.');
+      }
+    } catch (err) {
+      toast.error('Image upload failed.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await createTeam(form);
+      const submitForm = {
+        ...form,
+        image: form.image?.id || null,
+      };
+      await createTeam(submitForm);
       toast.success('Team member created successfully!');
-      setTimeout(() => navigate(-1), 1500); // Wait for toast before navigating
+      setTimeout(() => navigate(-1), 1500);
     } catch (error) {
       toast.error('Failed to create team member.');
     } finally {
@@ -64,50 +93,28 @@ function TeamCreate() {
             required
           />
         </div>
-        {/* <div>
-          <label className="block font-medium mb-1">Image URL</label>
-          <input
-            type="text"
-            name="image"
-            value={form.image}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-          />
-        </div> */}
-        {/* <div>
-          <label className="block font-medium mb-1">Facebook</label>
-          <input
-            type="text"
-            name="facebook"
-            value={form.facebook}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-          />
-        </div>
         <div>
-          <label className="block font-medium mb-1">Twitter</label>
+          <label className="block font-medium mb-1">Image</label>
           <input
-            type="text"
-            name="twitter"
-            value={form.twitter}
-            onChange={handleChange}
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
             className="w-full border rounded px-3 py-2"
+            disabled={uploading}
           />
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="mt-2 h-24 object-contain border rounded"
+            />
+          )}
+          {uploading && <div className="text-sm text-gray-500">Uploading...</div>}
         </div>
-        <div>
-          <label className="block font-medium mb-1">Instagram</label>
-          <input
-            type="text"
-            name="instagram"
-            value={form.instagram}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-          />
-        </div> */}
         <button
           type="submit"
           className={`px-4 py-2 rounded text-white ${loading ? 'bg-gray-500' : 'bg-blue-600 hover:bg-blue-700'}`}
-          disabled={loading}
+          disabled={loading || uploading}
         >
           {loading ? 'Creating...' : 'Create'}
         </button>

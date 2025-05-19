@@ -6,6 +6,13 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { paginate } from '../../services/paginate';
 
+function getImageUrl(image) {
+  if (!image) return "https://docs.material-tailwind.com/img/team-3.jpg";
+  if (typeof image === "string") return image;
+  if (image.url) return image.url.startsWith("http") ? image.url : `http://localhost:1337${image.url}`;
+  return "https://docs.material-tailwind.com/img/team-3.jpg";
+}
+
 function TeamList() {
   const [team, setTeam] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -87,9 +94,9 @@ function TeamList() {
                     <td className="px-6 py-4">{member.role || 'N/A'}</td>
                     <td className="px-6 py-4">
                       <img
-                        src={member.image || "https://docs.material-tailwind.com/img/team-3.jpg"}
+                        src={getImageUrl(member.image)}
                         alt={member.name || "profile"}
-                        className="object-cover w-12 h-12 rounded-full"
+                        className="w-12 h-12 object-cover rounded-full"
                       />
                     </td>
                     <td className="flex gap-2 px-6 py-4">
