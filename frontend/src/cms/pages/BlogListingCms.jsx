@@ -100,7 +100,7 @@ export default function BlogListingCms() {
                       <Link
                         to={`/edit/${blog.slug}`}
                         state={{ slug: blog.slug }}
-                        className="mr-2 text-blue-600 hover:underline"
+                        className="mr-4 text-green-600 hover:underline"
                       >
                         Edit
                       </Link>

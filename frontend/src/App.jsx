@@ -86,7 +86,7 @@ function LayoutWrapper({ children }) {
     location.pathname.startsWith('/darah-sadayem') ||
     location.pathname.startsWith('/infiniti') ||
     location.pathname.startsWith('/projectlist') ||
-    location.pathname.startsWith('/projectupdate')||
+    location.pathname.startsWith('/projectupdate') ||
     location.pathname.startsWith('/teamlist') ||
     location.pathname.startsWith('/teamcreate') ||
     location.pathname.startsWith('/teamupdate') ||

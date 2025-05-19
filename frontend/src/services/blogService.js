@@ -33,6 +33,26 @@ export const fetchBlogByDocumentId = async (documentId, slug = null, locale = 'e
   }
 };
 
+export const fetchBlogBySlug = async (slug, locale = 'en') => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/blogs-and-news`,
+      {
+        params: {
+          'filters[slug][$eq]': slug,
+          locale,
+          populate: '*',
+        },
+      }
+    );
+    // Strapi returns an array in data
+    return response.data.data && response.data.data.length > 0 ? response.data.data[0] : null;
+  } catch (error) {
+    console.error('Error fetching blog by slug:', error);
+    throw error;
+  }
+};
+
 export const createBlogPost = async (formData) => {
   return axios.post(`${API_URL}/api/blogs-and-news`, {
     data: formData, // no need to wrap in FormData or set content-type

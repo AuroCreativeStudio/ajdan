@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { fetchBlogByDocumentId, updateBlog } from '../../services/blogService';
+import { fetchBlogBySlug, updateBlog } from '../../services/blogService';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { logout } from '../../services/authService';
@@ -11,7 +11,7 @@ const API_URL = 'http://localhost:1337/';
 
 const EditBlog = () => {
   const location = useLocation();
-  const documentId = location.state?.documentId;
+ const slug = location.state?.slug;
   const locale = 'en';
 
   const [formData, setFormData] = useState({
@@ -69,15 +69,19 @@ const EditBlog = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!documentId) {
-        console.error("No documentId provided");
+      if (!slug) {
+        console.error("No slug provided");
         setLoading(false);
         return;
       }
 
       try {
-        const data = await fetchBlogByDocumentId(documentId, locale);
-        const blog = data?.data || {};
+        const blog = await fetchBlogBySlug(slug, locale);
+        if (!blog) {
+          setLoading(false);
+          toast.error('Blog not found!');
+          return;
+        }
 
         setFormData({
           title: blog.title || '',
@@ -124,7 +128,7 @@ const EditBlog = () => {
     };
 
     fetchData();
-  }, [documentId]);
+  }, [slug]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -191,7 +195,7 @@ const EditBlog = () => {
 
       console.log('Payload being submitted:', payload);
 
-      await updateBlog(documentId, payload);
+      await updateBlog(slug, payload);
       toast.success('Blog updated successfully!');
     } catch (error) {
       console.error('Error updating blog:', error.response?.data || error.message);
@@ -199,14 +203,14 @@ const EditBlog = () => {
     }
   };
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (loading) return <div className="py-10 text-center">Loading...</div>;
 
   return (
     <div className="flex h-screen bg-gray-100">
       
       <Sidebar handleLogout={handleLogout} /> {/* Use the Sidebar component */}
-    <form onSubmit={handleSubmit} className="p-6 space-y-4 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">Edit Blog</h2>
+    <form onSubmit={handleSubmit} className="max-w-3xl p-6 mx-auto space-y-4">
+      <h2 className="mb-4 text-2xl font-semibold">Edit Blog</h2>
 
       {/* Text fields */}
       {[{ label: 'Title', name: 'title', type: 'text' },
@@ -224,7 +228,7 @@ const EditBlog = () => {
               name={name}
               value={formData[name] || ''}
               onChange={handleChange}
-              className="w-full border p-2 mt-1"
+              className="w-full p-2 mt-1 border"
               rows={4}
             />
           ) : (
@@ -233,7 +237,7 @@ const EditBlog = () => {
               name={name}
               value={formData[name] || ''}
               onChange={handleChange}
-              className="w-full border p-2 mt-1"
+              className="w-full p-2 mt-1 border"
             />
           )}
         </label>
@@ -246,7 +250,7 @@ const EditBlog = () => {
           name="slug"
           value={formData.slug || ''}
           readOnly
-          className="w-full border p-2 mt-1 bg-gray-100"
+          className="w-full p-2 mt-1 bg-gray-100 border"
         />
       </label>
 
@@ -256,7 +260,7 @@ const EditBlog = () => {
           {field.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}:
           {existingImages[field] && (
             <div className="mb-2">
-              <img src={existingImages[field]} alt={`Existing ${field}`} className="w-32 h-32 object-cover rounded" />
+              <img src={existingImages[field]} alt={`Existing ${field}`} className="object-cover w-32 h-32 rounded" />
             </div>
           )}
           <input
@@ -264,14 +268,14 @@ const EditBlog = () => {
             name={field}
             accept="image/*"
             onChange={(e) => setFormData({ ...formData, [field]: e.target.files[0] })}
-            className="w-full border p-2"
+            className="w-full p-2 border"
           />
         </label>
       ))}
 
       <button
         type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
       >
         Update Blog
       </button>
