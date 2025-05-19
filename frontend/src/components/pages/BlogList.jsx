@@ -10,33 +10,32 @@ function BlogList() {
   useEffect(() => {
     fetchBlogs(i18n.language)
       .then(data => {
-        console.log('Fetched blog data:', data);
         const sanitizedBlogs = (data?.data || []).map(blog => {
-          console.log('Full blog object:', blog); // Add this line to inspect structure
-          // If featured_image is present and is an array/object with a url
+          // If blog.attributes exists, use it; otherwise, use blog directly
+          const b = blog.attributes ? blog.attributes : blog;
+
           let imageUrl = null;
-          if (Array.isArray(blog.featured_image) && blog.featured_image[0]?.url) {
-            imageUrl = blog.featured_image[0].url.startsWith('http')
-              ? blog.featured_image[0].url
-              : `http://localhost:1337${blog.featured_image[0].url}`;
-          } else if (blog.featured_image?.url) {
-            imageUrl = blog.featured_image.url.startsWith('http')
-              ? blog.featured_image.url
-              : `http://localhost:1337${blog.featured_image.url}`;
+          if (Array.isArray(b.featured_image) && b.featured_image[0]?.url) {
+            imageUrl = b.featured_image[0].url.startsWith('http')
+              ? b.featured_image[0].url
+              : `http://localhost:1337${b.featured_image[0].url}`;
+          } else if (b.featured_image?.url) {
+            imageUrl = b.featured_image.url.startsWith('http')
+              ? b.featured_image.url
+              : `http://localhost:1337${b.featured_image.url}`;
           }
-          console.log('Resolved imageUrl:', imageUrl); // Debug image URL
+
           return {
-            id: blog.documentId,
-            slug: blog.slug, // Make sure this field exists in your API
-            title: blog.title || 'Untitled',
-            descriptionBlocks: Array.isArray(blog.description_1) ? blog.description_1 : [],
+            id: b.documentId || blog.id,
+            slug: b.slug,
+            title: b.title || 'Untitled',
+            descriptionBlocks: Array.isArray(b.description_1) ? b.description_1 : [],
             imageUrl,
-            altText: blog.alt_text_image || 'No description',
+            altText: b.alt_text_image || 'No description',
           };
         });
-        
+
         setBlogs(sanitizedBlogs);
-       
       })
       .catch(error => {
         console.error('Error fetching blogs:', error);
@@ -95,8 +94,7 @@ function BlogList() {
               />
             )}
             <h2>{blog.title}</h2>
-            {/* <p>{getExcerpt(blog.descriptionBlocks)}</p> */}
-            {/* Removed button, card is now clickable */}
+            <p>{getExcerpt(blog.descriptionBlocks)}</p> {/* <-- Bind description here */}
           </Link>
         ))
       ) : (

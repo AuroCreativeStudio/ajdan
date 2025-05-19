@@ -18,6 +18,7 @@ import SmoothScrollHero from './components/pages/animation';
 import BlogList from './components/pages/BlogList';
 import BlogSingle from './components/pages/BlogSingle';
 
+
 import Login from './cms/pages/Login';
 import Dashboard from './cms/pages/DashboardPage';
 import ProtectedRoute from './cms/components/ProtectedRoute';
@@ -29,6 +30,9 @@ import NewsletterCms from './cms/pages/NewsletterCms';
 import ContactListing from './cms/pages/ContactListing';
 import ProjectList from './cms/pages/ProjectList';
 import ProjectUpdate from './cms/pages/ProjectUpdate';
+import TeamList from './cms/pages/TeamList';
+import TeamCreate from './cms/pages/TeamCreate';
+import TeamUpdate from './cms/pages/TeamUpdate';
 
 import Ajdan2Page from './components/landing/ajdan-II/LandingPage';
 import AjdanIsland from './components/landing/ajdan-island/LandingPage';
@@ -81,7 +85,10 @@ function LayoutWrapper({ children }) {
     location.pathname.startsWith('/darah-sadayem') ||
     location.pathname.startsWith('/infiniti') ||
     location.pathname.startsWith('/projectlist') ||
-    location.pathname.startsWith('/projectupdate');
+    location.pathname.startsWith('/projectupdate')||
+    location.pathname.startsWith('/teamlist') ||
+    location.pathname.startsWith('/teamcreate') ||
+    location.pathname.startsWith('/teamupdate');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -140,7 +147,9 @@ function AppRoutes({ setToken, setUser }) {
       <Route path="/contactlist" element={<ProtectedRoute><ContactListing /></ProtectedRoute>} />
       <Route path="/projectlist" element={<ProtectedRoute><ProjectList /></ProtectedRoute>} />
       <Route path="/projectUpdate" element={<ProtectedRoute><ProjectUpdate /></ProtectedRoute>} />
-
+      <Route path="/teamlist" element={<ProtectedRoute><TeamList /></ProtectedRoute>}/>
+      <Route path="/teamcreate" element = {<ProtectedRoute><TeamCreate/></ProtectedRoute>} />
+      <Route path="/teamupdate" element = {<ProtectedRoute><TeamUpdate/></ProtectedRoute>}/>
     </Routes>
   );
 }

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { fetchBlogs,deleteBlog } from '../../services/blogService';
+import { fetchBlogs, deleteBlog } from '../../services/blogService';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { logout } from '../../services/authService';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function BlogListingCms() {
   const { i18n } = useTranslation();
@@ -40,22 +42,22 @@ export default function BlogListingCms() {
       });
   }, [i18n.language]);
 
-    const handleDelete = async (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this blog?')) {
       try {
         await deleteBlog(id); // Call the delete API
         setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id)); // Update the state
-        alert('Blog deleted successfully!');
+        toast.success('Blog deleted successfully!');
       } catch (error) {
         console.error('Error deleting blog:', error);
-        alert('Failed to delete blog.');
+        toast.error('Failed to delete blog.');
       }
     }
   };
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar handleLogout={handleLogout} /> {/* Use the Sidebar component */}
+      <Sidebar handleLogout={handleLogout} />
       <div className="flex-1 p-6">
         <div className="mb-6 w-full flex justify-between items-center">
           <h1 className="text-3xl font-semibold text-gray-800">Blogs</h1>
@@ -92,16 +94,17 @@ export default function BlogListingCms() {
                     <td className="px-6 py-4">
                       <Link
                         to={`/edit/${blog.slug}`}
-                        state={{ documentId: blog.id }}
+                        state={{ slug: blog.slug }}
                         className="text-blue-600 hover:underline mr-2"
                       >
                         Edit
                       </Link>
-
-
                       <button 
-                      onClick={() => handleDelete(blog.id)}
-                      className="text-red-600 hover:underline">Delete</button>
+                        onClick={() => handleDelete(blog.slug)}
+                        className="text-red-600 hover:underline"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))
@@ -115,6 +118,7 @@ export default function BlogListingCms() {
             </tbody>
           </table>
         </div>
+        <ToastContainer />
       </div>
     </div>
   );

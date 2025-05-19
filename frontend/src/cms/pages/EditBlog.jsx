@@ -4,6 +4,8 @@ import { fetchBlogByDocumentId, updateBlog } from '../../services/blogService';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { logout } from '../../services/authService';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const API_URL = 'http://localhost:1337/';
 
@@ -190,10 +192,10 @@ const EditBlog = () => {
       console.log('Payload being submitted:', payload);
 
       await updateBlog(documentId, payload);
-      alert('Blog updated successfully!');
+      toast.success('Blog updated successfully!');
     } catch (error) {
       console.error('Error updating blog:', error.response?.data || error.message);
-      alert('Failed to update blog.');
+      toast.error('Failed to update blog.');
     }
   };
 
@@ -274,6 +276,7 @@ const EditBlog = () => {
         Update Blog
       </button>
     </form>
+    <ToastContainer />
     </div>
   );
 };

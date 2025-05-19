@@ -4,6 +4,8 @@ import { createBlogPost } from '../../services/blogService';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { logout } from '../../services/authService';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function BlogCreate() {
   const [formData, setFormData] = useState({
@@ -98,20 +100,20 @@ function BlogCreate() {
 
       const response = await createBlogPost(payload);
       console.log('Blog created:', response);
-      alert('Blog created successfully!');
+      toast.success('Blog created successfully!');
     } catch (error) {
       console.error('Error creating blog:', error);
       if (error.response) {
         console.error('Response data:', error.response.data);
       }
-      alert('Error creating blog. Please try again.');
+      toast.error('Error creating blog. Please try again.');
     }
   };
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar handleLogout={handleLogout} /> {/* Use the Sidebar component */}
-
+      <Sidebar handleLogout={handleLogout} />
+      <ToastContainer />
       <div className="mx-24 mt-6">
 
         <h2 className="text-2xl font-semibold mb-4">Create Blog</h2>

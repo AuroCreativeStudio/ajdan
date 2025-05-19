@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import Sidebar from '../components/Sidebar';
 import { logout } from '../../services/authService';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ProjectUpdate() {
   const { state } = useLocation();
@@ -51,19 +53,17 @@ function ProjectUpdate() {
     setLoading(true);
     try {
       await updateProjectList(project.documentId, {
-
-
         building: form.building,
         place: form.place,
         description: form.description,
         square_feet: Number(form.squarefeet),
         // amenities: form.amenities,
       });
-      alert('Project updated successfully!');
-      navigate(-1);
+      toast.success('Project updated successfully!'); // Success toaster
+      setTimeout(() => navigate(-1), 1500); // Give user time to see toast
     } catch (error) {
       console.error('Update failed:', error);
-      alert('Failed to update project.');
+      toast.error('Failed to update project.');
     } finally {
       setLoading(false);
     }
@@ -164,6 +164,7 @@ function ProjectUpdate() {
             {loading ? 'Updating...' : 'Update Project'}
           </button>
         </form>
+        <ToastContainer />
       </div>
     </div>
   );
