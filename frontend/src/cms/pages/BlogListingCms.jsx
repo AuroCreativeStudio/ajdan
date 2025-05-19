@@ -7,10 +7,12 @@ import { logout } from '../../services/authService';
 import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { paginate } from '../../services/paginate';
 
 export default function BlogListingCms() {
   const { i18n } = useTranslation();
   const [blogs, setBlogs] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -55,15 +57,18 @@ export default function BlogListingCms() {
     }
   };
 
+  const ITEMS_PER_PAGE = 10; // Define how many items you want per page
+  const paginatedBlogs = paginate(blogs, currentPage, ITEMS_PER_PAGE);
+
   return (
     <div className="flex h-screen bg-gray-100">
       <Sidebar handleLogout={handleLogout} />
       <div className="flex-1 p-6">
-        <div className="mb-6 w-full flex justify-between items-center">
+        <div className="flex items-center justify-between w-full mb-6">
           <h1 className="text-3xl font-semibold text-gray-800">Blogs</h1>
           <button
             onClick={() => navigate('/create')}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
           >
             Create
           </button>
@@ -80,8 +85,8 @@ export default function BlogListingCms() {
               </tr>
             </thead>
             <tbody>
-              {blogs.length > 0 ? (
-                blogs.map((blog) => (
+              {paginatedBlogs.length > 0 ? (
+                paginatedBlogs.map((blog) => (
                   <tr key={blog.id} className="bg-white border-b border-gray-200">
                     <th
                       scope="row"
@@ -95,7 +100,7 @@ export default function BlogListingCms() {
                       <Link
                         to={`/edit/${blog.slug}`}
                         state={{ slug: blog.slug }}
-                        className="text-blue-600 hover:underline mr-2"
+                        className="mr-2 text-blue-600 hover:underline"
                       >
                         Edit
                       </Link>
@@ -117,6 +122,17 @@ export default function BlogListingCms() {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="flex mt-4 space-x-2">
+          {Array.from({ length: Math.ceil(blogs.length / ITEMS_PER_PAGE) }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`px-3 py-1 rounded ${currentPage === page ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+            >
+              {page}
+            </button>
+          ))}
         </div>
         <ToastContainer />
       </div>

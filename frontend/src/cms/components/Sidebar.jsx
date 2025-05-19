@@ -3,8 +3,8 @@ import { HiChartPie, HiUser, HiLogout } from 'react-icons/hi';
 
 function Sidebar({ handleLogout }) {
   return (
-    <div className="w-64 bg-white shadow-md p-4">
-      <h2 className="text-2xl font-bold text-blue-600 mb-8">Dashboard</h2>
+    <div className="w-64 p-4 bg-white shadow-md">
+      <h2 className="mb-8 text-2xl font-bold text-blue-600">Dashboard</h2>
       <nav className="space-y-4">
         <a href="#" className="flex items-center gap-2 text-gray-700 hover:text-blue-600">
           <HiChartPie /> Overview
@@ -24,9 +24,13 @@ function Sidebar({ handleLogout }) {
  <a href="/teamlist" className="flex items-center gap-2 text-gray-700 hover:text-blue-600">
         <HiUser />Aboutus Team Member
         </a>
+         
+ <a href="/popuplist" className="flex items-center gap-2 text-gray-700 hover:text-blue-600">
+        <HiUser />Popup List
+        </a>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2 text-red-500 hover:text-red-700 mt-8"
+          className="flex items-center gap-2 mt-8 text-red-500 hover:text-red-700"
         >
           <HiLogout /> Logout
         </button>

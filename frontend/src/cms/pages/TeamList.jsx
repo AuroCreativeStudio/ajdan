@@ -4,10 +4,12 @@ import Sidebar from '../components/Sidebar';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { paginate } from '../../services/paginate';
 
 function TeamList() {
   const [team, setTeam] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -41,16 +43,19 @@ function TeamList() {
     }
   };
 
+  const ITEMS_PER_PAGE = 10; // Define how many items you want per page
+  const paginatedContacts = paginate(team, currentPage, ITEMS_PER_PAGE);
+
   return (
     <div className="flex h-screen bg-gray-100">
       <div className="w-64 bg-white border-r border-gray-200">
         <Sidebar handleLogout={handleLogout} />
       </div>
       <div className="flex-1 p-6">
-        <div className="mb-6 w-full flex justify-between items-center">
+        <div className="flex items-center justify-between w-full mb-6">
           <h1 className="text-3xl font-semibold text-gray-800">Team List</h1>
           <button
-            className="mr-4 border-1 bg-blue-800 text-white p-2 border rounded-md"
+            className="p-2 mr-4 text-white bg-blue-800 border rounded-md border-1"
             onClick={() => navigate('/teamcreate')}
           >
             Create
@@ -75,7 +80,7 @@ function TeamList() {
                   </td>
                 </tr>
               ) : team && team.length > 0 ? (
-                team.map((member, idx) => (
+                paginatedContacts.map((member, idx) => (
                   <tr key={member.id || member.documentId || idx} className="bg-white border-b border-gray-200">
                     <td className="px-6 py-4">{idx + 1}</td>
                     <td className="px-6 py-4">{member.name || member.member || 'N/A'}</td>
@@ -84,10 +89,10 @@ function TeamList() {
                       <img
                         src={member.image || "https://docs.material-tailwind.com/img/team-3.jpg"}
                         alt={member.name || "profile"}
-                        className="w-12 h-12 object-cover rounded-full"
+                        className="object-cover w-12 h-12 rounded-full"
                       />
                     </td>
-                    <td className="px-6 py-4 flex gap-2">
+                    <td className="flex gap-2 px-6 py-4">
                       <button
                         className="text-blue-600 hover:underline"
                         onClick={() => {
@@ -115,6 +120,17 @@ function TeamList() {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="flex mt-4 space-x-2">
+          {Array.from({ length: Math.ceil(team.length / ITEMS_PER_PAGE) }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`px-3 py-1 rounded ${currentPage === page ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+            >
+              {page}
+            </button>
+          ))}
         </div>
         <ToastContainer />
       </div>

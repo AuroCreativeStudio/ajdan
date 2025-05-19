@@ -33,6 +33,7 @@ import ProjectUpdate from './cms/pages/ProjectUpdate';
 import TeamList from './cms/pages/TeamList';
 import TeamCreate from './cms/pages/TeamCreate';
 import TeamUpdate from './cms/pages/TeamUpdate';
+import ProjectPopupList from './cms/pages/ProjectPopupList';
 
 import Ajdan2Page from './components/landing/ajdan-II/LandingPage';
 import AjdanIsland from './components/landing/ajdan-island/LandingPage';
@@ -88,7 +89,8 @@ function LayoutWrapper({ children }) {
     location.pathname.startsWith('/projectupdate')||
     location.pathname.startsWith('/teamlist') ||
     location.pathname.startsWith('/teamcreate') ||
-    location.pathname.startsWith('/teamupdate');
+    location.pathname.startsWith('/teamupdate') ||
+    location.pathname.startsWith('/popuplist');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -150,6 +152,7 @@ function AppRoutes({ setToken, setUser }) {
       <Route path="/teamlist" element={<ProtectedRoute><TeamList /></ProtectedRoute>}/>
       <Route path="/teamcreate" element = {<ProtectedRoute><TeamCreate/></ProtectedRoute>} />
       <Route path="/teamupdate" element = {<ProtectedRoute><TeamUpdate/></ProtectedRoute>}/>
+      <Route path="/popuplist" element = {<ProtectedRoute><ProjectPopupList/></ProtectedRoute>} />
     </Routes>
   );
 }
