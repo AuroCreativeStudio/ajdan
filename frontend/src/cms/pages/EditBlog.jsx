@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchBlogBySlug, updateBlog } from '../../services/blogService';
-import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
 import { logout } from '../../services/authService';
+import Sidebar from '../components/Sidebar';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -11,8 +10,11 @@ const API_URL = 'http://localhost:1337/';
 
 const EditBlog = () => {
   const location = useLocation();
- const slug = location.state?.slug;
-  const locale = 'en';
+  const navigate = useNavigate();
+  const slug = location.state?.slug;
+
+  const [locale, setLocale] = useState('en');
+  const [blogId, setBlogId] = useState(null); // To track localized ID
 
   const [formData, setFormData] = useState({
     title: '',
@@ -27,24 +29,15 @@ const EditBlog = () => {
     image_2: null,
     featured_image: null,
   });
-  const navigate = useNavigate();
+
+  const [existingImages, setExistingImages] = useState({});
+  const [existingImageIds, setExistingImageIds] = useState({});
+  const [loading, setLoading] = useState(true);
+
   const handleLogout = () => {
     logout();
-    navigate('/login'); // Redirect to login on logout
+    navigate('/login');
   };
-  const [existingImages, setExistingImages] = useState({
-    image_1: null,
-    image_2: null,
-    featured_image: null,
-  });
-
-  const [existingImageIds, setExistingImageIds] = useState({
-    image_1: null,
-    image_2: null,
-    featured_image: null,
-  });
-
-  const [loading, setLoading] = useState(true);
 
   const extractText = (blocks) => {
     return Array.isArray(blocks)
@@ -69,19 +62,17 @@ const EditBlog = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!slug) {
-        console.error("No slug provided");
-        setLoading(false);
-        return;
-      }
+      if (!slug) return;
 
       try {
         const blog = await fetchBlogBySlug(slug, locale);
         if (!blog) {
-          setLoading(false);
           toast.error('Blog not found!');
+          setLoading(false);
           return;
         }
+
+        setBlogId(blog.id);
 
         setFormData({
           title: blog.title || '',
@@ -99,19 +90,13 @@ const EditBlog = () => {
 
         setExistingImages({
           image_1: blog.image_1?.url
-            ? blog.image_1.url.startsWith('http')
-              ? blog.image_1.url
-              : `${API_URL.replace(/\/$/, '')}/${blog.image_1.url.replace(/^\//, '')}`
+            ? (blog.image_1.url.startsWith('http') ? blog.image_1.url : `${API_URL}${blog.image_1.url}`)
             : null,
           image_2: blog.image_2?.url
-            ? blog.image_2.url.startsWith('http')
-              ? blog.image_2.url
-              : `${API_URL.replace(/\/$/, '')}/${blog.image_2.url.replace(/^\//, '')}`
+            ? (blog.image_2.url.startsWith('http') ? blog.image_2.url : `${API_URL}${blog.image_2.url}`)
             : null,
           featured_image: blog.featured_image?.url
-            ? blog.featured_image.url.startsWith('http')
-              ? blog.featured_image.url
-              : `${API_URL.replace(/\/$/, '')}/${blog.featured_image.url.replace(/^\//, '')}`
+            ? (blog.featured_image.url.startsWith('http') ? blog.featured_image.url : `${API_URL}${blog.featured_image.url}`)
             : null,
         });
 
@@ -120,64 +105,42 @@ const EditBlog = () => {
           image_2: blog.image_2?.id || null,
           featured_image: blog.featured_image?.id || null,
         });
-      } catch (error) {
-        console.error('Failed to fetch blog:', error);
+      } catch (err) {
+        console.error('Fetch error:', err);
+        toast.error('Error loading blog');
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [slug]);
+  }, [slug, locale]);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? Boolean(checked) : value,
-    }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append('files', file);
-
-    try {
-      const response = await fetch(`${API_URL}api/upload`, {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await response.json();
-      return data[0]?.id;
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      throw error;
-    }
+    const data = new FormData();
+    data.append('files', file);
+    const res = await fetch(`${API_URL}api/upload`, { method: 'POST', body: data });
+    const json = await res.json();
+    return json[0]?.id;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const uploadedImages = {};
+      const uploaded = {};
 
-      // Upload new images if selected
-      if (formData.image_1) {
-        uploadedImages.image_1 = await uploadImage(formData.image_1);
-      } else {
-        uploadedImages.image_1 = existingImageIds.image_1;
-      }
-
-      if (formData.image_2) {
-        uploadedImages.image_2 = await uploadImage(formData.image_2);
-      } else {
-        uploadedImages.image_2 = existingImageIds.image_2;
-      }
-
-      if (formData.featured_image) {
-        uploadedImages.featured_image = await uploadImage(formData.featured_image);
-      } else {
-        uploadedImages.featured_image = existingImageIds.featured_image;
+      for (const key of ['image_1', 'image_2', 'featured_image']) {
+        if (formData[key]) {
+          uploaded[key] = await uploadImage(formData[key]);
+        } else {
+          uploaded[key] = existingImageIds[key];
+        }
       }
 
       const payload = {
@@ -185,20 +148,20 @@ const EditBlog = () => {
         slug: formData.slug,
         meta_description: formData.meta_description,
         meta_keywords: formData.meta_keywords,
+        alt_text_image: formData.alt_text_image,
         description_1: convertToBlock(formData.description_1),
-        description_2: convertToBlock(formData.description_2 || ''),
-        description_3: convertToBlock(formData.description_3 || ''),
-        image_1: uploadedImages.image_1,
-        image_2: uploadedImages.image_2,
-        featured_image: uploadedImages.featured_image,
+        description_2: convertToBlock(formData.description_2),
+        description_3: convertToBlock(formData.description_3),
+        image_1: uploaded.image_1,
+        image_2: uploaded.image_2,
+        featured_image: uploaded.featured_image,
+        locale,
       };
 
-      console.log('Payload being submitted:', payload);
-
-      await updateBlog(slug, payload);
+      await updateBlog(slug, payload, blogId);
       toast.success('Blog updated successfully!');
     } catch (error) {
-      console.error('Error updating blog:', error.response?.data || error.message);
+      console.error('Update error:', error);
       toast.error('Failed to update blog.');
     }
   };
@@ -207,80 +170,95 @@ const EditBlog = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      
-      <Sidebar handleLogout={handleLogout} /> {/* Use the Sidebar component */}
-    <form onSubmit={handleSubmit} className="max-w-3xl p-6 mx-auto space-y-4">
-      <h2 className="mb-4 text-2xl font-semibold">Edit Blog</h2>
+      <Sidebar handleLogout={handleLogout} />
 
-      {/* Text fields */}
-      {[{ label: 'Title', name: 'title', type: 'text' },
-        { label: 'Description 1', name: 'description_1', type: 'textarea' },
-        { label: 'Description 2', name: 'description_2', type: 'textarea' },
-        { label: 'Description 3', name: 'description_3', type: 'textarea' },
-        { label: 'Meta Description', name: 'meta_description', type: 'text' },
-        { label: 'Meta Keywords', name: 'meta_keywords', type: 'text' },
-        { label: 'Alt Text (Image)', name: 'alt_text_image', type: 'text' },
-      ].map(({ label, name, type }) => (
-        <label className="block" key={name}>
-          {label}:
-          {type === 'textarea' ? (
-            <textarea
-              name={name}
-              value={formData[name] || ''}
-              onChange={handleChange}
-              className="w-full p-2 mt-1 border"
-              rows={4}
-            />
-          ) : (
+      <div className="w-full p-6 overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold">Edit Blog</h2>
+          <div>
+            <button
+              className={`px-3 py-1 mr-2 rounded ${locale === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+              onClick={() => setLocale('en')}
+            >
+              English
+            </button>
+            <button
+              className={`px-3 py-1 rounded ${locale === 'ar' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+              onClick={() => setLocale('ar')}
+            >
+              Arabic
+            </button>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-4 bg-white p-6 rounded shadow">
+          {[
+            { label: 'Title', name: 'title', type: 'text' },
+            { label: 'Description 1', name: 'description_1', type: 'textarea' },
+            { label: 'Description 2', name: 'description_2', type: 'textarea' },
+            { label: 'Description 3', name: 'description_3', type: 'textarea' },
+            { label: 'Meta Description', name: 'meta_description', type: 'text' },
+            { label: 'Meta Keywords', name: 'meta_keywords', type: 'text' },
+            { label: 'Alt Text (Image)', name: 'alt_text_image', type: 'text' },
+          ].map(({ label, name, type }) => (
+            <label className="block" key={name}>
+              {label}:
+              {type === 'textarea' ? (
+                <textarea
+                  name={name}
+                  value={formData[name] || ''}
+                  onChange={handleChange}
+                  className="w-full p-2 mt-1 border"
+                  rows={4}
+                />
+              ) : (
+                <input
+                  type={type}
+                  name={name}
+                  value={formData[name] || ''}
+                  onChange={handleChange}
+                  className="w-full p-2 mt-1 border"
+                />
+              )}
+            </label>
+          ))}
+
+          <label className="block">
+            Slug:
             <input
-              type={type}
-              name={name}
-              value={formData[name] || ''}
-              onChange={handleChange}
-              className="w-full p-2 mt-1 border"
+              type="text"
+              name="slug"
+              value={formData.slug || ''}
+              readOnly
+              className="w-full p-2 mt-1 bg-gray-100 border"
             />
-          )}
-        </label>
-      ))}
+          </label>
 
-      <label className="block">
-        Slug:
-        <input
-          type="text"
-          name="slug"
-          value={formData.slug || ''}
-          readOnly
-          className="w-full p-2 mt-1 bg-gray-100 border"
-        />
-      </label>
+          {['image_1', 'image_2', 'featured_image'].map((field) => (
+            <label key={field} className="block">
+              {field.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}:
+              {existingImages[field] && (
+                <div className="mb-2">
+                  <img src={existingImages[field]} alt={`Existing ${field}`} className="object-cover w-32 h-32 rounded" />
+                </div>
+              )}
+              <input
+                type="file"
+                name={field}
+                accept="image/*"
+                onChange={(e) => setFormData({ ...formData, [field]: e.target.files[0] })}
+                className="w-full p-2 border"
+              />
+            </label>
+          ))}
 
-      {/* Image fields */}
-      {['image_1', 'image_2', 'featured_image'].map((field) => (
-        <label key={field} className="block">
-          {field.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}:
-          {existingImages[field] && (
-            <div className="mb-2">
-              <img src={existingImages[field]} alt={`Existing ${field}`} className="object-cover w-32 h-32 rounded" />
-            </div>
-          )}
-          <input
-            type="file"
-            name={field}
-            accept="image/*"
-            onChange={(e) => setFormData({ ...formData, [field]: e.target.files[0] })}
-            className="w-full p-2 border"
-          />
-        </label>
-      ))}
+          <button type="submit" className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
+            Update Blog ({locale.toUpperCase()})
+          </button>
+        </form>
 
-      <button
-        type="submit"
-        className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
-      >
-        Update Blog
-      </button>
-    </form>
-    <ToastContainer />
+        <ToastContainer />
+      </div>
     </div>
   );
 };

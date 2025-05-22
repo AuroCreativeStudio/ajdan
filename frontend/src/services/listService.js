@@ -15,22 +15,35 @@ export const fetchApartmentList = async () => {
   }
 };
 
-export const updateProjectList = async (documentId, updateFields) => {
+export const updateProjectList = async (documentId, updateFields, locale) => {
+  const url = locale
+    ? `${API_URL}/api/lists/${documentId}?locale=${locale}`
+    : `${API_URL}/api/lists/${documentId}`;
   try {
     const payload = {
       data: {
-        ...updateFields,
-        locale: 'en', // 👈 ADD THIS LINE
+        ...updateFields
       },
     };
 
     console.log('Payload for update:', payload);
 
-    const response = await axios.put(`${API_URL}/api/lists/${documentId}`, payload);
+    const response = await axios.put(url, payload);
 
     return response.data;
   } catch (error) {
     console.error('Error updating project:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// Example fetch for a single project
+export const fetchSingleProject = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL}/api/lists/${id}?populate=localizations`);
+    return response.data.data;
+  } catch (error) {
+    console.error('Error fetching single project:', error);
     throw error;
   }
 };

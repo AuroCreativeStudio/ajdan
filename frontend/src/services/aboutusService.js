@@ -11,12 +11,15 @@ export const fetchteam= async () => {
   }
 }
 
-export const createTeam = async (teamData) => {
+export const createTeam = async (teamData, locale = 'en', relatedId = null) => {
+  let url = `${API_URL}/api/aboutus-teams?locale=${locale}`;
+  // For Arabic, link to English entry
+  if (locale === 'ar' && relatedId) {
+    url += `&localization=${relatedId}`;
+  }
   try {
-    const response = await axios.post(`${API_URL}/api/aboutus-teams`, {
-      data: {
-        ...teamData
-      }
+    const response = await axios.post(url, {
+      data: { ...teamData }
     });
     return response.data;
   } catch (error) {

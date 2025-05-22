@@ -6,38 +6,46 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 
 function TeamCreate() {
-  const [form, setForm] = useState({
+  const [formEn, setFormEn] = useState({
     member: '',
     role: '',
-    image: null, // Store uploaded image file info
+    image: null,
   });
-  const [imagePreview, setImagePreview] = useState(null);
+  const [formAr, setFormAr] = useState({
+    member: '',
+    role: '',
+    image: null,
+  });
+  const [imagePreviewEn, setImagePreviewEn] = useState(null);
+  const [imagePreviewAr, setImagePreviewAr] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [tab, setTab] = useState('en');
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleImageChange = async (e) => {
+  // Helper for image upload
+  const handleImageChange = async (e, locale) => {
     const file = e.target.files[0];
     if (!file) return;
     setUploading(true);
-    setImagePreview(URL.createObjectURL(file));
+    if (locale === 'en') setImagePreviewEn(URL.createObjectURL(file));
+    else setImagePreviewAr(URL.createObjectURL(file));
     try {
       const formData = new FormData();
       formData.append('files', file);
       const res = await axios.post('http://localhost:1337/api/upload', formData);
       if (res.data && res.data[0]) {
-        setForm((prev) => ({
-          ...prev,
-          image: res.data[0],
-        }));
+        if (locale === 'en') {
+          setFormEn((prev) => ({
+            ...prev,
+            image: res.data[0],
+          }));
+        } else {
+          setFormAr((prev) => ({
+            ...prev,
+            image: res.data[0],
+          }));
+        }
         toast.success('Image uploaded!');
       } else {
         toast.error('Image upload failed.');
@@ -49,15 +57,52 @@ function TeamCreate() {
     }
   };
 
+  // Handle input change for both forms
+  const handleChange = (e, locale) => {
+    const { name, value } = e.target;
+    if (locale === 'en') {
+      setFormEn((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    } else {
+      setFormAr((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  // Submit both locales
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const submitForm = {
-        ...form,
-        image: form.image?.id || null,
+      // Prepare English data
+      let imageValueEn = formEn.image;
+      if (imageValueEn && typeof imageValueEn === 'object' && imageValueEn.id) {
+        imageValueEn = imageValueEn.id;
+      }
+      const submitFormEn = {
+        ...formEn,
+        image: imageValueEn,
       };
-      await createTeam(submitForm);
+      // Create English entry first
+      const createdEn = await createTeam(submitFormEn, 'en');
+      // Prepare Arabic data
+      let imageValueAr = formAr.image;
+      if (imageValueAr && typeof imageValueAr === 'object' && imageValueAr.id) {
+        imageValueAr = imageValueAr.id;
+      }
+      const submitFormAr = {
+        ...formAr,
+        image: imageValueAr,
+      };
+      // Only create Arabic if any field is filled
+      if (formAr.member || formAr.role || formAr.image) {
+        // 2. Create Arabic, linked to English
+        await createTeam(submitFormAr, 'ar', createdEn.data.id); // Pass English ID as relatedId
+      }
       toast.success('Team member created successfully!');
       setTimeout(() => navigate(-1), 1500);
     } catch (error) {
@@ -70,47 +115,112 @@ function TeamCreate() {
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-bold mb-4">Create Team Member</h2>
+      {/* Tabs */}
+      <div className="flex mb-4">
+        <button
+          type="button"
+          className={`px-4 py-2 rounded-t ${tab === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+          onClick={() => setTab('en')}
+        >
+          English
+        </button>
+        <button
+          type="button"
+          className={`px-4 py-2 rounded-t ${tab === 'ar' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+          onClick={() => setTab('ar')}
+        >
+          Arabic
+        </button>
+      </div>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-medium mb-1">Name</label>
-          <input
-            type="text"
-            name="member"
-            value={form.member}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-        <div>
-          <label className="block font-medium mb-1">Role</label>
-          <input
-            type="text"
-            name="role"
-            value={form.role}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-        <div>
-          <label className="block font-medium mb-1">Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="w-full border rounded px-3 py-2"
-            disabled={uploading}
-          />
-          {imagePreview && (
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="mt-2 h-24 object-contain border rounded"
-            />
-          )}
-          {uploading && <div className="text-sm text-gray-500">Uploading...</div>}
-        </div>
+        {tab === 'en' && (
+          <>
+            <div>
+              <label className="block font-medium mb-1">Name</label>
+              <input
+                type="text"
+                name="member"
+                value={formEn.member}
+                onChange={(e) => handleChange(e, 'en')}
+                className="w-full border rounded px-3 py-2"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-medium mb-1">Role</label>
+              <input
+                type="text"
+                name="role"
+                value={formEn.role}
+                onChange={(e) => handleChange(e, 'en')}
+                className="w-full border rounded px-3 py-2"
+                required
+              />
+            </div>
+            <div>
+              <label className="block font-medium mb-1">Image</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageChange(e, 'en')}
+                className="w-full border rounded px-3 py-2"
+                disabled={uploading}
+              />
+              {imagePreviewEn && (
+                <img
+                  src={imagePreviewEn}
+                  alt="Preview"
+                  className="mt-2 h-24 object-contain border rounded"
+                />
+              )}
+              {uploading && <div className="text-sm text-gray-500">Uploading...</div>}
+            </div>
+          </>
+        )}
+        {tab === 'ar' && (
+          <>
+            <div>
+              <label className="block font-medium mb-1">Name (Arabic)</label>
+              <input
+                type="text"
+                name="member"
+                value={formAr.member}
+                onChange={(e) => handleChange(e, 'ar')}
+                className="w-full border rounded px-3 py-2"
+                dir="rtl"
+              />
+            </div>
+            <div>
+              <label className="block font-medium mb-1">Role (Arabic)</label>
+              <input
+                type="text"
+                name="role"
+                value={formAr.role}
+                onChange={(e) => handleChange(e, 'ar')}
+                className="w-full border rounded px-3 py-2"
+                dir="rtl"
+              />
+            </div>
+            <div>
+              <label className="block font-medium mb-1">Image (Arabic)</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleImageChange(e, 'ar')}
+                className="w-full border rounded px-3 py-2"
+                disabled={uploading}
+              />
+              {imagePreviewAr && (
+                <img
+                  src={imagePreviewAr}
+                  alt="Preview"
+                  className="mt-2 h-24 object-contain border rounded"
+                />
+              )}
+              {uploading && <div className="text-sm text-gray-500">Uploading...</div>}
+            </div>
+          </>
+        )}
         <button
           type="submit"
           className={`px-4 py-2 rounded text-white ${loading ? 'bg-gray-500' : 'bg-blue-600 hover:bg-blue-700'}`}
