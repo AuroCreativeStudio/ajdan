@@ -44,18 +44,20 @@ export default function BlogListingCms() {
       });
   }, [i18n.language]);
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this blog?')) {
-      try {
-        await deleteBlog(id); // Call the delete API
-        setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id)); // Update the state
-        toast.success('Blog deleted successfully!');
-      } catch (error) {
-        console.error('Error deleting blog:', error);
-        toast.error('Failed to delete blog.');
-      }
-    }
-  };
+
+// In your component
+const handleDelete = async (documentId) => {
+  console.log('Attempting to delete:', documentId); // Verify correct ID
+  
+  try {
+    await deleteBlog(documentId);
+    console.log('Delete successful');
+    // Update state
+  } catch (error) {
+    console.log('Full error:', error); 
+    // Check network tab for response details
+  }
+};
 
   const ITEMS_PER_PAGE = 10; // Define how many items you want per page
   const paginatedBlogs = paginate(blogs, currentPage, ITEMS_PER_PAGE);

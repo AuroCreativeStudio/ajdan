@@ -84,8 +84,8 @@ const EditBlog = () => {
           return;
         }
 
-        setBlogId(blog.id || null); // <-- Store the blog's ID
-
+        setBlogId(blog.documentId || null); // <-- Store the blog's ID
+        
         setFormData({
           title: blog.title || '',
           description_1: extractText(blog.description_1),
@@ -157,59 +157,42 @@ const EditBlog = () => {
       throw error;
     }
   };
+// In your EditBlog.jsx
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  try {
+    const uploadedImages = {
+      image_1: formData.image_1 ? await uploadImage(formData.image_1) : existingImageIds.image_1,
+      image_2: formData.image_2 ? await uploadImage(formData.image_2) : existingImageIds.image_2,
+      featured_image: formData.featured_image ? await uploadImage(formData.featured_image) : existingImageIds.featured_image
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const uploadedImages = {};
-
-      // Upload new images if selected
-      if (formData.image_1) {
-        uploadedImages.image_1 = await uploadImage(formData.image_1);
-      } else {
-        uploadedImages.image_1 = existingImageIds.image_1;
+    const payload = {
+    data: {  
+    title: formData.title,
+    slug: formData.slug,
+    description_1: formData.description_1,
+    description_2: formData.description_2 || null,
+    description_3: formData.description_3 || null, 
+    meta_description: formData.meta_description || "", 
+    meta_keywords: formData.meta_keywords || "",
+    image_1: uploadedImages.image_1 || null, 
+    image_2: uploadedImages.image_2 || null,
+    featured_image: uploadedImages.featured_image || null,
+    alt_text_image: formData.alt_text_image || "",
+    
       }
+    };
 
-      if (formData.image_2) {
-        uploadedImages.image_2 = await uploadImage(formData.image_2);
-      } else {
-        uploadedImages.image_2 = existingImageIds.image_2;
-      }
-
-      if (formData.featured_image) {
-        uploadedImages.featured_image = await uploadImage(formData.featured_image);
-      } else {
-        uploadedImages.featured_image = existingImageIds.featured_image;
-      }
-
-      const payload = {
-        title: formData.title,
-        slug: formData.slug,
-        meta_description: formData.meta_description,
-        meta_keywords: formData.meta_keywords,
-        description_1: convertToBlock(formData.description_1),
-        description_2: convertToBlock(formData.description_2 || ''),
-        description_3: convertToBlock(formData.description_3 || ''),
-        image_1: uploadedImages.image_1,
-        image_2: uploadedImages.image_2,
-        featured_image: uploadedImages.featured_image,
-      };
-
-      console.log('Payload being submitted:', payload);
-
-      if (!blogId) {
-        toast.error('Blog ID not found.');
-        return;
-      }
-
-      await updateBlog(blogId, payload); // <-- Use blogId instead of slug
-      toast.success('Blog updated successfully!');
-    } catch (error) {
-      console.error('Error updating blog:', error.response?.data || error.message);
-      toast.error('Failed to update blog.');
-    }
-  };
+    console.log("Payload:", payload); // Debug before sending
+    await updateBlog(blogId, payload); // Make sure blogId is correct
+    toast.success("Blog updated!");
+  } catch (error) {
+    toast.error("Update failed: " + error.message);
+    console.error("Full error:", error.response?.data);
+  }
+};
 
   if (loading) return <div className="py-10 text-center">Loading...</div>;
 

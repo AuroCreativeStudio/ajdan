@@ -45,7 +45,6 @@ export const fetchBlogBySlug = async (slug, locale = 'en') => {
         },
       }
     );
-    // Strapi returns an array in data
     return response.data.data && response.data.data.length > 0 ? response.data.data[0] : null;
   } catch (error) {
     console.error('Error fetching blog by slug:', error);
@@ -54,25 +53,33 @@ export const fetchBlogBySlug = async (slug, locale = 'en') => {
 };
 
 export const createBlogPost = async (formData) => {
-  return axios.post(`${API_URL}/api/blogs-and-news`, {
-    data: formData, // no need to wrap in FormData or set content-type
-  });
+  try {
+    const response = await axios.post(`${API_URL}/api/blogs-and-news`, {
+      data: formData,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating blog:', error);
+    throw error;
+  }
 };
 
-
-export const updateBlog = async (documentId, blogData) => {
-  return axios.put(`${API_URL}/api/blogs-and-news/${documentId}`, {
-    data: blogData, // MUST wrap in `data`
-  });
+export const updateBlog = async (documentId, data) => {
+  try {
+    const response = await axios.put(`${API_URL}/api/blogs-and-news/${documentId}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Update blog error:', error.response?.data || error.message);
+    throw error;
+  }
 };
 
-
- ///api/blogs-and-news/:id
-
-export const deleteBlog = async (documentId, blogData) => {
-  return axios.delete(`${API_URL}/api/blogs-and-news/${documentId}`, {
-    data: blogData, 
-  });
+export const deleteBlog = async (documentId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/api/blogs-and-news/${documentId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting blog:', error);
+    throw error;
+  }
 };
-
-
