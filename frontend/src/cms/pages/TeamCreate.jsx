@@ -113,8 +113,8 @@ function TeamCreate() {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-6 bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-4">Create Team Member</h2>
+    <div className="max-w-lg p-6 mx-auto bg-white rounded shadow">
+      <h2 className="mb-4 text-2xl font-bold">Create Team Member</h2>
       {/* Tabs */}
       <div className="flex mb-4">
         <button
@@ -136,41 +136,41 @@ function TeamCreate() {
         {tab === 'en' && (
           <>
             <div>
-              <label className="block font-medium mb-1">Name</label>
+              <label className="block mb-1 font-medium">Name</label>
               <input
                 type="text"
                 name="member"
                 value={formEn.member}
                 onChange={(e) => handleChange(e, 'en')}
-                className="w-full border rounded px-3 py-2"
+                className="w-full px-3 py-2 border rounded"
                 required
               />
             </div>
             <div>
-              <label className="block font-medium mb-1">Role</label>
+              <label className="block mb-1 font-medium">Role</label>
               <input
                 type="text"
                 name="role"
                 value={formEn.role}
                 onChange={(e) => handleChange(e, 'en')}
-                className="w-full border rounded px-3 py-2"
+                className="w-full px-3 py-2 border rounded"
                 required
               />
             </div>
             <div>
-              <label className="block font-medium mb-1">Image</label>
+              <label className="block mb-1 font-medium">Image</label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleImageChange(e, 'en')}
-                className="w-full border rounded px-3 py-2"
+                className="w-full px-3 py-2 border rounded"
                 disabled={uploading}
               />
               {imagePreviewEn && (
                 <img
                   src={imagePreviewEn}
                   alt="Preview"
-                  className="mt-2 h-24 object-contain border rounded"
+                  className="object-contain h-24 mt-2 border rounded"
                 />
               )}
               {uploading && <div className="text-sm text-gray-500">Uploading...</div>}
@@ -180,41 +180,41 @@ function TeamCreate() {
         {tab === 'ar' && (
           <>
             <div>
-              <label className="block font-medium mb-1">Name (Arabic)</label>
+              <label className="block mb-1 font-medium">Name (Arabic)</label>
               <input
                 type="text"
                 name="member"
                 value={formAr.member}
                 onChange={(e) => handleChange(e, 'ar')}
-                className="w-full border rounded px-3 py-2"
+                className="w-full px-3 py-2 border rounded"
                 dir="rtl"
               />
             </div>
             <div>
-              <label className="block font-medium mb-1">Role (Arabic)</label>
+              <label className="block mb-1 font-medium">Role (Arabic)</label>
               <input
                 type="text"
                 name="role"
                 value={formAr.role}
                 onChange={(e) => handleChange(e, 'ar')}
-                className="w-full border rounded px-3 py-2"
+                className="w-full px-3 py-2 border rounded"
                 dir="rtl"
               />
             </div>
             <div>
-              <label className="block font-medium mb-1">Image (Arabic)</label>
+              <label className="block mb-1 font-medium">Image (Arabic)</label>
               <input
                 type="file"
                 accept="image/*"
                 onChange={(e) => handleImageChange(e, 'ar')}
-                className="w-full border rounded px-3 py-2"
+                className="w-full px-3 py-2 border rounded"
                 disabled={uploading}
               />
               {imagePreviewAr && (
                 <img
                   src={imagePreviewAr}
                   alt="Preview"
-                  className="mt-2 h-24 object-contain border rounded"
+                  className="object-contain h-24 mt-2 border rounded"
                 />
               )}
               {uploading && <div className="text-sm text-gray-500">Uploading...</div>}

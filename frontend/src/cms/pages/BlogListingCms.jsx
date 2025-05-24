@@ -86,8 +86,7 @@ const handleDelete = async (documentId) => {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
               <tr>
                 <th scope="col" className="px-6 py-3">Title</th>
-                <th scope="col" className="px-6 py-3">Slug</th>
-                <th scope="col" className="px-6 py-3">Meta-Description</th>
+                
                 <th scope="col" className="px-6 py-3">Actions</th>
               </tr>
             </thead>
@@ -101,8 +100,7 @@ const handleDelete = async (documentId) => {
                     >
                       {blog.title}
                     </th>
-                    <td className="px-6 py-4">{blog.slug}</td>
-                    <td className="px-6 py-4">{blog.meta_description}</td>
+                 
                     <td className="px-6 py-4">
                       <Link
                         to={`/edit/${blog.slug}`}
