@@ -1,9 +1,8 @@
 import './App.css';
 import './index.css';
 import { useTranslation } from 'react-i18next';
-import { detectLanguageByLocation } from './utils/geoLanguage';
 import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useParams, useNavigate } from "react-router-dom";
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -17,15 +16,14 @@ import Sample from './components/pages/Test';
 import SmoothScrollHero from './components/pages/animation';
 import BlogList from './components/pages/BlogList';
 import BlogSingle from './components/pages/BlogSingle';
-
+import Aboutus from './components/pages/Aboutus';
 
 import Login from './cms/pages/Login';
 import Dashboard from './cms/pages/DashboardPage';
 import ProtectedRoute from './cms/components/ProtectedRoute';
 import BlogListingCms from './cms/pages/BlogListingCms';
 import BlogCreate from './cms/pages/BlogCreate';
-import EditBlog from './cms/pages/Editblog';
-import Aboutus from './components/pages/Aboutus';
+import EditBlog from './cms/pages/EditBlog';
 import NewsletterCms from './cms/pages/NewsletterCms';
 import ContactListing from './cms/pages/ContactListing';
 import ProjectList from './cms/pages/ProjectList';
@@ -55,7 +53,7 @@ import DarahQomrah from './components/landing/darah-qomrah/LandingPage';
 import DarahSadayem from './components/landing/darah-sadayem/LandingPage';
 import Infiniti from './components/landing/infiniti/LandingPage';
 
-
+import { detectLanguageByLocation } from './utils/geoLanguage';
 
 function LayoutWrapper({ children }) {
   const location = useLocation();
@@ -66,59 +64,88 @@ function LayoutWrapper({ children }) {
     location.pathname.startsWith('/edit') ||
     location.pathname.startsWith('/newsletter') ||
     location.pathname.startsWith('/contactlist') ||
-    location.pathname.startsWith('/ajdanII') ||
-    location.pathname.startsWith('/ajdan-island') ||
-    location.pathname.startsWith('/bayfront') ||
-    location.pathname.startsWith('/buhirat') ||
-    location.pathname.startsWith('/grand-square') ||
-    location.pathname.startsWith('/khobar-peirs') ||
-    location.pathname.startsWith('/khuzam') ||
-    location.pathname.startsWith('/rejan') ||
-    location.pathname.startsWith('/sbf') ||
-    location.pathname.startsWith('/sedra-1') ||
-    location.pathname.startsWith('/sedra-2') ||
-    location.pathname.startsWith('/waterfront') ||
-    location.pathname.startsWith('/darah-alfursan') ||
-    location.pathname.startsWith('/darah-almadinah') ||
-    location.pathname.startsWith('/darah-alwajhah') ||
-    location.pathname.startsWith('/darah-makkah') ||
-    location.pathname.startsWith('/darah-qomrah') ||
-    location.pathname.startsWith('/darah-sadayem') ||
-    location.pathname.startsWith('/infiniti') ||
     location.pathname.startsWith('/projectlist') ||
     location.pathname.startsWith('/projectupdate') ||
     location.pathname.startsWith('/teamlist') ||
     location.pathname.startsWith('/teamcreate') ||
     location.pathname.startsWith('/teamupdate') ||
-    location.pathname.startsWith('/popuplist');
+    location.pathname.startsWith('/popuplist')
+    || location.pathname.startsWith('/en/ajdanII')
+    || location.pathname.startsWith('/ar/ajdanII')
+    || location.pathname.startsWith('/en/ajdan-island')
+    || location.pathname.startsWith('/ar/ajdan-island')
+    || location.pathname.startsWith('/en/bayfront')
+    || location.pathname.startsWith('/ar/bayfront')
+    || location.pathname.startsWith('/en/buhirat')
+    || location.pathname.startsWith('/ar/buhirat')
+    || location.pathname.startsWith('/en/grand-square')
+    || location.pathname.startsWith('/ar/grand-square')
+    || location.pathname.startsWith('/en/khobar-peirs')
+    || location.pathname.startsWith('/ar/khobar-peirs')
+    || location.pathname.startsWith('/en/khuzam')
+    || location.pathname.startsWith('/ar/khuzam')
+    || location.pathname.startsWith('/en/sedra-1')
+    || location.pathname.startsWith('/ar/sedra-1')
+    || location.pathname.startsWith('/en/sedra-2')
+    || location.pathname.startsWith('/ar/sedra-2')
+    || location.pathname.startsWith('/en/sbf')
+    || location.pathname.startsWith('/ar/sbf')
+    || location.pathname.startsWith('/en/waterfront')
+    || location.pathname.startsWith('/ar/waterfront')
+    || location.pathname.startsWith('/en/rejan')
+    || location.pathname.startsWith('/ar/rejan')
+    || location.pathname.startsWith('/en/darah-alfursan')
+    || location.pathname.startsWith('/ar/darah-alfursan')
+    || location.pathname.startsWith('/en/darah-almadinah')
+    || location.pathname.startsWith('/ar/darah-almadinah')
+    || location.pathname.startsWith('/en/darah-alwajhah')
+    || location.pathname.startsWith('/ar/darah-alwajhah')
+    || location.pathname.startsWith('/en/darah-makkah')
+    || location.pathname.startsWith('/ar/darah-makkah')
+    || location.pathname.startsWith('/en/darah-qomrah')
+    || location.pathname.startsWith('/ar/darah-qomrah')
+    || location.pathname.startsWith('/en/darah-sadayem')
+    || location.pathname.startsWith('/ar/darah-sadayem')
+    || location.pathname.startsWith('/en/infiniti')
+    || location.pathname.startsWith('/ar/infiniti');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {!isCmsRoute && <Header />}
       <main style={{ flex: 1 }}>{children}</main>
-      {/* {!isCmsRoute && <ConsentBanner />} */}
       {!isCmsRoute && <Footer />}
     </div>
   );
 }
 
-function AppRoutes({ setToken, setUser }) {
-  return (
-    <Routes>
+function PublicRoutes() {
+  const { lang } = useParams();
+  const { i18n } = useTranslation();
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    if (lang && i18n.language !== lang) {
+      i18n.changeLanguage(lang);
+      document.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    }
+  }, [lang, i18n]);
+
+  if (!['en', 'ar'].includes(lang)) {
+    return <Navigate to="/en" replace />;
+  }
+
+  return (
+    <Routes>  
+      
       <Route path="/" element={<Home />} />
       <Route path="/list" element={<List />} />
       <Route path="/search" element={<Search />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/test" element={<Sample />} />
       <Route path="/animation" element={<SmoothScrollHero />} />
-      <Route path="/blogs" element={<BlogList locale="en" />} />
-      <Route path="/blogs/:slug" element={<BlogSingle locale="en" />} />
-      <Route path="/ar/blogs" element={<BlogList locale="ar" />} />
-      <Route path="/ar/blogs/:slug" element={<BlogSingle locale="ar" />} />
-      <Route path="/blog/:slug" element={<BlogSingle />} />
-      <Route path="aboutus" element={<Aboutus />} />
-
+      <Route path="/blogs" element={<BlogList locale={lang} />} />
+      <Route path="/blog/:slug" element={<BlogSingle locale={lang} />} />
+      <Route path="/aboutus" element={<Aboutus />} />
       <Route path="/ajdanII" element={<Ajdan2Page />} />
       <Route path="/ajdan-island" element={<AjdanIsland />} />
       <Route path="/bayfront" element={<AjdanBayfront />} />
@@ -126,11 +153,11 @@ function AppRoutes({ setToken, setUser }) {
       <Route path="/grand-square" element={<GrandSquare />} />
       <Route path="/khobar-peirs" element={<KhobarPeirs />} />
       <Route path="/khuzam" element={<Khuzam />} />
-      <Route path="/rejan" element={<Rejan />} />
-      <Route path="/sbf" element={<SbfPage />} />
       <Route path="/sedra-1" element={<Sedra1Page />} />
       <Route path="/sedra-2" element={<Sedra2Page />} />
+      <Route path="/sbf" element={<SbfPage />} />
       <Route path="/waterfront" element={<Waterfront />} />
+      <Route path="/rejan" element={<Rejan />} />
       <Route path="/darah-alfursan" element={<DarahAlfursan />} />
       <Route path="/darah-almadinah" element={<DarahAlmadinah />} />
       <Route path="/darah-alwajhah" element={<DarahAlwajhah />} />
@@ -138,8 +165,17 @@ function AppRoutes({ setToken, setUser }) {
       <Route path="/darah-qomrah" element={<DarahQomrah />} />
       <Route path="/darah-sadayem" element={<DarahSadayem />} />
       <Route path="/infiniti" element={<Infiniti />} />
+      <Route path="*" element={<Navigate to={`/${lang}`} replace />} />
+    </Routes>
+  );
+}
 
 
+function AppRoutes({ setToken, setUser }) {
+  return (
+    <Routes>
+      {/* <Route path="/" element={<Navigate to="/en" replace />} /> */}
+      <Route path="/:lang/*" element={<PublicRoutes />} />
       <Route path="/login" element={<Login setToken={setToken} setUser={setUser} />} />
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/bloglist" element={<ProtectedRoute><BlogListingCms /></ProtectedRoute>} />
@@ -149,10 +185,12 @@ function AppRoutes({ setToken, setUser }) {
       <Route path="/contactlist" element={<ProtectedRoute><ContactListing /></ProtectedRoute>} />
       <Route path="/projectlist" element={<ProtectedRoute><ProjectList /></ProtectedRoute>} />
       <Route path="/projectUpdate" element={<ProtectedRoute><ProjectUpdate /></ProtectedRoute>} />
-      <Route path="/teamlist" element={<ProtectedRoute><TeamList /></ProtectedRoute>}/>
-      <Route path="/teamcreate" element = {<ProtectedRoute><TeamCreate/></ProtectedRoute>} />
-      <Route path="/teamupdate" element = {<ProtectedRoute><TeamUpdate/></ProtectedRoute>}/>
-      <Route path="/popuplist" element = {<ProtectedRoute><ProjectPopupList/></ProtectedRoute>} />
+      <Route path="/teamlist" element={<ProtectedRoute><TeamList /></ProtectedRoute>} />
+      <Route path="/teamcreate" element={<ProtectedRoute><TeamCreate /></ProtectedRoute>} />
+      <Route path="/teamupdate" element={<ProtectedRoute><TeamUpdate /></ProtectedRoute>} />
+      <Route path="/popuplist" element={<ProtectedRoute><ProjectPopupList /></ProtectedRoute>} />
+      {/* Fallback route for unmatched paths */}
+      <Route path="*" element={null} />
     </Routes>
   );
 }
@@ -161,15 +199,47 @@ function App() {
   const { i18n } = useTranslation();
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false); // Add loading state
+
+  // Define CMS route prefixes
+  const cmsPrefixes = [
+    '/login',
+    '/dashboard',
+    '/bloglist',
+    '/create',
+    '/edit',
+    '/newsletter',
+    '/contactlist',
+    '/projectlist',
+    '/projectupdate',
+    '/teamlist',
+    '/teamcreate',
+    '/teamupdate',
+    '/popuplist'
+  ];
 
   useEffect(() => {
-    const detectLanguage = async () => {
-      const detectedLang = await detectLanguageByLocation();
-      i18n.changeLanguage(detectedLang);
-      document.dir = detectedLang === 'ar' ? 'rtl' : 'ltr';
-    };
-    detectLanguage();
-  }, [i18n]);
+    console.log('App: useEffect for geo language detection running');
+    const path = window.location.pathname;
+    const pathMatch = path.match(/^\/(en|ar)(\/|$)/);
+    const isCmsRoute = cmsPrefixes.some(prefix => path.toLowerCase().startsWith(prefix));
+    if (!pathMatch && !isCmsRoute) {
+      setLoading(true); // Start loading
+      detectLanguageByLocation().then((detectedLang) => {
+        const lang = ['en', 'ar'].includes(detectedLang) ? detectedLang : 'en';
+        window.location.replace(`/${lang}${window.location.pathname}${window.location.search}`);
+      });
+    }
+  }, []);
+
+  // Show loading spinner/message if loading and on root path
+  if (loading && window.location.pathname === '/') {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span>Detecting your language, please wait...</span>
+      </div>
+    );
+  }
 
   return (
     <Router>

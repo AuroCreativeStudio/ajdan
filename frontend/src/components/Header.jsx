@@ -1,10 +1,26 @@
-
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../assets/image/ajdan-dark-logo.png';
 import LanguageToggle from './LanguageToggle';
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Try to get lang from URL, fallback to 'en'
+  const match = location.pathname.match(/^\/(en|ar)(\/|$)/);
+  const lang = match ? match[1] : 'en';
+
+  // Helper to build links with lang prefix
+  const withLang = (path) => `/${lang}${path.startsWith('/') ? path : '/' + path}`;
+
+  // Language toggle handler
+  const handleLangToggle = (newLang) => {
+    if (newLang === lang) return;
+    const newPath = location.pathname.replace(/^\/(en|ar)/, `/${newLang}`);
+    navigate(newPath + location.search, { replace: true });
+  };
 
   return (
     <header className="bg-white px-10 py-5 relative max-md:px-8 max-md:py-4 max-sm:px-5 max-sm:py-2.5 border-b border-gray-200">
@@ -31,14 +47,39 @@ const Header = () => {
 
         {/* Center: Logo */}
         <div className="absolute left-1/2 transform -translate-x-1/2">
-        <a href="/">
-          <img src={logo} alt="Logo" className="h-24 w-32 object-contain" />
+          <a href={withLang('/')}>
+            <img src={logo} alt="Logo" className="h-24 w-32 object-contain" />
           </a>
         </div>
 
         {/* Right: Language Selector */}
         <div className="text-xl text-black max-md:text-lg max-sm:text-base z-10">
-          <LanguageToggle />
+          <button
+            onClick={() => handleLangToggle('en')}
+            style={{
+              fontWeight: lang === 'en' ? 'bold' : 'normal',
+              textDecoration: lang === 'en' ? 'underline' : 'none',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: lang === 'en' ? '#007bff' : '#333',
+            }}
+          >
+            EN/
+          </button>
+          <button
+            onClick={() => handleLangToggle('ar')}
+            style={{
+              fontWeight: lang === 'ar' ? 'bold' : 'normal',
+              textDecoration: lang === 'ar' ? 'underline' : 'none',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: lang === 'ar' ? '#007bff' : '#333',
+            }}
+          >
+            AR
+          </button>
         </div>
       </div>
 
@@ -52,36 +93,36 @@ const Header = () => {
           onClick={() => setMenuOpen(false)}
           className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
         >
-           <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" className="text-black">
-      <line x1="6" y1="6" x2="18" y2="18" />
-      <line x1="6" y1="18" x2="18" y2="6" />
-      </svg>
+          <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" className="text-black">
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="6" y1="18" x2="18" y2="6" />
+          </svg>
         </button>
         <ul className="mt-16 space-y-4 text-lg text-gray-700 p-4">
           <li>
-            <a href="/" className="block py-2 px-4 hover:bg-gray-200 rounded-md">Home</a>
+            <Link to={withLang('/')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">Home</Link>
           </li>
           <li>
-            <a href="/list" className="block py-2 px-4 hover:bg-gray-200 rounded-md">Lists</a>
+            <Link to={withLang('/list')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">Lists</Link>
           </li>
           <li>
-            <a href="/search" className="block py-2 px-4 hover:bg-gray-200 rounded-md">Search</a>
+            <Link to={withLang('/search')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">Search</Link>
           </li>
           <li>
-            <a href="/Contact" className="block py-2 px-4 hover:bg-gray-200 rounded-md">Contact</a>
+            <Link to={withLang('/Contact')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">Contact</Link>
           </li>
           <li>
-            <a href="/test" className="block py-2 px-4 hover:bg-gray-200 rounded-md">Test</a>
+            <Link to={withLang('/test')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">Test</Link>
           </li>
           <li>
-            <a href="/animation" className="block py-2 px-4 hover:bg-gray-200 rounded-md">Animation</a>
+            <Link to={withLang('/animation')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">Animation</Link>
           </li>
           <li>
-            <a href="/blogs" className="block py-2 px-4 hover:bg-gray-200 rounded-md">Blogs</a>
+            <Link to={withLang('/blogs')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">News</Link>
           </li>
           <li>
-            <a href="/aboutus" className="Block py-2 px-4 hover:bg-gray-200 rounded-md">About Us</a>
-            </li>
+            <Link to={withLang('/aboutus')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">About Us</Link>
+          </li>
         </ul>
       </div>
     </header>

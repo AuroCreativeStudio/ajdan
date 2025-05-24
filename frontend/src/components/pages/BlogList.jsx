@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { fetchBlogs } from '../../services/blogService';
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import { Link, useLocation } from 'react-router-dom'; // update import
 
 function BlogList() {
   const { i18n } = useTranslation();
   const [blogs, setBlogs] = useState([]);
+  const location = useLocation();
+  const match = location.pathname.match(/^\/(en|ar)(\/|$)/);
+  const lang = match ? match[1] : 'en';
   
   useEffect(() => {
     fetchBlogs(i18n.language)
@@ -67,7 +70,7 @@ function BlogList() {
         blogs.map(blog => (
           <Link
             key={blog.id}
-            to={`/blog/${blog.slug}`}
+            to={`/${lang}/blog/${blog.slug}`}
             state={{ documentId: blog.id }}
             style={{
               flex: '1 1 calc(33.333% - 20px)',

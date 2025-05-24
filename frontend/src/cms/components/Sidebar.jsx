@@ -10,7 +10,7 @@ function Sidebar({ handleLogout }) {
           <HiChartPie /> Overview
         </a>
         <a href="/bloglist" className="flex items-center gap-2 text-gray-700 hover:text-blue-600">
-          <HiUser /> Blogs
+          <HiUser /> News
         </a>
          <a href="/newsletter" className="flex items-center gap-2 text-gray-700 hover:text-blue-600">
           <HiUser /> NewsLetter

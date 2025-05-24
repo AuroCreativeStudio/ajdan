@@ -55,14 +55,18 @@ export const fetchBlogBySlug = async (slug, locale = 'en') => {
 
 export const createBlogPost = async (formData) => {
   return axios.post(`${API_URL}/api/blogs-and-news`, {
-    data: formData, // no need to wrap in FormData or set content-type
+    data: formData, 
   });
 };
 
+export const updateBlog = async (documentId, data, locale) => {
 
-export const updateBlog = async (documentId, data) => {
+  let url = `${API_URL.replace(/\/$/, '')}/api/blogs-and-news/${documentId}`;
+  if (locale) {
+    url += `?locale=${locale}`;
+  }
   try {
-    const response = await axios.put(`${API_URL}/api/blogs-and-news/${documentId}`, data);
+    const response = await axios.put(url, data);
     return response.data;
   } catch (error) {
     console.error('Update blog error:', error.response?.data || error.message);
@@ -70,11 +74,10 @@ export const updateBlog = async (documentId, data) => {
   }
 };
 
- ///api/blogs-and-news/:id
 
 export const deleteBlog = async (documentId, blogData) => {
   return axios.delete(`${API_URL}/api/blogs-and-news/${documentId}`, {
-    data: blogData, 
+    data: blogData,
   });
 };
 

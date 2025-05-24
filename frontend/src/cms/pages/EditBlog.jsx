@@ -241,9 +241,9 @@ const EditBlog = () => {
         data: {  
           title: formData.title,
           slug: formData.slug,
-          description_1: formData.description_1,
-          description_2: formData.description_2 || null,
-          description_3: formData.description_3 || null, 
+          description_1: convertToBlock(formData.description_1),
+          description_2: convertToBlock(formData.description_2),
+          description_3: convertToBlock(formData.description_3),
           meta_description: formData.meta_description || "", 
           meta_keywords: formData.meta_keywords || "",
           image_1: uploadedImages.image_1 || null, 
@@ -261,16 +261,15 @@ const EditBlog = () => {
         const payloadAr = {
           data: {
             title: formDataAr.title,
-            description_1: formDataAr.description_1,
-            description_2: formDataAr.description_2 || null,
-            description_3: formDataAr.description_3 || null,
+            description_1: convertToBlock(formDataAr.description_1),
+            description_2: convertToBlock(formDataAr.description_2),
+            description_3: convertToBlock(formDataAr.description_3),
             meta_description: formDataAr.meta_description || "",
             meta_keywords: formDataAr.meta_keywords || "",
             alt_text_image: formDataAr.alt_text_image || "",
           }
-         
         };
-         console.log('Arabic Payload:', payloadAr); 
+        console.log('Arabic Payload:', payloadAr); 
         await updateBlog(arabicBlogId, payloadAr, 'ar');
       }
      
