@@ -75,10 +75,13 @@ export const updateBlog = async (documentId, data, locale) => {
 };
 
 
-export const deleteBlog = async (documentId, blogData) => {
+export const deleteBlog = async (documentId) => {
   return axios.delete(`${API_URL}/api/blogs-and-news/${documentId}`, {
-    data: blogData,
+ 
   });
 };
+
+
+
 
 

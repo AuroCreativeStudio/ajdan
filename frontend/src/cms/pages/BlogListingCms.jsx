@@ -47,17 +47,22 @@ export default function BlogListingCms() {
 
 // In your component
 const handleDelete = async (documentId) => {
-  console.log('Attempting to delete:', documentId); // Verify correct ID
-  
+  const confirmDelete = window.confirm("Are you sure you want to delete the blog?");
+  if (!confirmDelete) return;
+
   try {
+    console.log("Trying to delete:", documentId);
     await deleteBlog(documentId);
-    console.log('Delete successful');
-    // Update state
+    toast.success("Blog deleted successfully"); // ✅ Toast on success
+
+    // Optionally remove the blog from state without refetching
+    setBlogs(prev => prev.filter(blog => blog.id !== documentId));
   } catch (error) {
-    console.log('Full error:', error); 
-    // Check network tab for response details
+    console.error("Delete failed:", error.response?.data || error.message);
+    toast.error("Failed to delete blog"); // ✅ Toast on error
   }
 };
+
 
   const ITEMS_PER_PAGE = 10; // Define how many items you want per page
   const paginatedBlogs = paginate(blogs, currentPage, ITEMS_PER_PAGE);
@@ -107,7 +112,7 @@ const handleDelete = async (documentId) => {
                         Edit
                       </Link>
                       <button 
-                        onClick={() => handleDelete(blog.slug)}
+                        onClick={() => handleDelete(blog.id)}
                         className="text-red-600 hover:underline"
                       >
                         Delete
