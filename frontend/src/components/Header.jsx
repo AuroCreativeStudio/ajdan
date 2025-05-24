@@ -21,10 +21,14 @@ const Header = () => {
     const newPath = location.pathname.replace(/^\/(en|ar)/, `/${newLang}`);
     navigate(newPath + location.search, { replace: true });
   };
-
+  // Close menu and navigate
+  const handleMenuClick = (path) => {
+    setMenuOpen(false);
+    navigate(withLang(path));
+  };
   return (
     <header className="bg-white px-10 py-5 relative max-md:px-8 max-md:py-4 max-sm:px-5 max-sm:py-2.5 border-b border-gray-200">
-      <div className="flex items-center justify-between relative z-20">
+      <div className="relative z-20 flex items-center justify-between">
         {/* Left: Menu Icon (toggler for sliding menu) */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
@@ -46,14 +50,14 @@ const Header = () => {
         </button>
 
         {/* Center: Logo */}
-        <div className="absolute left-1/2 transform -translate-x-1/2">
+        <div className="absolute transform -translate-x-1/2 left-1/2">
           <a href={withLang('/')}>
-            <img src={logo} alt="Logo" className="h-24 w-32 object-contain" />
+            <img src={logo} alt="Logo" className="object-contain w-32 h-24" />
           </a>
         </div>
 
         {/* Right: Language Selector */}
-        <div className="text-xl text-black max-md:text-lg max-sm:text-base z-10">
+        <div className="z-10 text-xl text-black max-md:text-lg max-sm:text-base">
           <button
             onClick={() => handleLangToggle('en')}
             style={{
@@ -84,47 +88,95 @@ const Header = () => {
       </div>
 
       {/* Sliding Menu */}
-      <div
+       <div
         className={`fixed top-0 left-0 h-full w-full bg-gray-50 shadow-lg z-20 transform ${
           menuOpen ? 'translate-x-0' : '-translate-x-full'
-        } transition-transform duration-300 ease-in-out w-64`}
+        } transition-transform duration-700 ease-in-out w-64`}
       >
         <button
           onClick={() => setMenuOpen(false)}
-          className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
+          className="absolute text-gray-600 top-4 right-4 hover:text-gray-800"
         >
           <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" className="text-black">
             <line x1="6" y1="6" x2="18" y2="18" />
             <line x1="6" y1="18" x2="18" y2="6" />
           </svg>
         </button>
-        <ul className="mt-16 space-y-4 text-lg text-gray-700 p-4">
-          <li>
-            <Link to={withLang('/')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">Home</Link>
-          </li>
-          <li>
-            <Link to={withLang('/list')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">Lists</Link>
-          </li>
-          <li>
-            <Link to={withLang('/search')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">Search</Link>
-          </li>
-          <li>
-            <Link to={withLang('/Contact')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">Contact</Link>
-          </li>
-          <li>
-            <Link to={withLang('/test')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">Test</Link>
-          </li>
-          <li>
-            <Link to={withLang('/animation')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">Animation</Link>
-          </li>
-          <li>
-            <Link to={withLang('/blogs')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">News</Link>
-          </li>
-          <li>
-            <Link to={withLang('/aboutus')} className="block py-2 px-4 hover:bg-gray-200 rounded-md">About Us</Link>
-          </li>
-        </ul>
-      </div>
+        
+        {/* Centered Menu Content */}
+        <div className="flex flex-col items-center justify-center h-full">
+          <ul className="w-full space-y-6 text-lg text-center text-gray-700">
+            <li>
+              <button 
+                onClick={() => handleMenuClick('/')} 
+                className="block w-full px-4 py-2 rounded-md hover:bg-gray-200"
+              >
+                Home
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => handleMenuClick('/aboutus')} 
+                className="block w-full px-4 py-2 rounded-md hover:bg-gray-200"
+              >
+                About Us
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => handleMenuClick('/list')} 
+                className="block w-full px-4 py-2 rounded-md hover:bg-gray-200"
+              >
+               Project Lists
+              </button>
+            </li>
+
+            <li>
+              <button 
+                onClick={() => handleMenuClick('/blogs')} 
+                className="block w-full px-4 py-2 rounded-md hover:bg-gray-200"
+              >
+                News
+              </button>
+            </li>
+            
+            {/* <li>
+              <button 
+                onClick={() => handleMenuClick('/search')} 
+                className="block w-full px-4 py-2 rounded-md hover:bg-gray-200"
+              >
+                Search
+              </button>
+            </li> */}
+            <li>
+              <button 
+                onClick={() => handleMenuClick('/Contact')} 
+                className="block w-full px-4 py-2 rounded-md hover:bg-gray-200"
+              >
+                Contact
+              </button>
+            </li>
+            <li>
+              <button 
+                onClick={() => handleMenuClick('/test')} 
+                className="block w-full px-4 py-2 rounded-md hover:bg-gray-200"
+              >
+                Test
+              </button>
+            </li>
+            {/* <li>
+              <button 
+                onClick={() => handleMenuClick('/animation')} 
+                className="block w-full px-4 py-2 rounded-md hover:bg-gray-200"
+              >
+                Animation
+              </button>
+            </li> */}
+            
+            
+          </ul>
+        </div>
+        </div>
     </header>
   );
 };

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { fetchBlogs } from '../../services/blogService';
-import { Link, useLocation } from 'react-router-dom'; // update import
+import { Link, useLocation } from 'react-router-dom';
 
 function BlogList() {
   const { i18n } = useTranslation();
@@ -14,7 +14,6 @@ function BlogList() {
     fetchBlogs(i18n.language)
       .then(data => {
         const sanitizedBlogs = (data?.data || []).map(blog => {
-          // If blog.attributes exists, use it; otherwise, use blog directly
           const b = blog.attributes ? blog.attributes : blog;
 
           let imageUrl = null;
@@ -44,18 +43,17 @@ function BlogList() {
         console.error('Error fetching blogs:', error);
         setBlogs([]);
       });
-  }, [i18n.language]); // <-- triggers re-fetch on language change
+  }, [i18n.language]);
 
   const getExcerpt = (blocks) => {
     const text = blocks
       .filter(block => block.type === 'paragraph' && block.children)
       .flatMap(block => block.children.map(child => child.text || ''))
       .join(' ');
-    return text.split(' ').slice(0, 8).join(' ') + (text.split(' ').length > 8 ? '...' : '');
+    return text;
   };
 
   return (
-    <>
     <div
       className="blog-list"
       dir={i18n.language === 'ar' ? 'rtl' : 'ltr'}
@@ -63,50 +61,78 @@ function BlogList() {
         display: 'flex',
         flexWrap: 'wrap',
         gap: '20px',
-        margin: '30px 20px' // 30px top/bottom, 10px left/right
+        margin: '30px 20px',
+        justifyContent: 'center'
       }}
     >
       {blogs.length > 0 ? (
         blogs.map(blog => (
-          <Link
-            key={blog.id}
-            to={`/${lang}/blog/${blog.slug}`}
-            state={{ documentId: blog.id }}
+          <div 
+            key={blog.id} 
+            className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700"
             style={{
-              flex: '1 1 calc(33.333% - 20px)',
-              boxSizing: 'border-box',
-              border: '1px solid #ddd',
-              padding: '10px',
-              textDecoration: 'none',
-              color: 'inherit',
-              borderRadius: '5px',
-              transition: 'box-shadow 0.2s',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
-              cursor: 'pointer'
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100%'
             }}
           >
-            {blog.imageUrl && (
-              <img
-                src={blog.imageUrl}
-                alt={blog.altText || 'Blog image'}
-                style={{ width: '100%', height: 'auto', marginBottom: '10px' }}
-                onError={e => {
-                  console.error('Image failed to load:', blog.imageUrl);
-                  e.target.style.display = 'none';
-                }}
-              />
-            )}
-            <h2>{blog.title}</h2>
-            <p>{getExcerpt(blog.descriptionBlocks)}</p> {/* <-- Bind description here */}
-          </Link>
+            <Link 
+              to={`/${lang}/blog/${blog.slug}`} 
+              state={{ documentId: blog.id }}
+              className="flex flex-col h-full"
+            >
+              {blog.imageUrl && (
+                <img 
+                  className="object-cover w-full h-48 rounded-t-lg" 
+                  src={blog.imageUrl} 
+                  alt={blog.altText}
+                  onError={e => {
+                    console.error('Image failed to load:', blog.imageUrl);
+                    e.target.style.display = 'none';
+                  }}
+                />
+              )}
+              <div className="flex flex-col flex-grow p-5">
+                <h5 
+                  className="mb-2 text-lg font-bold tracking-tight text-gray-900 dark:text-white"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    minHeight: '3em', // Ensures space for 2 lines
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  {blog.title}
+                </h5>
+                <p 
+                  className="flex-grow mb-3 font-normal text-gray-700 dark:text-gray-400"
+                  style={{
+                    display: '-webkit-box',
+                    WebkitLineClamp: 3,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    minHeight: '4.5em', // Ensures space for 3 lines
+                    lineHeight: '1.5em'
+                  }}
+                >
+                  {getExcerpt(blog.descriptionBlocks)}
+                </p>
+              <div className="inline-flex items-center px-3 py-2 mt-auto text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 w-fit">
+                Read more
+                <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                </svg>
+              </div>
+              </div>
+            </Link>
+          </div>
         ))
       ) : (
-        <p>No blogs available.</p>
+        <p className="text-gray-500 dark:text-gray-400">No blogs available.</p>
       )}
     </div>
-
-    
-    </>
   );
 }
 

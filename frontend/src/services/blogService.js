@@ -14,21 +14,37 @@ export const fetchBlogs = async (locale) => {
   }
 };
 
-export const fetchBlogByDocumentId = async (documentId, slug = null, locale = 'en') => {
+export const fetchBlogByDocumentId = async (documentId = null, slug = null, locale = 'en') => {
   try {
-    const url = documentId
-      ? `${API_URL}/api/blogs-and-news/${documentId}`
-      : `${API_URL}/api/blogs-and-news?filters[slug][$eq]=${slug}`;
-    const response = await axios.get(url, {
-      params: {
-        locale,
-        populate: '*',
-      },
-    });
-    console.log('API Response:', response.data);
-    return response.data;
+    let url;
+    const params = {
+      locale,
+      populate: '*'
+    };
+
+    if (documentId) {
+      // Fetch by direct ID
+      url = `${API_URL}/api/blogs-and-news/${documentId}`;
+    } else if (slug) {
+      // Fetch by slug with filters
+      url = `${API_URL}/api/blogs-and-news`;
+      params['filters[slug][$eq]'] = slug;
+    } else {
+      throw new Error('Either documentId or slug must be provided');
+    }
+
+    const response = await axios.get(url, { params });
+    
+    // Handle both single item and collection responses
+    const data = documentId 
+      ? response.data.data 
+      : response.data.data?.[0] || null;
+    
+    console.log('API Response:', data);
+    return { data };
+    
   } catch (error) {
-    console.error('Error fetching blog by documentId:', error);
+    console.error('Error fetching blog:', error);
     throw error;
   }
 };
