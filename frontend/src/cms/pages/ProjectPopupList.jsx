@@ -139,23 +139,68 @@ export default function ProjectPopupList() {
         </div>
       </div>
 
-      {showModal && selectedPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-lg min-w-[300px] max-w-[90vw]">
-            <h2 className="mb-4 text-xl font-bold">{selectedPopup.title}</h2>
-            <p><strong>User:</strong> {selectedPopup.username}</p>
-            <p><strong>Phone:</strong> {selectedPopup.phone}</p>
-            <p><strong>Email:</strong> {selectedPopup.email}</p>
-            <p><strong>Message:</strong> {selectedPopup.message}</p>
-            <button
-              onClick={() => setShowModal(false)}
-              className="px-4 py-2 mt-4 text-white bg-blue-600 rounded hover:bg-blue-700"
-            >
-              Close
-            </button>
-          </div>
+     {showModal && selectedPopup && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+    <div className="w-full max-w-md overflow-hidden bg-white rounded-lg shadow-lg">
+      
+      {/* Modal Header */}
+      <div className="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-500">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-white">Popup Details</h3>
+          <button
+            onClick={() => setShowModal(false)}
+            className="p-1 text-white rounded-full hover:bg-blue-700 focus:outline-none"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-      )}
+      </div>
+
+      {/* Modal Body */}
+      <div className="p-6 space-y-4 text-sm text-gray-700">
+        <div>
+          <span className="font-medium text-gray-500">Title:</span>
+          <p className="text-gray-900">{selectedPopup.title ?? 'N/A'}</p>
+        </div>
+
+        <div>
+          <span className="font-medium text-gray-500">User:</span>
+          <p className="text-gray-900">{selectedPopup.username ?? 'N/A'}</p>
+        </div>
+
+        <div>
+          <span className="font-medium text-gray-500">Phone:</span>
+          <p className="text-gray-900">{selectedPopup.phone ?? 'N/A'}</p>
+        </div>
+
+        <div>
+          <span className="font-medium text-gray-500">Email:</span>
+          <p className="text-gray-900 break-all">{selectedPopup.email ?? 'N/A'}</p>
+        </div>
+
+        <div>
+          <span className="font-medium text-gray-500">Message:</span>
+          <p className="text-gray-900 whitespace-pre-wrap">
+            {selectedPopup.message || 'No message provided'}
+          </p>
+        </div>
+      </div>
+
+      {/* Modal Footer */}
+      <div className="px-6 py-4 text-right bg-gray-100">
+        <button
+          onClick={() => setShowModal(false)}
+          className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
