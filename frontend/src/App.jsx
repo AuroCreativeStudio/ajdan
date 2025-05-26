@@ -54,6 +54,7 @@ import DarahSadayem from './components/landing/darah-sadayem/LandingPage';
 import Infiniti from './components/landing/infiniti/LandingPage';
 
 import { detectLanguageByLocation } from './utils/geoLanguage';
+import PrivacyPolicy from './components/pages/PrivacyPolicy';
 
 function LayoutWrapper({ children }) {
   const location = useLocation();
@@ -113,7 +114,8 @@ function LayoutWrapper({ children }) {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {!isCmsRoute && <Header />}
       <main style={{ flex: 1 }}>{children}</main>
-      {!isCmsRoute && <Footer />}
+      {!isCmsRoute && <Footer />}   
+     {!isCmsRoute &&<ConsentBanner/>}
     </div>
   );
 }
@@ -146,6 +148,8 @@ function PublicRoutes() {
       <Route path="/blogs" element={<BlogList locale={lang} />} />
       <Route path="/blog/:slug" element={<BlogSingle locale={lang} />} />
       <Route path="/aboutus" element={<Aboutus />} />
+<Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
+
       <Route path="/ajdanII" element={<Ajdan2Page />} />
       <Route path="/ajdan-island" element={<AjdanIsland />} />
       <Route path="/bayfront" element={<AjdanBayfront />} />

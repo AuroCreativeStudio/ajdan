@@ -26,43 +26,43 @@ function Sidebar({ handleLogout }) {
       <nav className="space-y-4">
         <a 
           href="/" 
-          className={`flex items-center gap-2 ${isActive('/') ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}`}
+          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
         >
           <HiChartPie className="text-lg" /> Overview
         </a>
         <a 
           href="/bloglist" 
-          className={`flex items-center gap-2 ${isActive('/bloglist') ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}`}
+          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/bloglist') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
         >
           <HiNewspaper className="text-lg" /> News
         </a>
         <a 
           href="/newsletter" 
-          className={`flex items-center gap-2 ${isActive('/newsletter') ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}`}
+          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/newsletter') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
         >
           <HiMail className="text-lg" /> Newsletter
         </a>
         <a 
           href="/contactlist" 
-          className={`flex items-center gap-2 ${isActive('/contactlist') ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}`}
+          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/contactlist') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
         >
           <HiPhone className="text-lg" /> Contact Listing
         </a>
         <a 
           href="/projectlist" 
-          className={`flex items-center gap-2 ${isActive('/projectlist') ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}`}
+          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/projectlist') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
         >
           <HiFolder className="text-lg" /> Project Listing
         </a>
         <a 
           href="/teamlist" 
-          className={`flex items-center gap-2 ${isActive('/teamlist') ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}`}
+          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/teamlist') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
         >
           <HiUserGroup className="text-lg" /> About Us Team
         </a>
         <a 
           href="/popuplist" 
-          className={`flex items-center gap-2 ${isActive('/popuplist') ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}`}
+          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/popuplist') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
         >
           <HiInformationCircle className="text-lg" /> Popup List
         </a>

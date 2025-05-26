@@ -60,6 +60,33 @@
           "localized": true
         }
       }
+    },
+    "amenities": {
+      "type": "enumeration",
+      "enum": [
+        "Gym",
+        "Pool",
+        "Smart Home",
+        "Sea View"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "Property_type": {
+      "type": "enumeration",
+      "enum": [
+        "Residential",
+        "Commercial",
+        "Mixed-Use"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
   }
 }

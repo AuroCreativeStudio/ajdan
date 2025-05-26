@@ -33,6 +33,7 @@ export default function ProjectPopupList() {
           email: popup.email || 'N/A',
           message: popup.message || 'N/A',
           description: popup.description || 'N/A',
+                    purchase_plan: popup.purchase_plan || 'N/A', // Add purchase_plan
         }));
         setPopups(sanitizedPopups);
       })
@@ -50,12 +51,13 @@ export default function ProjectPopupList() {
   // Export data as CSV (Excel-compatible)
   const handleExport = () => {
     if (!popups.length) return;
-    const header = ['Title', 'User', 'Phone', 'Email', 'Message', 'Description'];
+    const header = ['Title', 'User', 'Phone', 'Email','Purchase Plan','Message', 'Description'];
     const rows = popups.map(p => [
       p.title,
       p.username,
       p.phone,
       p.email,
+            p.purchase_plan, // Add purchase_plan to export
       p.message,
       p.description,
     ]);
@@ -95,6 +97,7 @@ export default function ProjectPopupList() {
                 <th className="px-6 py-3">Title</th>
                 <th className="px-6 py-3">User</th>
                 <th className="px-6 py-3">Phone</th>
+                                <th className="px-6 py-3">Purchase Plan</th> {/* Add column */}
                 <th className="px-6 py-3">Actions</th>
               </tr>
             </thead>
@@ -105,6 +108,7 @@ export default function ProjectPopupList() {
                     <td className="px-6 py-4 font-medium text-gray-900">{popup.title}</td>
                     <td className="px-6 py-4">{popup.username}</td>
                     <td className="px-6 py-4">{popup.phone}</td>
+                                        <td className="px-6 py-4">{popup.purchase_plan}</td> {/* Add cell */}
                     <td className="px-6 py-4 space-x-2">
                       <button
                         onClick={() => handleView(popup)}
@@ -179,7 +183,7 @@ export default function ProjectPopupList() {
           <span className="font-medium text-gray-500">Email:</span>
           <p className="text-gray-900 break-all">{selectedPopup.email ?? 'N/A'}</p>
         </div>
-
+            <p><strong>Purchase Plan:</strong> {selectedPopup.purchase_plan}</p>
         <div>
           <span className="font-medium text-gray-500">Message:</span>
           <p className="text-gray-900 whitespace-pre-wrap">

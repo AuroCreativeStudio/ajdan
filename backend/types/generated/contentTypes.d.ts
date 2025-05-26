@@ -580,6 +580,14 @@ export interface ApiListList extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
+    amenities: Schema.Attribute.Enumeration<
+      ['Gym', 'Pool', 'Smart Home', 'Sea View']
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     building: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -598,6 +606,14 @@ export interface ApiListList extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::list.list'>;
     place: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    Property_type: Schema.Attribute.Enumeration<
+      ['Residential', 'Commercial', 'Mixed-Use']
+    > &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -709,6 +725,9 @@ export interface ApiProjectContactFormProjectContactForm
         };
       }>;
     publishedAt: Schema.Attribute.DateTime;
+    purchase_plan: Schema.Attribute.Enumeration<
+      ['Within 1-3 months', 'In 6 months', 'In 1 year']
+    >;
     title: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {

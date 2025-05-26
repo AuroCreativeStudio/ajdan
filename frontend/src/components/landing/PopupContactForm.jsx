@@ -18,6 +18,7 @@ const ContactForm = ({ show, onClose, listingTitle }) => {
     phone: '',
     title: listingTitle,
     message: '',
+    purchase_plan: '', // Add purchase_plan to initial state
   };
 
   const [formData, setFormData] = useState(initialFormData);
@@ -64,6 +65,13 @@ const ContactForm = ({ show, onClose, listingTitle }) => {
           </Typography>
         <form onSubmit={handleSubmit}>
           <CardBody className="flex flex-col gap-4">
+                      <Input
+              label="Title"
+              name="title"
+              value={formData.title}
+              readOnly
+              className="cursor-not-allowed"
+            />
             <Input
               label="Name"
               name="username"
@@ -86,13 +94,21 @@ const ContactForm = ({ show, onClose, listingTitle }) => {
               onChange={handleChange}
               required
             />
-            <Input
-              label="Title"
-              name="title"
-              value={formData.title}
-              readOnly
-              className="cursor-not-allowed"
-            />
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Purchase Plan</label>
+              <select
+                name="purchase_plan"
+                value={formData.purchase_plan}
+                onChange={handleChange}
+                required
+                className="w-full border rounded px-3 py-2"
+              >
+                <option value="">Select...</option>
+                <option value="Within 1-3 months">Within 1-3 months</option>
+                <option value="In 6 months">In 6 months</option>
+                <option value="In 1 year">In 1 year</option>
+              </select>
+            </div>
             <Textarea
               label="Message"
               name="message"

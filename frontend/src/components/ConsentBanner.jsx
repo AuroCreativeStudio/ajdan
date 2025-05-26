@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 
 const ConsentBanner = () => {
   const [showBanner, setShowBanner] = useState(false);
@@ -8,7 +7,7 @@ const ConsentBanner = () => {
     const consent = localStorage.getItem('userConsent');
     const timestamp = localStorage.getItem('consentTimestamp');
 
-    // If no consent or it's older than 12 months, show banner
+    // Show banner if no consent or it's older than 12 months
     if (!consent || isConsentExpired(timestamp)) {
       setShowBanner(true);
     }
@@ -18,87 +17,73 @@ const ConsentBanner = () => {
     if (!timestamp) return true;
     const givenDate = new Date(timestamp);
     const now = new Date();
-    const diffInMonths = (now.getFullYear() - givenDate.getFullYear()) * 12 + (now.getMonth() - givenDate.getMonth());
+    const diffInMonths =
+      (now.getFullYear() - givenDate.getFullYear()) * 12 +
+      (now.getMonth() - givenDate.getMonth());
     return diffInMonths >= 12;
   };
 
-  const sendConsent = async (acceptedCategories) => {
-    try {
-      const ip = await (await fetch('https://api.ipify.org?format=json')).json();
-      await axios.post('http://localhost:1337/api/consents', {
-        data: {
-          ip_address: ip.ip,
-          accepted_categories: acceptedCategories,
-          consent_given_at: new Date().toISOString(),
-          user_agent: navigator.userAgent,
-        },
-      });
-    } catch (err) {
-      console.error("Failed to send consent: ", err);
-    }
+  const saveConsent = (categories) => {
+    localStorage.setItem('userConsent', JSON.stringify(categories));
+    localStorage.setItem('consentTimestamp', new Date().toISOString());
+    setShowBanner(false);
   };
 
   const handleAcceptAll = () => {
     const categories = ['necessary', 'analytics', 'marketing'];
-    localStorage.setItem('userConsent', JSON.stringify(categories));
-    localStorage.setItem('consentTimestamp', new Date().toISOString());
-    sendConsent(categories);
-    setShowBanner(false);
+    saveConsent(categories);
   };
 
   const handleReject = () => {
     const categories = ['necessary'];
-    localStorage.setItem('userConsent', JSON.stringify(categories));
-    localStorage.setItem('consentTimestamp', new Date().toISOString());
-    sendConsent(categories);
-    setShowBanner(false);
+    saveConsent(categories);
   };
 
   const handleManageConsent = () => {
     setShowBanner(true);
   };
 
+  const match = location.pathname.match(/^\/(en|ar)(\/|$)/);
+  const lang = match ? match[1] : 'en';
+
+  const withLang = (path) => `/${lang}${path.startsWith('/') ? path : '/' + path}`;
+
   return (
     <>
-      {/* Add this to any part of your site, like footer */}
-      <button
-        onClick={handleManageConsent}
-        style={{ position: 'fixed', bottom: '1rem', right: '1rem', zIndex: 999 }}
-      >
-        Manage Consent
-      </button>
-
       {showBanner && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            background: '#f0f0f0',
-            padding: '1rem',
-            zIndex: 1000,
-            borderTop: '1px solid #ccc',
-          }}
-        >
-          <p>
-            We use cookies to enhance your experience. Choose your preferences.
-            Read our{' '}
-            <a
-              href="/privacy-policy"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: 'underline' }}
+        <section className="fixed max-w-2xl p-4 mx-auto bg-white border border-gray-200 md:gap-x-4 left-12 bottom-4 dark:bg-gray-900 md:flex md:items-center dark:border-gray-700 rounded-2xl z-[1000]">
+          <div className="flex items-center gap-x-4">
+            <span className="inline-flex p-2 text-blue-500 rounded-lg shrink-0 dark:bg-gray-800 bg-blue-100/80">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M17.9803 8.5468C17.5123 8.69458 17.0197 8.7931 16.5271 8.7931C14.2118 8.76847 12.3399 6.89655 12.3153 4.58128C12.3153 4.13793 12.3892 3.69458 12.537 3.27586C11.9951 2.68473 11.6995 1.92118 11.6995 1.13301C11.6995 0.812808 11.7488 0.492611 11.8473 0.172414C11.2315 0.0738918 10.6158 0 10 0C4.48276 0 0 4.48276 0 10C0 15.5172 4.48276 20 10 20C15.5172 20 20 15.5172 20 10C20 9.77833 20 9.55665 19.9754 9.33498C19.2611 9.26108 18.5468 8.99015 17.9803 8.5468ZM4.58128 7.31527C6.30542 7.31527 6.30542 10.0246 4.58128 10.0246C2.85714 10.0246 2.61084 7.31527 4.58128 7.31527ZM6.05912 15.7635C4.08867 15.7635 4.08867 12.8079 6.05912 12.8079C8.02956 12.8079 8.02956 15.7635 6.05912 15.7635ZM9.01478 1.33005C10.7389 1.33005 10.7389 4.28571 9.01478 4.28571C7.29064 4.28571 7.04434 1.33005 9.01478 1.33005ZM10.2463 8.84237C11.7241 8.84237 11.7241 10.8128 10.2463 10.8128C8.76848 10.8128 9.01478 8.84237 10.2463 8.84237ZM11.9704 16.9458C10.4926 16.9458 10.4926 14.9754 11.9704 14.9754C13.4483 14.9754 13.202 16.9458 11.9704 16.9458ZM16.6503 13.1034C15.4187 13.1034 15.4187 11.133 16.6503 11.133C17.8818 11.133 17.8818 13.1034 16.6503 13.1034Z" fill="currentColor" />
+              </svg>
+            </span>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              We use cookies to ensure that we give you the best experience on our website.{' '}
+              <a
+                href={withLang('/privacy-policy')}
+                className="text-blue-500 hover:underline"
+              >
+                Read cookies policies
+              </a>.
+            </p>
+          </div>
+
+          <div className="flex items-center mt-6 gap-x-4 shrink-0 lg:mt-0">
+            <button
+              onClick={handleReject}
+              className="w-1/2 text-xs text-gray-800 underline transition-colors duration-300 md:w-auto dark:text-white dark:hover:text-gray-400 hover:text-gray-600 focus:outline-none"
             >
-              Privacy Policy
-            </a>
-            .
-          </p>
-          <button onClick={handleAcceptAll} style={{ marginRight: '1rem' }}>
-            Accept All
-          </button>
-          <button onClick={handleReject}>Reject</button>
-        </div>
+              Cookie Setting
+            </button>
+            <button
+              onClick={handleAcceptAll}
+              className="text-xs w-1/2 md:w-auto font-medium bg-gray-800 rounded-lg hover:bg-gray-700 text-white px-4 py-2.5 duration-300 transition-colors focus:outline-none"
+            >
+              Accept All Cookies
+            </button>
+          </div>
+        </section>
       )}
     </>
   );
