@@ -21,7 +21,7 @@ function Sidebar({ handleLogout }) {
   };
 
   return (
-    <div className="w-64 p-4 bg-white shadow-md">
+    <div className="w-64 p-4 bg-white">
       <h2 className="mb-8 text-2xl font-bold text-blue-600">Dashboard</h2>
       <nav className="space-y-4">
         <a 
@@ -40,19 +40,19 @@ function Sidebar({ handleLogout }) {
           href="/newsletter" 
           className={`flex items-center gap-2 ${isActive('/newsletter') ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}`}
         >
-          <HiMail className="text-lg" /> NewsLetter
+          <HiMail className="text-lg" /> Newsletter
         </a>
         <a 
           href="/contactlist" 
           className={`flex items-center gap-2 ${isActive('/contactlist') ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}`}
         >
-          <HiPhone className="text-lg" /> ContactListing
+          <HiPhone className="text-lg" /> Contact Listing
         </a>
         <a 
           href="/projectlist" 
           className={`flex items-center gap-2 ${isActive('/projectlist') ? 'text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600'}`}
         >
-          <HiFolder className="text-lg" /> ProjectListing
+          <HiFolder className="text-lg" /> Project Listing
         </a>
         <a 
           href="/teamlist" 

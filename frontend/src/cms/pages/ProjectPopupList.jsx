@@ -146,7 +146,7 @@ export default function ProjectPopupList() {
       {/* Modal Header */}
       <div className="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-500">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-white">Popup Details</h3>
+          <h3 className="text-lg font-semibold text-white">Project Contact Form Details</h3>
           <button
             onClick={() => setShowModal(false)}
             className="p-1 text-white rounded-full hover:bg-blue-700 focus:outline-none"

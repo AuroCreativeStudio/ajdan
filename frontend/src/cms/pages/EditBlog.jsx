@@ -283,159 +283,161 @@ const EditBlog = () => {
   if (loading) return <div className="py-10 text-center">Loading...</div>;
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar handleLogout={handleLogout} />
-      <div className="flex-1 p-4 overflow-auto">
-        <h2 className="mb-4 text-2xl font-semibold">Edit Blog</h2>
-        
-        <div className="flex mb-4">
-          <button
-            type="button"
-            className={`px-4 py-2 rounded-t ${tab === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-            onClick={() => setTab('en')}
-          >
-            English
-          </button>
-          <button
-            type="button"
-            className={`px-4 py-2 rounded-t ${tab === 'ar' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-            onClick={() => setTab('ar')}
-          >
-            Arabic
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="max-w-3xl space-y-4">
-          {tab === 'en' && (
-            <>
-              {/* English form fields */}
-              {[
-                { label: 'Title', name: 'title', type: 'text' },
-                { label: 'Description 1', name: 'description_1', type: 'textarea' },
-                { label: 'Description 2', name: 'description_2', type: 'textarea' },
-                { label: 'Description 3', name: 'description_3', type: 'textarea' },
-                { label: 'Meta Description', name: 'meta_description', type: 'text' },
-                { label: 'Meta Keywords', name: 'meta_keywords', type: 'text' },
-                { label: 'Alt Text (Image)', name: 'alt_text_image', type: 'text' },
-              ].map(({ label, name, type }) => (
-                <label className="block" key={name}>
-                  {label}:
-                  {type === 'textarea' ? (
-                    <textarea
-                      name={name}
-                      value={formData[name] || ''}
-                      onChange={(e) => handleChange(e, 'en')}
-                      className="w-full p-2 mt-1 border"
-                      rows={4}
-                    />
-                  ) : (
-                    <input
-                      type={type}
-                      name={name}
-                      value={formData[name] || ''}
-                      onChange={(e) => handleChange(e, 'en')}
-                      className="w-full p-2 mt-1 border"
-                    />
-                  )}
-                </label>
-              ))}
-
-              <label className="block">
-                Slug:
-                <input
-                  type="text"
-                  name="slug"
-                  value={formData.slug || ''}
-                  readOnly
-                  className="w-full p-2 mt-1 bg-gray-100 border"
-                />
-              </label>
-
-              {/* Image fields */}
-              {['image_1', 'image_2', 'featured_image'].map((field) => (
-                <label key={field} className="block">
-                  {field.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}:
-                  {existingImages[field] && (
-                    <div className="mb-2">
-                      <img 
-                        src={existingImages[field]} 
-                        alt={`Existing ${field}`} 
-                        className="object-cover w-32 h-32 rounded" 
-                      />
-                    </div>
-                  )}
-                  <input
-                    type="file"
-                    name={field}
-                    accept="image/*"
-                    onChange={(e) => handleImageChange(e, field)}
-                    className="w-full p-2 border"
-                  />
-                </label>
-              ))}
-            </>
-          )}
-
-          {tab === 'ar' && (
-            <>
-              {/* Arabic form fields */}
-              {[
-                { label: 'العنوان', name: 'title', type: 'text' },
-                { label: 'الوصف 1', name: 'description_1', type: 'textarea' },
-                { label: 'الوصف 2', name: 'description_2', type: 'textarea' },
-                { label: 'الوصف 3', name: 'description_3', type: 'textarea' },
-                { label: 'وصف التعريف', name: 'meta_description', type: 'text' },
-                { label: 'كلمات البحث', name: 'meta_keywords', type: 'text' },
-                { label: 'النص البديل (الصورة)', name: 'alt_text_image', type: 'text' },
-              ].map(({ label, name, type }) => (
-                <label className="block" key={name}>
-                  {label}:
-                  {type === 'textarea' ? (
-                    <textarea
-                      name={name}
-                      value={formDataAr[name] || ''}
-                      onChange={(e) => handleChange(e, 'ar')}
-                      className="w-full p-2 mt-1 border"
-                      rows={4}
-                      dir="rtl"
-                    />
-                  ) : (
-                    <input
-                      type={type}
-                      name={name}
-                      value={formDataAr[name] || ''}
-                      onChange={(e) => handleChange(e, 'ar')}
-                      className="w-full p-2 mt-1 border"
-                      dir="rtl"
-                    />
-                  )}
-                </label>
-              ))}
-
-              <label className="block">
-                الرابط:
-                <input
-                  type="text"
-                  name="slug"
-                  value={formDataAr.slug || ''}
-                  readOnly
-                  className="w-full p-2 mt-1 bg-gray-100 border"
-                  dir="rtl"
-                />
-              </label>
-            </>
-          )}
-
-          <button
-            type="submit"
-            className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
-          >
-            Update Blog
-          </button>
-        </form>
-        <ToastContainer />
+  <div className="flex h-screen bg-gray-100">
+  <Sidebar handleLogout={handleLogout} />
+  <div className="flex-1 overflow-auto">
+    <div className="max-w-3xl mx-auto p-4"> {/* Centering container */}
+      <h2 className="mb-4 text-2xl font-semibold">Edit News</h2>
+      
+      <div className="flex mb-4">
+        <button
+          type="button"
+          className={`px-4 py-2 rounded-t ${tab === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+          onClick={() => setTab('en')}
+        >
+          English
+        </button>
+        <button
+          type="button"
+          className={`px-4 py-2 rounded-t ${tab === 'ar' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+          onClick={() => setTab('ar')}
+        >
+          Arabic
+        </button>
       </div>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {tab === 'en' && (
+          <>
+            {/* English form fields */}
+            {[
+              { label: 'Title', name: 'title', type: 'text' },
+              { label: 'Description 1', name: 'description_1', type: 'textarea' },
+              { label: 'Description 2', name: 'description_2', type: 'textarea' },
+              { label: 'Description 3', name: 'description_3', type: 'textarea' },
+              { label: 'Meta Description', name: 'meta_description', type: 'text' },
+              { label: 'Meta Keywords', name: 'meta_keywords', type: 'text' },
+              { label: 'Alt Text (Image)', name: 'alt_text_image', type: 'text' },
+            ].map(({ label, name, type }) => (
+              <label className="block" key={name}>
+                {label}:
+                {type === 'textarea' ? (
+                  <textarea
+                    name={name}
+                    value={formData[name] || ''}
+                    onChange={(e) => handleChange(e, 'en')}
+                    className="w-full p-2 mt-1 border"
+                    rows={4}
+                  />
+                ) : (
+                  <input
+                    type={type}
+                    name={name}
+                    value={formData[name] || ''}
+                    onChange={(e) => handleChange(e, 'en')}
+                    className="w-full p-2 mt-1 border"
+                  />
+                )}
+              </label>
+            ))}
+
+            <label className="block">
+              Slug:
+              <input
+                type="text"
+                name="slug"
+                value={formData.slug || ''}
+                readOnly
+                className="w-full p-2 mt-1 bg-gray-100 border"
+              />
+            </label>
+
+            {/* Image fields */}
+            {['image_1', 'image_2', 'featured_image'].map((field) => (
+              <label key={field} className="block">
+                {field.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}:
+                {existingImages[field] && (
+                  <div className="mb-2">
+                    <img 
+                      src={existingImages[field]} 
+                      alt={`Existing ${field}`} 
+                      className="object-cover w-32 h-32 rounded" 
+                    />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  name={field}
+                  accept="image/*"
+                  onChange={(e) => handleImageChange(e, field)}
+                  className="w-full p-2 border"
+                />
+              </label>
+            ))}
+          </>
+        )}
+
+        {tab === 'ar' && (
+          <>
+            {/* Arabic form fields */}
+            {[
+              { label: 'العنوان', name: 'title', type: 'text' },
+              { label: 'الوصف 1', name: 'description_1', type: 'textarea' },
+              { label: 'الوصف 2', name: 'description_2', type: 'textarea' },
+              { label: 'الوصف 3', name: 'description_3', type: 'textarea' },
+              { label: 'وصف التعريف', name: 'meta_description', type: 'text' },
+              { label: 'كلمات البحث', name: 'meta_keywords', type: 'text' },
+              { label: 'النص البديل (الصورة)', name: 'alt_text_image', type: 'text' },
+            ].map(({ label, name, type }) => (
+              <label className="block" key={name}>
+                {label}:
+                {type === 'textarea' ? (
+                  <textarea
+                    name={name}
+                    value={formDataAr[name] || ''}
+                    onChange={(e) => handleChange(e, 'ar')}
+                    className="w-full p-2 mt-1 border"
+                    rows={4}
+                    dir="rtl"
+                  />
+                ) : (
+                  <input
+                    type={type}
+                    name={name}
+                    value={formDataAr[name] || ''}
+                    onChange={(e) => handleChange(e, 'ar')}
+                    className="w-full p-2 mt-1 border"
+                    dir="rtl"
+                  />
+                )}
+              </label>
+            ))}
+
+            <label className="block">
+              الرابط:
+              <input
+                type="text"
+                name="slug"
+                value={formDataAr.slug || ''}
+                readOnly
+                className="w-full p-2 mt-1 bg-gray-100 border"
+                dir="rtl"
+              />
+            </label>
+          </>
+        )}
+
+        <button
+          type="submit"
+          className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+        >
+          Update Blog
+        </button>
+      </form>
+      <ToastContainer />
     </div>
+  </div>
+</div>
   );
 };
 

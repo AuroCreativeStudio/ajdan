@@ -111,94 +111,197 @@ function BlogCreate() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar handleLogout={handleLogout} />
-      <ToastContainer />
-      <div className="mx-24 mt-6">
-
-        <h2 className="text-2xl font-semibold mb-4">Create Blog</h2>
-
-        <form onSubmit={handleSubmit}>
-          {/* Text Fields */}
-          <div className="grid gap-6 mb-6 md:grid-cols-2">
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900">Title</label>
-              <input type="text" name="title" value={formData.title} onChange={handleChange} required className="form-input" />
-            </div>
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900">Slug</label>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <input
-                  type="text"
-                  name="slug"
-                  value={formData.slug}
-                  onChange={handleChange}
-                  required
-                  className="form-input"
-                />
-                <button
-                  type="button"
-                  onClick={() =>
-                    setFormData(prev => ({
-                      ...prev,
-                      slug: generateSlug(formData.title)
-                    }))
-                  }
-                  className="text-xs px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                >
-                  Autogenerate
-                </button>
-              </div>
-            </div>
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900">Meta Description</label>
-              <input type="text" name="meta_description" value={formData.meta_description} onChange={handleChange} required className="form-input" />
-            </div>
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900">Meta Keywords</label>
-              <input type="text" name="meta_keywords" value={formData.meta_keywords} onChange={handleChange} required className="form-input" />
-            </div>
-          </div>
-
-          {/* Descriptions */}
-          <div className="mb-6 grid gap-6 md:grid-cols-2">
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900">Description 1</label>
-              <textarea name="description_1" rows="3" value={formData.description_1} onChange={handleChange} className="form-textarea" />
-            </div>
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900">Description 2</label>
-              <textarea name="description_2" rows="3" value={formData.description_2} onChange={handleChange} className="form-textarea" />
-            </div>
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900">Description 3</label>
-              <textarea name="description_3" rows="3" value={formData.description_3} onChange={handleChange} className="form-textarea" />
-            </div>
-          </div>
-
-          {/* File Uploads */}
-          <div className="mb-6 grid gap-6 md:grid-cols-3">
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900">Image 1</label>
-              <input type="file" name="image_1" accept="image/*" onChange={handleImageChange} />
-            </div>
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900">Image 2</label>
-              <input type="file" name="image_2" accept="image/*" onChange={handleImageChange} />
-            </div>
-            <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900">Featured Image</label>
-              <input type="file" name="featured_image" accept="image/*" onChange={handleImageChange} />
-            </div>
-          </div>
-
-          {/* Submit */}
-          <button type="submit" className="text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5">
-            Submit
-          </button>
-        </form>
+ <div className="flex min-h-screen bg-gray-100">
+  <Sidebar handleLogout={handleLogout} />
+  
+  <div className="flex-grow p-6">
+    <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-2xl font-bold text-gray-800">Create News</h2>
       </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Text Fields */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Title</label>
+            <input 
+              type="text" 
+              name="title" 
+              value={formData.title} 
+              onChange={handleChange} 
+              required 
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Slug</label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                name="slug"
+                value={formData.slug}
+                onChange={handleChange}
+                required
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  setFormData(prev => ({
+                    ...prev,
+                    slug: generateSlug(formData.title)
+                  }))
+                }
+                className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Generate
+              </button>
+            </div>
+          </div>
+          
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Meta Description</label>
+            <input 
+              type="text" 
+              name="meta_description" 
+              value={formData.meta_description} 
+              onChange={handleChange} 
+              required 
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Meta Keywords</label>
+            <input 
+              type="text" 
+              name="meta_keywords" 
+              value={formData.meta_keywords} 
+              onChange={handleChange} 
+              required 
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+
+        {/* Descriptions */}
+        <div className="space-y-6">
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Description 1</label>
+            <textarea 
+              name="description_1" 
+              rows="4" 
+              value={formData.description_1} 
+              onChange={handleChange} 
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Description 2</label>
+            <textarea 
+              name="description_2" 
+              rows="4" 
+              value={formData.description_2} 
+              onChange={handleChange} 
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Description 3</label>
+            <textarea 
+              name="description_3" 
+              rows="4" 
+              value={formData.description_3} 
+              onChange={handleChange} 
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+
+        {/* File Uploads */}
+        <div className="grid gap-6 md:grid-cols-3">
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Image 1</label>
+            <div className="flex items-center gap-4">
+              <label className="cursor-pointer">
+                <span className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm">
+                  Choose File
+                </span>
+                <input 
+                  type="file" 
+                  name="image_1" 
+                  accept="image/*" 
+                  onChange={handleImageChange} 
+                  className="hidden"
+                />
+              </label>
+              {formData.image_1 && (
+                <span className="text-sm text-gray-500 truncate">{formData.image_1.name}</span>
+              )}
+            </div>
+          </div>
+          
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Image 2</label>
+            <div className="flex items-center gap-4">
+              <label className="cursor-pointer">
+                <span className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm">
+                  Choose File
+                </span>
+                <input 
+                  type="file" 
+                  name="image_2" 
+                  accept="image/*" 
+                  onChange={handleImageChange} 
+                  className="hidden"
+                />
+              </label>
+              {formData.image_2 && (
+                <span className="text-sm text-gray-500 truncate">{formData.image_2.name}</span>
+              )}
+            </div>
+          </div>
+          
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">Featured Image</label>
+            <div className="flex items-center gap-4">
+              <label className="cursor-pointer">
+                <span className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm">
+                  Choose File
+                </span>
+                <input 
+                  type="file" 
+                  name="featured_image" 
+                  accept="image/*" 
+                  onChange={handleImageChange} 
+                  className="hidden"
+                />
+              </label>
+              {formData.featured_image && (
+                <span className="text-sm text-gray-500 truncate">{formData.featured_image.name}</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <div className="pt-4">
+          <button 
+            type="submit" 
+            className="w-full md:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+          >
+            Create Blog
+          </button>
+        </div>
+      </form>
     </div>
+    <ToastContainer position="bottom-right" />
+  </div>
+</div>
   );
 }
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchteam } from '../../services/aboutusService';
+import aboutUsBg from '../../assets/image/one.jpg'; 
 
 function getImageUrl(image) {
   if (!image) return "https://docs.material-tailwind.com/img/team-3.jpg";
@@ -29,11 +30,29 @@ function Aboutus() {
 
   return (
     <>
-      <div className='m-12 mx-auto bg-blue-700 h-24'>
-        <div className='my-auto'>
-          <h1 className='text-white mt-4 text-4xl'>Aboutus</h1>
-        </div>
-      </div>
+    <div 
+  className="relative h-64 w-full mx-auto  overflow-hidden"
+>
+  {/* Background Image */}
+  <img
+    src={aboutUsBg}
+    alt="About Us Background"
+    className="w-full h-full object-cover"
+    onError={(e) => {
+      e.target.src = "https://via.placeholder.com/1200x300"; // Fallback image
+    }}
+  />
+  
+  {/* Black Overlay */}
+  <div className="absolute inset-0 bg-black opacity-50"></div>
+  
+  {/* About Us Text */}
+  <div className="absolute inset-0 flex items-center justify-center">
+    <h1 className="text-white text-4xl md:text-5xl font-bold">
+      About Us
+    </h1>
+  </div>
+</div>
 
       {loading ? (
         <div className="m-12">Loading...</div>
@@ -55,8 +74,8 @@ function Aboutus() {
                 </h4>
                 <p className="text-blue-gray-500 font-medium">{member.role || "Role"}</p>
               </div>
-              <div className="flex justify-center gap-7 p-4 border-t">
-                {/* Example social links, adjust as needed */}
+              {/* <div className="flex justify-center gap-7 p-4 border-t">
+            
                 <a href={member.facebook || "#facebook"} className="text-blue-600 text-xl hover:text-blue-800" title="Like">
                   <i className="fab fa-facebook"></i>
                 </a>
@@ -66,7 +85,7 @@ function Aboutus() {
                 <a href={member.instagram || "#instagram"} className="text-purple-500 text-xl hover:text-purple-700" title="Follow">
                   <i className="fab fa-instagram"></i>
                 </a>
-              </div>
+              </div> */}
             </div>
           ))}
         </div>

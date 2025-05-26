@@ -72,7 +72,7 @@ const handleDelete = async (documentId) => {
       <Sidebar handleLogout={handleLogout} />
       <div className="flex-1 p-6">
         <div className="flex items-center justify-between w-full mb-6">
-          <h1 className="text-3xl font-semibold text-gray-800">Blogs</h1>
+          <h1 className="text-3xl font-semibold text-gray-800">News</h1>
           <button
             onClick={() => navigate('/create')}
             className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
