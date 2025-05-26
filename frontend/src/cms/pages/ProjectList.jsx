@@ -72,8 +72,14 @@ function ProjectList() {
   //   toast.success('Project list exported successfully!');
   // };
 
-  const paginatedProjects = paginate(projectList, currentPage, ITEMS_PER_PAGE);
-  const totalPages = Math.ceil(projectList.length / ITEMS_PER_PAGE);
+  // Sort projectList by title ascending before paginating
+  const sortedProjects = [...projectList].sort((a, b) => {
+    if (!a.title) return -1;
+    if (!b.title) return 1;
+    return a.title.localeCompare(b.title);
+  });
+  const paginatedProjects = paginate(sortedProjects, currentPage, ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(sortedProjects.length / ITEMS_PER_PAGE);
 
   const handlePageChange = (page) => {
     setSearchParams({ page: page.toString() });
