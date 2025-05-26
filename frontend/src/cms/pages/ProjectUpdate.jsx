@@ -28,8 +28,9 @@ function ProjectUpdate() {
     slug: project?.slug || '',
   });
 
+  // Modified Arabic form initialization
   const [formAr, setFormAr] = useState({
-    title: arabicProject?.title || '',
+    title: arabicProject?.title?.Property_Title || arabicProject?.title || '',
     place: arabicProject?.place || '',
     building: arabicProject?.building || '',
     squarefeet: arabicProject?.square_feet || '',
@@ -41,14 +42,16 @@ function ProjectUpdate() {
 
   useEffect(() => {
     if (arabicProject) {
-      setFormAr({
-        title: arabicProject?.title || '',
-        place: arabicProject?.place || '',
-        building: arabicProject?.building || '',
-        squarefeet: arabicProject?.square_feet || '',
-        description: arabicProject?.description || '',
-        slug: arabicProject?.slug || '',
-      });
+      setFormAr(prev => ({
+        ...prev,
+        // Modified to properly handle title object
+        title: arabicProject.title?.Property_Title || arabicProject.title || prev.title,
+        place: arabicProject.place || prev.place,
+        building: arabicProject.building || prev.building,
+        squarefeet: arabicProject.square_feet || prev.squarefeet,
+        description: arabicProject.description || prev.description,
+        slug: arabicProject.slug || prev.slug,
+      }));
     }
   }, [arabicProject]);
 
@@ -65,6 +68,7 @@ function ProjectUpdate() {
     e.preventDefault();
     setLoading(true);
     try {
+      // Update English project
       await updateProjectList(project.documentId, {
         building: form.building,
         place: form.place,
@@ -72,8 +76,10 @@ function ProjectUpdate() {
         square_feet: Number(form.squarefeet),
       }, 'en');
 
-      if (arabicProject) {
+      // Update Arabic project if exists
+      if (arabicProject?.id) {
         await updateProjectList(arabicProject.documentId, {
+    
           building: formAr.building,
           place: formAr.place,
           description: formAr.description,
@@ -84,6 +90,7 @@ function ProjectUpdate() {
       toast.success('Project updated successfully!');
       setTimeout(() => navigate(-1), 1500);
     } catch (error) {
+      console.error('Update error:', error);
       toast.error('Failed to update project.');
     } finally {
       setLoading(false);
@@ -91,6 +98,23 @@ function ProjectUpdate() {
   };
 
   if (!project) return <div className="mt-20 text-center text-gray-600">No project data provided.</div>;
+
+  // Modified getFieldValue function
+  const getFieldValue = (field, locale) => {
+    if (locale === 'en') return form[field];
+    
+    // Special handling for Arabic title
+    if (field === 'title') {
+      // If formAr.title is an object, return Property_Title
+      if (formAr[field] && typeof formAr[field] === 'object') {
+        return formAr[field].Property_Title || '';
+      }
+      // Otherwise return the string value
+      return formAr[field] || '';
+    }
+    
+    return formAr[field];
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -128,39 +152,38 @@ function ProjectUpdate() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {(tab === 'en' ? form : formAr) &&
-              ['title', 'place', 'building', 'squarefeet', 'description', 'slug'].map((field) => (
-                <div key={field}>
-                  <label className="block mb-1 font-medium text-gray-700 capitalize">
-                    {field === 'squarefeet' ? 'Square Feet' : field.charAt(0).toUpperCase() + field.slice(1)}
-                  </label>
-                  {field === 'description' ? (
-                    <textarea
-                      name={field}
-                      value={tab === 'en' ? form[field] : formAr[field]}
-                      onChange={(e) => handleChange(e, tab)}
-                      className={`w-full border rounded px-3 py-2 ${
-                        tab === 'ar' ? 'text-right' : ''
-                      }`}
-                      rows={3}
-                      dir={tab === 'ar' ? 'rtl' : 'ltr'}
-                    />
-                  ) : (
-                    <input
-                      type={field === 'squarefeet' ? 'number' : 'text'}
-                      name={field}
-                      value={tab === 'en' ? form[field] : formAr[field]}
-                      onChange={(e) => handleChange(e, tab)}
-                      className={`w-full border rounded px-3 py-2 ${
-                        tab === 'ar' ? 'text-right' : ''
-                      }`}
-                      dir={tab === 'ar' ? 'rtl' : 'ltr'}
-                      required={field !== 'building'}
-                      disabled={['title', 'slug'].includes(field)}
-                    />
-                  )}
-                </div>
-              ))}
+            {['title', 'place', 'building', 'squarefeet', 'description', 'slug'].map((field) => (
+              <div key={field}>
+                <label className="block mb-1 font-medium text-gray-700 capitalize">
+                  {field === 'squarefeet' ? 'Square Feet' : field.charAt(0).toUpperCase() + field.slice(1)}
+                </label>
+                {field === 'description' ? (
+                  <textarea
+                    name={field}
+                    value={getFieldValue(field, tab)}
+                    onChange={(e) => handleChange(e, tab)}
+                    className={`w-full border rounded px-3 py-2 ${
+                      tab === 'ar' ? 'text-right' : ''
+                    }`}
+                    rows={3}
+                    dir={tab === 'ar' ? 'rtl' : 'ltr'}
+                  />
+                ) : (
+                  <input
+                    type={field === 'squarefeet' ? 'number' : 'text'}
+                    name={field}
+                    value={getFieldValue(field, tab)}
+                    onChange={(e) => handleChange(e, tab)}
+                    className={`w-full border rounded px-3 py-2 ${
+                      tab === 'ar' ? 'text-right' : ''
+                    }`}
+                    dir={tab === 'ar' ? 'rtl' : 'ltr'}
+                    required={field !== 'building'}
+                    disabled={['title', 'slug'].includes(field)}
+                  />
+                )}
+              </div>
+            ))}
 
             <div className="pt-4">
               <button
