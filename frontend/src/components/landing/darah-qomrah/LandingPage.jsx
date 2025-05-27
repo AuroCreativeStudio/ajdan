@@ -9,12 +9,12 @@ const DarahQomrah = () => {
 const [showForm, setShowForm] = useState(false);
   useEffect(() => {
     const loadData = async () => {
-      const result = await getListingByIdentifier('darah-qomrrah');
+      const result = await getListingByIdentifier('darah-qomrah');
       setData(result);
     };
 
     loadData();
-  }, []);
+  }, []); 
 
   if (!data) return <p>Loading...</p>;
     return (
