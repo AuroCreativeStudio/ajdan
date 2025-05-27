@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchApartmentList } from '../../services/listService';
+import { fetchApartmentListCMS } from '../../services/listService';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { logout } from '../../services/authService';
@@ -26,7 +26,7 @@ function ProjectList() {
   useEffect(() => {
     async function fetchProjectList() {
       try {
-        const data = await fetchApartmentList();
+        const data = await fetchApartmentListCMS();
         const projects = Array.isArray(data) ? data : data.data || [];
         setProjectList(projects);
       } catch (error) {
@@ -53,24 +53,7 @@ function ProjectList() {
     navigate('/projectupdate', { state: { project } });
   };
 
-  // const handleExport = () => {
-  //   if (!projectList.length) return;
-  //   const header = ['Title', 'Place', 'Area', 'Status'];
-  //   const rows = projectList.map(p => [
-  //     p.title, p.place, p.area, p.status
-  //   ]);
-  //   const csvContent = [header, ...rows]
-  //     .map(row => row.map(val => `"${val ?? ''}"`).join(','))
-  //     .join('\n');
-  //   const blob = new Blob([csvContent], { type: 'text/csv' });
-  //   const url = URL.createObjectURL(blob);
-  //   const a = document.createElement('a');
-  //   a.href = url;
-  //   a.download = 'project-list.csv';
-  //   a.click();
-  //   URL.revokeObjectURL(url);
-  //   toast.success('Project list exported successfully!');
-  // };
+
 
   // Sort projectList by title ascending before paginating
   const sortedProjects = [...projectList].sort((a, b) => {
@@ -105,9 +88,8 @@ function ProjectList() {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
               <tr>
                 <th className="px-6 py-3">#</th>
-                <th className="px-6 py-3">Title</th>
-                <th className="px-6 py-3">Place</th>
-        
+                <th className="px-6 py-3">Title (EN)</th>
+                <th className="px-6 py-3">Title (AR)</th>
                 <th className="px-6 py-3">Actions</th>
               </tr>
             </thead>
@@ -125,8 +107,18 @@ function ProjectList() {
                       {(currentPage - 1) * ITEMS_PER_PAGE + idx + 1}
                     </td>
                     <td className="px-6 py-4">{project.title}</td>
-                    <td className="px-6 py-4">{project.place}</td>
-                 
+                    <td className="px-6 py-4">
+                      {
+                        (project.title_ar !== undefined && project.title_ar !== null && project.title_ar !== '')
+                          ? project.title_ar
+                          : (project.title && project.title.Property_Title)
+                            ? project.title.Property_Title
+                            : (project.localizations && project.localizations.length > 0 && project.localizations[0].title && project.localizations[0].title.Property_Title)
+                              ? project.localizations[0].title.Property_Title
+                              : 'N/A'
+                      }
+                      
+                    </td>
                     
                     <td className="px-6 py-4 ">
                       {/* <button

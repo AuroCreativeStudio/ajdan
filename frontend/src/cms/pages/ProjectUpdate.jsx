@@ -30,7 +30,7 @@ function ProjectUpdate() {
 
   // Modified Arabic form initialization
   const [formAr, setFormAr] = useState({
-    title: arabicProject?.title?.Property_Title || arabicProject?.title || '',
+    title: arabicProject?.title?.Property_Title || '',
     place: arabicProject?.place || '',
     building: arabicProject?.building || '',
     squarefeet: arabicProject?.square_feet || '',
@@ -40,20 +40,20 @@ function ProjectUpdate() {
 
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (arabicProject) {
-      setFormAr(prev => ({
-        ...prev,
-        // Modified to properly handle title object
-        title: arabicProject.title?.Property_Title || arabicProject.title || prev.title,
-        place: arabicProject.place || prev.place,
-        building: arabicProject.building || prev.building,
-        squarefeet: arabicProject.square_feet || prev.squarefeet,
-        description: arabicProject.description || prev.description,
-        slug: arabicProject.slug || prev.slug,
-      }));
-    }
-  }, [arabicProject]);
+useEffect(() => {
+  if (arabicProject) {
+    setFormAr({
+      title: arabicProject.title?.Property_Title || arabicProject.title || '',
+      place: arabicProject.place || '',
+      building: arabicProject.building || '',
+      squarefeet: arabicProject.square_feet || '',
+      description: arabicProject.description || '',
+      slug: arabicProject.slug || '',
+    });
+  }
+}, [arabicProject]);
+
+
 
   const handleChange = (e, locale = 'en') => {
     const { name, value } = e.target;
@@ -100,21 +100,25 @@ function ProjectUpdate() {
   if (!project) return <div className="mt-20 text-center text-gray-600">No project data provided.</div>;
 
   // Modified getFieldValue function
-  const getFieldValue = (field, locale) => {
-    if (locale === 'en') return form[field];
-    
-    // Special handling for Arabic title
-    if (field === 'title') {
-      // If formAr.title is an object, return Property_Title
-      if (formAr[field] && typeof formAr[field] === 'object') {
-        return formAr[field].Property_Title || '';
-      }
-      // Otherwise return the string value
-      return formAr[field] || '';
-    }
-    
-    return formAr[field];
-  };
+const getFieldValue = (field, locale) => {
+  if (locale === 'en') return form[field];
+  if (field === 'title') {
+    // Defensive: handle cases where arabicProject or title is undefined
+    if (!arabicProject) return '';
+    // If title is undefined but title_ar exists (from fetchApartmentListCMS), use that
+    if (arabicProject.title_ar) return arabicProject.title_ar;
+    // If title is an object with Property_Title
+    if (arabicProject.title && arabicProject.title.Property_Title)
+      return arabicProject.title.Property_Title;
+    // If title is a string
+    if (typeof arabicProject.title === 'string') return arabicProject.title;
+    // Fallback to formAr.title
+    return formAr.title || '';
+  }
+  return formAr[field];
+};
+
+
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -174,9 +178,7 @@ function ProjectUpdate() {
                     name={field}
                     value={getFieldValue(field, tab)}
                     onChange={(e) => handleChange(e, tab)}
-                    className={`w-full border rounded px-3 py-2 ${
-                      tab === 'ar' ? 'text-right' : ''
-                    }`}
+                    className={`w-full border rounded px-3 py-2 ${tab === 'ar' ? 'text-right' : ''}`}
                     dir={tab === 'ar' ? 'rtl' : 'ltr'}
                     required={field !== 'building'}
                     disabled={['title', 'slug'].includes(field)}
