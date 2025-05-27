@@ -12,21 +12,25 @@ const DarahQomrah = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      const result = await getListingByIdentifier('darah-qomrah');
+      try{
+      const result = await getListingByIdentifier('darah-qomrah', i18n.language);
       setData(result);
+      }catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
 
     loadData();
-  }, []); 
+  }, [i18n.language]); 
 
   const isArabic = i18n.language === 'ar';
 
   if (!data) return <p>{t('loading')}...</p>;
-
-  // Helper function to get localized field
-  const getLocalized = (field) => {
-    return (isArabic && data[`${field}_ar`]) ? data[`${field}_ar`] : data[field];
-  };
+  
+    // Helper function to get localized field
+    const getLocalized = (field) => {
+      return (isArabic && data[`${field}_ar`]) ? data[`${field}_ar`] : data[field];
+    };
     return (
         <>
             <DarahQomrahHeader /> 

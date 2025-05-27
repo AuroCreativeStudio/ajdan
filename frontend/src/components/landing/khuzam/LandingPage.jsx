@@ -13,7 +13,7 @@ const Khuzam = () => {
    useEffect(() => {
      const loadData = async () => {
        try {
-         const result = await getListingByIdentifier('buhirat', i18n.language);
+         const result = await getListingByIdentifier('khuzam', i18n.language);
          setData(result);
        } catch (error) {
          console.error("Error fetching data:", error);

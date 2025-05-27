@@ -13,7 +13,7 @@ const Ajdan2Page = () => {
       useEffect(() => {
           const loadData = async () => {
               try {
-                  const result = await getListingByIdentifier('ajdanII', i18n.language);
+                  const result = await getListingByIdentifier('ajdan-2', i18n.language);
                   setData(result);
               } catch (error) {
                   console.error("Error fetching data:", error);

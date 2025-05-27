@@ -13,7 +13,7 @@ const SbfPage = () => {
    useEffect(() => {
      const loadData = async () => {
        try {
-         const result = await getListingByIdentifier('buhirat', i18n.language);
+         const result = await getListingByIdentifier('sbf', i18n.language);
          setData(result);
        } catch (error) {
          console.error("Error fetching data:", error);
