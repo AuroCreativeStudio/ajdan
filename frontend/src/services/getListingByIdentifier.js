@@ -1,21 +1,25 @@
 import { fetchApartmentList } from './listService';
-import { fetchBlogs } from './blogService'; // Corrected import
+import { fetchBlogs } from './blogService'; 
 
-export const getListingByIdentifier = async (identifier) => {
-  const list = await fetchApartmentList();
-  const match = list.find(item =>
-    item.slug?.toLowerCase() === identifier.toLowerCase() ||
-    item.title?.toLowerCase() === identifier.toLowerCase()
-  );
-  return match;
+export const getListingByIdentifier = async (identifier, locale = 'en') => {
+  const list = await fetchApartmentList(locale);
+
+  const normalizedId = identifier.normalize('NFD').replace(/[\u064B-\u065F]/g, '').toLowerCase();
+
+  return list.find(item => {
+    const slugNorm = item.slug?.normalize('NFD').replace(/[\u064B-\u065F]/g, '').toLowerCase();
+    const titleNorm = item.title?.normalize('NFD').replace(/[\u064B-\u065F]/g, '').toLowerCase();
+    return slugNorm === normalizedId || titleNorm === normalizedId;
+  }) || null;
 };
+
 
 export const getListingBySlugOrTitle = async (identifier, locale = 'en') => {
   const blogsData = await fetchBlogs(locale);
-  // If your API returns { data: [...] }, extract the array:
+
   const list = blogsData.data || [];
   return list.find(item =>
-    item.attributes?.slug?.toLowerCase() === identifier.toLowerCase() ||
-    item.attributes?.title?.toLowerCase() === identifier.toLowerCase()
+    item.slug?.toLowerCase() === identifier.toLowerCase() ||
+    item.title?.toLowerCase() === identifier.toLowerCase()
   );
 };
