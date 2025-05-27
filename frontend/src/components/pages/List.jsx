@@ -95,9 +95,9 @@ const List = () => {
                   <p className="mb-2 text-lg font-normal text-gray-700 dark:text-gray-400">
                     {item.place}
                   </p>
-                  <p className="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-3">
+                  {/* <p className="mb-3 font-normal text-gray-700 dark:text-gray-400 line-clamp-3">
                     {item.description}
-                  </p>
+                  </p> */}
                   <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                     <strong>{lang === 'ar' ? 'المساحة:' : 'Size:'}</strong> {item.square_feet} {lang === 'ar' ? 'قدم مربع' : 'sq ft'}
                   </p>

@@ -12,6 +12,7 @@ const DarahQomrah = () => {
 
   useEffect(() => {
     const loadData = async () => {
+<<<<<<< HEAD
       try {
         const result = await getListingByIdentifier('buhirat', i18n.language);
         setData(result);
@@ -22,6 +23,14 @@ const DarahQomrah = () => {
 
     loadData();
   }, [i18n.language]);
+=======
+      const result = await getListingByIdentifier('darah-qomrah');
+      setData(result);
+    };
+
+    loadData();
+  }, []); 
+>>>>>>> 94410d637428747e69f5a7225d3f69c7c98a0530
 
   const isArabic = i18n.language === 'ar';
 
