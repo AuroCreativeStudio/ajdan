@@ -28,9 +28,8 @@ function ProjectUpdate() {
     slug: project?.slug || '',
   });
 
-  // Modified Arabic form initialization
   const [formAr, setFormAr] = useState({
-    title: arabicProject?.title?.Property_Title || '',
+    title: project?.title_ar || arabicProject?.title || '',
     place: arabicProject?.place || '',
     building: arabicProject?.building || '',
     squarefeet: arabicProject?.square_feet || '',
@@ -40,20 +39,29 @@ function ProjectUpdate() {
 
   const [loading, setLoading] = useState(false);
 
-useEffect(() => {
-  if (arabicProject) {
-    setFormAr({
-      title: arabicProject.title?.Property_Title || arabicProject.title || '',
-      place: arabicProject.place || '',
-      building: arabicProject.building || '',
-      squarefeet: arabicProject.square_feet || '',
-      description: arabicProject.description || '',
-      slug: arabicProject.slug || '',
-    });
-  }
-}, [arabicProject]);
+  useEffect(() => {
+    if (project) {
+      setForm({
+        title: project.title || '',
+        place: project.place || '',
+        building: project.building || '',
+        squarefeet: project.square_feet || '',
+        description: project.description || '',
+        slug: project.slug || '',
+      });
 
-
+      // Initialize Arabic form with title_ar from main project if available
+      setFormAr(prev => ({
+        ...prev,
+        title: project.title_ar || arabicProject?.title || '',
+        place: arabicProject?.place || prev.place,
+        building: arabicProject?.building || prev.building,
+        squarefeet: arabicProject?.square_feet || prev.squarefeet,
+        description: arabicProject?.description || prev.description,
+        slug: arabicProject?.slug || prev.slug,
+      }));
+    }
+  }, [project, arabicProject]);
 
   const handleChange = (e, locale = 'en') => {
     const { name, value } = e.target;
@@ -70,6 +78,7 @@ useEffect(() => {
     try {
       // Update English project
       await updateProjectList(project.documentId, {
+      
         building: form.building,
         place: form.place,
         description: form.description,
@@ -79,12 +88,18 @@ useEffect(() => {
       // Update Arabic project if exists
       if (arabicProject?.id) {
         await updateProjectList(arabicProject.documentId, {
-    
+          
           building: formAr.building,
           place: formAr.place,
           description: formAr.description,
           square_feet: Number(formAr.squarefeet),
         }, 'ar');
+      } else if (project.title_ar) {
+        // If there's no Arabic localization but title_ar exists in main project
+        // You might need to handle this case differently depending on your API
+        await updateProjectList(project.documentId, {
+          title_ar: formAr.title,
+        }, 'en');
       }
 
       toast.success('Project updated successfully!');
@@ -99,26 +114,10 @@ useEffect(() => {
 
   if (!project) return <div className="mt-20 text-center text-gray-600">No project data provided.</div>;
 
-  // Modified getFieldValue function
-const getFieldValue = (field, locale) => {
-  if (locale === 'en') return form[field];
-  if (field === 'title') {
-    // Defensive: handle cases where arabicProject or title is undefined
-    if (!arabicProject) return '';
-    // If title is undefined but title_ar exists (from fetchApartmentListCMS), use that
-    if (arabicProject.title_ar) return arabicProject.title_ar;
-    // If title is an object with Property_Title
-    if (arabicProject.title && arabicProject.title.Property_Title)
-      return arabicProject.title.Property_Title;
-    // If title is a string
-    if (typeof arabicProject.title === 'string') return arabicProject.title;
-    // Fallback to formAr.title
-    return formAr.title || '';
-  }
-  return formAr[field];
-};
-
-
+  const getFieldValue = (field, locale) => {
+    if (locale === 'en') return form[field];
+    return formAr[field];
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -181,7 +180,7 @@ const getFieldValue = (field, locale) => {
                     className={`w-full border rounded px-3 py-2 ${tab === 'ar' ? 'text-right' : ''}`}
                     dir={tab === 'ar' ? 'rtl' : 'ltr'}
                     required={field !== 'building'}
-                    disabled={['title', 'slug'].includes(field)}
+                    disabled={['slug'].includes(field)}
                   />
                 )}
               </div>

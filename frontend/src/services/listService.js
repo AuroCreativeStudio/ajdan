@@ -25,9 +25,8 @@ export const fetchApartmentList = async (locale = 'en') => {
 
 
 export const updateProjectList = async (documentId, updateFields, locale) => {
-  const url = locale
-    ? `${API_URL}/api/lists/${documentId}?locale=${locale}`
-    : `${API_URL}/api/lists/${documentId}`;
+  const url = `${API_URL}/api/lists/${documentId}?locale=${locale}`;
+
   try {
     const payload = {
       data: {
