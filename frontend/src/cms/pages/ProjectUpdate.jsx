@@ -25,7 +25,7 @@ function ProjectUpdate() {
     building: project?.building || '',
     squarefeet: project?.square_feet || '',
     description: project?.description || '',
-    slug: project?.slug || '',
+    // slug: project?.slug || '',
   });
 
   const [formAr, setFormAr] = useState({
@@ -34,7 +34,7 @@ function ProjectUpdate() {
     building: arabicProject?.building || '',
     squarefeet: arabicProject?.square_feet || '',
     description: arabicProject?.description || '',
-    slug: arabicProject?.slug || '',
+    // slug: arabicProject?.slug || '',
   });
 
   const [loading, setLoading] = useState(false);
@@ -47,7 +47,7 @@ function ProjectUpdate() {
         building: project.building || '',
         squarefeet: project.square_feet || '',
         description: project.description || '',
-        slug: project.slug || '',
+        // slug: project.slug || '',
       });
 
       // Initialize Arabic form with title_ar from main project if available
@@ -58,7 +58,7 @@ function ProjectUpdate() {
         building: arabicProject?.building || prev.building,
         squarefeet: arabicProject?.square_feet || prev.squarefeet,
         description: arabicProject?.description || prev.description,
-        slug: arabicProject?.slug || prev.slug,
+        // slug: arabicProject?.slug || prev.slug,
       }));
     }
   }, [project, arabicProject]);
@@ -155,7 +155,7 @@ function ProjectUpdate() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            {['title', 'place', 'building', 'squarefeet', 'description', 'slug'].map((field) => (
+            {['title', 'place', 'building', 'squarefeet', 'description'].map((field) => (
               <div key={field}>
                 <label className="block mb-1 font-medium text-gray-700 capitalize">
                   {field === 'squarefeet' ? 'Square Feet' : field.charAt(0).toUpperCase() + field.slice(1)}
@@ -167,9 +167,10 @@ function ProjectUpdate() {
                     onChange={(e) => handleChange(e, tab)}
                     className={`w-full border rounded px-3 py-2 ${
                       tab === 'ar' ? 'text-right' : ''
-                    }`}
+                    } ${field === 'title' ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                     rows={3}
                     dir={tab === 'ar' ? 'rtl' : 'ltr'}
+                    disabled={field === 'title'}
                   />
                 ) : (
                   <input
@@ -177,10 +178,12 @@ function ProjectUpdate() {
                     name={field}
                     value={getFieldValue(field, tab)}
                     onChange={(e) => handleChange(e, tab)}
-                    className={`w-full border rounded px-3 py-2 ${tab === 'ar' ? 'text-right' : ''}`}
+                    className={`w-full border rounded px-3 py-2 ${
+                      tab === 'ar' ? 'text-right' : ''
+                    } ${field === 'title' ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                     dir={tab === 'ar' ? 'rtl' : 'ltr'}
                     required={field !== 'building'}
-                    disabled={['slug'].includes(field)}
+                    disabled={field === 'title' || ['slug'].includes(field)}
                   />
                 )}
               </div>
