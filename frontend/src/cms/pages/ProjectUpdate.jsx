@@ -19,13 +19,20 @@ function ProjectUpdate() {
   };
 
   const [tab, setTab] = useState('en');
+  const [dropdownOpen, setDropdownOpen] = useState({
+    amenities: false,
+    property_type: false,
+    payment_plan: false
+  });
   const [form, setForm] = useState({
     title: project?.title || '',
     place: project?.place || '',
     building: project?.building || '',
     squarefeet: project?.square_feet || '',
     description: project?.description || '',
-    // slug: project?.slug || '',
+    amenities_en: [],
+    property_type_en: [],
+    payment_plan_en: []
   });
 
   const [formAr, setFormAr] = useState({
@@ -34,7 +41,9 @@ function ProjectUpdate() {
     building: arabicProject?.building || '',
     squarefeet: arabicProject?.square_feet || '',
     description: arabicProject?.description || '',
-    // slug: arabicProject?.slug || '',
+    amenities_ar: [],
+    property_type_ar: [],
+    payment_plan_ar: []
   });
 
   const [loading, setLoading] = useState(false);
@@ -47,10 +56,11 @@ function ProjectUpdate() {
         building: project.building || '',
         squarefeet: project.square_feet || '',
         description: project.description || '',
-        // slug: project.slug || '',
+        amenities_en: project.amenities_en || [],
+        property_type_en: project.property_type_en || [],
+        payment_plan_en: project.payment_plan_en || []
       });
 
-      // Initialize Arabic form with title_ar from main project if available
       setFormAr(prev => ({
         ...prev,
         title: project.title_ar || arabicProject?.title || '',
@@ -58,10 +68,19 @@ function ProjectUpdate() {
         building: arabicProject?.building || prev.building,
         squarefeet: arabicProject?.square_feet || prev.squarefeet,
         description: arabicProject?.description || prev.description,
-        // slug: arabicProject?.slug || prev.slug,
+        amenities_ar: arabicProject?.amenities_ar || [],
+        property_type_ar: arabicProject?.property_type_ar || [],
+        payment_plan_ar: arabicProject?.payment_plan_ar || []
       }));
     }
   }, [project, arabicProject]);
+
+  const toggleDropdown = (field) => {
+    setDropdownOpen(prev => ({
+      ...prev,
+      [field]: !prev[field]
+    }));
+  };
 
   const handleChange = (e, locale = 'en') => {
     const { name, value } = e.target;
@@ -72,31 +91,51 @@ function ProjectUpdate() {
     }
   };
 
+  const handleCheckboxChange = (field, value, locale = 'en') => {
+    if (locale === 'en') {
+      setForm(prev => {
+        const currentValues = prev[field] || [];
+        const newValues = currentValues.includes(value)
+          ? currentValues.filter(item => item !== value)
+          : [...currentValues, value];
+        return { ...prev, [field]: newValues };
+      });
+    } else {
+      setFormAr(prev => {
+        const currentValues = prev[field] || [];
+        const newValues = currentValues.includes(value)
+          ? currentValues.filter(item => item !== value)
+          : [...currentValues, value];
+        return { ...prev, [field]: newValues };
+      });
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // Update English project
       await updateProjectList(project.documentId, {
-      
         building: form.building,
         place: form.place,
         description: form.description,
         square_feet: Number(form.squarefeet),
+        amenities_en: form.amenities_en,
+        property_type_en: form.property_type_en,
+        payment_plan_en: form.payment_plan_en,
       }, 'en');
 
-      // Update Arabic project if exists
       if (arabicProject?.id) {
         await updateProjectList(arabicProject.documentId, {
-          
           building: formAr.building,
           place: formAr.place,
           description: formAr.description,
           square_feet: Number(formAr.squarefeet),
+          amenities_ar: formAr.amenities_ar,
+          property_type_ar: formAr.property_type_ar,
+          payment_plan_ar: formAr.payment_plan_ar,
         }, 'ar');
       } else if (project.title_ar) {
-        // If there's no Arabic localization but title_ar exists in main project
-        // You might need to handle this case differently depending on your API
         await updateProjectList(project.documentId, {
           title_ar: formAr.title,
         }, 'en');
@@ -119,6 +158,60 @@ function ProjectUpdate() {
     return formAr[field];
   };
 
+  const renderDropdownCheckbox = (field, label, locale = 'en') => {
+    const fieldName = `${field}_${locale}`;
+    const currentValues = locale === 'en' ? form[fieldName] : formAr[fieldName];
+    
+    return (
+      <div className="mb-4 relative">
+        <label className="block mb-1 font-medium text-gray-700 capitalize">{label}</label>
+        <div 
+          className={`w-full border rounded px-3 py-2 cursor-pointer flex justify-between items-center ${
+            locale === 'ar' ? 'text-right' : ''
+          }`}
+          onClick={() => toggleDropdown(field)}
+        >
+          <span>
+            {currentValues.length > 0 
+              ? currentValues.join(', ') 
+              : `Select ${label.toLowerCase()}...`}
+          </span>
+          <svg 
+            className={`w-4 h-4 transition-transform ${dropdownOpen[field] ? 'rotate-180' : ''}`}
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+        
+        {dropdownOpen[field] && (
+          <div className={`absolute z-10 w-full mt-1 bg-white border rounded shadow-lg max-h-60 overflow-auto ${
+            locale === 'ar' ? 'text-right' : ''
+          }`}>
+            <div className="p-2">
+              {currentValues.map((option) => (
+                <div key={option} className="flex items-center p-2 hover:bg-gray-100">
+                  <input
+                    type="checkbox"
+                    id={`${fieldName}-${option}`}
+                    checked={true}
+                    onChange={() => handleCheckboxChange(fieldName, option, locale)}
+                    className={locale === 'ar' ? 'ml-2' : 'mr-2'}
+                  />
+                  <label htmlFor={`${fieldName}-${option}`} className="cursor-pointer">
+                    {option}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       <Sidebar handleLogout={handleLogout} />
@@ -127,7 +220,6 @@ function ProjectUpdate() {
         <div className="max-w-3xl p-6 mx-auto bg-white shadow-lg rounded-xl">
           <h2 className="mb-4 text-2xl font-semibold text-gray-800">Update Project</h2>
 
-          {/* Language Tabs */}
           <div className="flex mb-6 border-b">
             <button
               type="button"
@@ -153,7 +245,6 @@ function ProjectUpdate() {
             </button>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
             {['title', 'place', 'building', 'squarefeet', 'description'].map((field) => (
               <div key={field}>
@@ -183,11 +274,25 @@ function ProjectUpdate() {
                     } ${field === 'title' ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                     dir={tab === 'ar' ? 'rtl' : 'ltr'}
                     required={field !== 'building'}
-                    disabled={field === 'title' || ['slug'].includes(field)}
+                    disabled={field === 'title'}
                   />
                 )}
               </div>
             ))}
+
+            {tab === 'en' ? (
+              <>
+                {renderDropdownCheckbox('amenities', 'Amenities', 'en')}
+                {renderDropdownCheckbox('property_type', 'Property Type', 'en')}
+                {renderDropdownCheckbox('payment_plan', 'Payment Plan', 'en')}
+              </>
+            ) : (
+              <>
+                {renderDropdownCheckbox('amenities', 'Amenities', 'ar')}
+                {renderDropdownCheckbox('property_type', 'Property Type', 'ar')}
+                {renderDropdownCheckbox('payment_plan', 'Payment Plan', 'ar')}
+              </>
+            )}
 
             <div className="pt-4">
               <button
