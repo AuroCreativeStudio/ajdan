@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { updateProjectList } from '../../services/listService';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import Sidebar from '../components/Sidebar';
 import { logout } from '../../services/authService';
 import { ToastContainer, toast } from 'react-toastify';
@@ -24,31 +24,43 @@ function ProjectUpdate() {
     property_type: false,
     payment_plan: false
   });
-  const [form, setForm] = useState({
-    title: project?.title || '',
-    place: project?.place || '',
-    building: project?.building || '',
-    squarefeet: project?.square_feet || '',
-    description: project?.description || '',
-    amenities_en: [],
-    property_type_en: [],
-    payment_plan_en: []
-  });
 
-  const [formAr, setFormAr] = useState({
-    title: project?.title_ar || arabicProject?.title || '',
-    place: arabicProject?.place || '',
-    building: arabicProject?.building || '',
-    squarefeet: arabicProject?.square_feet || '',
-    description: arabicProject?.description || '',
-    amenities_ar: [],
-    property_type_ar: [],
-    payment_plan_ar: []
-  });
+  // Default values for English fields
+  const defaultAmenitiesEn = ['Swimming Pool', 'Gym', 'Sea View', 'Smart Home'];
+  const defaultPropertyTypesEn = ['Residential', 'Commercial', 'Mixed-Use'];
+  const defaultPaymentPlansEn = ['Financing', 'Down Payment'];
+
+  // Default values for Arabic fields
+  const defaultAmenitiesAr = ['إطلالة على البحر', 'المنزل الذكي', 'نادي رياضي','حمام السباحة'];
+  const defaultPropertyTypesAr = ['سكني','تجاري','متعدد الاستخدامات'];
+  const defaultPaymentPlansAr = ['التمويل', 'دفعة مبدئية'];
+
+const [form, setForm] = useState({
+  title: project?.title || '',
+  place: project?.place || '',
+  building: project?.building || '',
+  squarefeet: project?.square_feet || '',
+  description: project?.description || '',
+  amenities_en: project?.amenities_en || defaultAmenitiesEn,
+  property_type_en: project?.property_type_en || defaultPropertyTypesEn,
+  payment_plan_en: project?.payment_plan_en || defaultPaymentPlansEn
+});
+
+const [formAr, setFormAr] = useState({
+  title: project?.title_ar || arabicProject?.title || '',
+  place: arabicProject?.place || '',
+  building: arabicProject?.building || '',
+  squarefeet: arabicProject?.square_feet || '',
+  description: arabicProject?.description || '',
+  amenities_ar: arabicProject?.amenities_ar || defaultAmenitiesAr,
+  property_type_ar: arabicProject?.property_type_ar || defaultPropertyTypesAr,
+  payment_plan_ar: arabicProject?.payment_plan_ar || defaultPaymentPlansAr
+});
 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    console.log("data:", project);
     if (project) {
       setForm({
         title: project.title || '',
@@ -56,9 +68,9 @@ function ProjectUpdate() {
         building: project.building || '',
         squarefeet: project.square_feet || '',
         description: project.description || '',
-        amenities_en: project.amenities_en || [],
-        property_type_en: project.property_type_en || [],
-        payment_plan_en: project.payment_plan_en || []
+        amenities_en: project.amenities_en || defaultAmenitiesEn,
+        property_type_en: project.property_type_en || defaultPropertyTypesEn,
+        payment_plan_en: project.payment_plan_en || defaultPaymentPlansEn
       });
 
       setFormAr(prev => ({
@@ -68,9 +80,9 @@ function ProjectUpdate() {
         building: arabicProject?.building || prev.building,
         squarefeet: arabicProject?.square_feet || prev.squarefeet,
         description: arabicProject?.description || prev.description,
-        amenities_ar: arabicProject?.amenities_ar || [],
-        property_type_ar: arabicProject?.property_type_ar || [],
-        payment_plan_ar: arabicProject?.payment_plan_ar || []
+        amenities_ar: arabicProject?.amenities_ar || defaultAmenitiesAr,
+        property_type_ar: arabicProject?.property_type_ar || defaultPropertyTypesAr,
+        payment_plan_ar: arabicProject?.payment_plan_ar || defaultPaymentPlansAr
       }));
     }
   }, [project, arabicProject]);
@@ -162,6 +174,16 @@ function ProjectUpdate() {
     const fieldName = `${field}_${locale}`;
     const currentValues = locale === 'en' ? form[fieldName] : formAr[fieldName];
     
+    // Get the appropriate options based on field and locale
+    let options = [];
+    if (field.includes('amenities')) {
+      options = locale === 'en' ? defaultAmenitiesEn : defaultAmenitiesAr;
+    } else if (field.includes('property_type')) {
+      options = locale === 'en' ? defaultPropertyTypesEn : defaultPropertyTypesAr;
+    } else if (field.includes('payment_plan')) {
+      options = locale === 'en' ? defaultPaymentPlansEn : defaultPaymentPlansAr;
+    }
+    
     return (
       <div className="mb-4 relative">
         <label className="block mb-1 font-medium text-gray-700 capitalize">{label}</label>
@@ -191,12 +213,12 @@ function ProjectUpdate() {
             locale === 'ar' ? 'text-right' : ''
           }`}>
             <div className="p-2">
-              {currentValues.map((option) => (
+              {options.map((option) => (
                 <div key={option} className="flex items-center p-2 hover:bg-gray-100">
                   <input
                     type="checkbox"
                     id={`${fieldName}-${option}`}
-                    checked={true}
+                    checked={currentValues.includes(option)}
                     onChange={() => handleCheckboxChange(fieldName, option, locale)}
                     className={locale === 'ar' ? 'ml-2' : 'mr-2'}
                   />

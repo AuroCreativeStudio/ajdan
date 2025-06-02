@@ -5,24 +5,36 @@ export const fetchApartmentList = async (locale = 'en') => {
   try {
     const response = await axios.get(`${API_URL}/api/lists?populate=*&locale=${locale}`);
 
- return (response.data.data || []).map(item => ({
-  id: item.id,
-  title: item.title?.Property_Title || null,
-  place: item.place || null,
-  building: item.building || null,
-  square_feet: item.square_feet || null,
-  description: item.description || null,
-
-  slug: item.slug || null,
- 
-}));
+return (response.data.data || []).map(item => {
+      // For Arabic locale, we need to check if localized fields exist
+      const localizedItem = locale === 'ar' ? 
+        (item.localizations?.find(loc => loc.locale === 'ar') || {}) : 
+        {};
+      
+      return {
+        id: item.id,
+        documentId: item.documentId,
+        title: locale === 'ar' ? localizedItem.title?.Property_Title || item.title?.Property_Title : item.title?.Property_Title,
+        place: locale === 'ar' ? localizedItem.place || item.place : item.place,
+        building: locale === 'ar' ? localizedItem.building || item.building : item.building,
+        square_feet: locale === 'ar' ? localizedItem.square_feet || item.square_feet : item.square_feet,
+        description: locale === 'ar' ? localizedItem.description || item.description : item.description,
+        slug: locale === 'ar' ? localizedItem.slug || item.slug : item.slug,
+        image: item.image?.url || null,
+        amenities_en: item.amenities_en || [],
+        amenities_ar: localizedItem.amenities_ar || item.amenities_ar || [],
+        property_type_en: item.property_type_en || [],
+        property_type_ar: localizedItem.property_type_ar || item.property_type_ar || [],
+        payment_plan_en: item.payment_plan_en || [],
+        payment_plan_ar: localizedItem.payment_plan_ar || item.payment_plan_ar || [],
+      };
+    });
 
   } catch (error) {
     console.error('Error fetching apartment list:', error);
     throw error;
   }
 };
-
 
 export const updateProjectList = async (documentId, updateFields, locale) => {
   const url = `${API_URL}/api/lists/${documentId}?locale=${locale}`;
