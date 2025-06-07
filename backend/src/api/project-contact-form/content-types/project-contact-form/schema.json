@@ -63,7 +63,12 @@
         "Within 1-3 months",
         "In 6 months",
         "In 1 year"
-      ]
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
     }
   }
 }

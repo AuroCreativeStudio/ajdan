@@ -2,23 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { fetchBlogs, deleteBlog } from '../../services/blogService';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import { logout } from '../../services/authService';
 import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { paginate } from '../../services/paginate';
-
 export default function BlogListingCms() {
   const { i18n } = useTranslation();
   const [blogs, setBlogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login'); // Redirect to login on logout
-  };
 
   useEffect(() => {
     fetchBlogs(i18n.language)
@@ -45,32 +38,33 @@ export default function BlogListingCms() {
   }, [i18n.language]);
 
 
-// In your component
-const handleDelete = async (documentId) => {
-  const confirmDelete = window.confirm("Are you sure you want to delete the blog?");
-  if (!confirmDelete) return;
+  // In your component
+  const handleDelete = async (documentId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete the blog?");
+    if (!confirmDelete) return;
 
-  try {
-    console.log("Trying to delete:", documentId);
-    await deleteBlog(documentId);
-    toast.success("Blog deleted successfully"); // ✅ Toast on success
+    try {
+      console.log("Trying to delete:", documentId);
+      await deleteBlog(documentId);
+      toast.success("Blog deleted successfully"); 
 
-    // Optionally remove the blog from state without refetching
-    setBlogs(prev => prev.filter(blog => blog.id !== documentId));
-  } catch (error) {
-    console.error("Delete failed:", error.response?.data || error.message);
-    toast.error("Failed to delete blog"); // ✅ Toast on error
-  }
-};
+      // Optionally remove the blog from state without refetching
+      setBlogs(prev => prev.filter(blog => blog.id !== documentId));
+    } catch (error) {
+      console.error("Delete failed:", error.response?.data || error.message);
+      toast.error("Failed to delete blog");
+    }
+  };
 
 
   const ITEMS_PER_PAGE = 10; // Define how many items you want per page
   const paginatedBlogs = paginate(blogs, currentPage, ITEMS_PER_PAGE);
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar handleLogout={handleLogout} />
-      <div className="flex-1 p-6">
+    <div className="flex h-screen">
+      <div className="w-64">
+      </div>
+      <div className="flex-1">
         <div className="flex items-center justify-between w-full mb-6">
           <h1 className="text-3xl font-semibold text-gray-800">News</h1>
           <button
@@ -81,12 +75,12 @@ const handleDelete = async (documentId) => {
           </button>
         </div>
 
-        <div className="relative overflow-x-auto">
+        <div className="overflow-x-auto">
           <table className="w-full text-sm text-left text-gray-500">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
               <tr>
                 <th scope="col" className="px-6 py-3">Title</th>
-                
+
                 <th scope="col" className="px-6 py-3">Actions</th>
               </tr>
             </thead>
@@ -100,7 +94,7 @@ const handleDelete = async (documentId) => {
                     >
                       {blog.title}
                     </th>
-                 
+
                     <td className="px-6 py-4">
                       <Link
                         to={`/edit/${blog.slug}`}
@@ -109,7 +103,7 @@ const handleDelete = async (documentId) => {
                       >
                         Edit
                       </Link>
-                      <button 
+                      <button
                         onClick={() => handleDelete(blog.id)}
                         className="text-red-600 hover:underline"
                       >

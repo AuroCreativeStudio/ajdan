@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
 
 const Home = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language === 'ar' ? 'ar' : undefined;
 
   return (
     <div className="p-10 bg-blue-100 text-center">
-      <h2 className="text-3xl font-bold text-blue-600">{t('hello')}</h2>
-      {/* <p className="mt-4 text-gray-700">{t('tailwind_working')}</p> */}
+      <h4 lang={lang}>{t('hello')}</h4>
     </div>
   );
 };

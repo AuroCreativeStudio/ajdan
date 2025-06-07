@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { updateProjectList } from '../../services/listService';
 // import { useTranslation } from 'react-i18next';
-import Sidebar from '../components/Sidebar';
-import { logout } from '../../services/authService';
+
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -13,10 +12,6 @@ function ProjectUpdate() {
   const project = state?.project;
   const arabicProject = project?.localizations?.find(loc => loc.locale === 'ar');
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
 
   const [tab, setTab] = useState('en');
   const [dropdownOpen, setDropdownOpen] = useState({
@@ -236,8 +231,6 @@ const [formAr, setFormAr] = useState({
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <Sidebar handleLogout={handleLogout} />
-
       <div className="flex-grow p-6">
         <div className="max-w-3xl p-6 mx-auto bg-white shadow-lg rounded-xl">
           <h2 className="mb-4 text-2xl font-semibold text-gray-800">Update Project</h2>

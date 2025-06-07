@@ -4,8 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
-import Sidebar from '../components/Sidebar';
-import { logout } from '../../services/authService';
+
 
 function TeamUpdate() {
   const navigate = useNavigate();
@@ -48,10 +47,6 @@ function TeamUpdate() {
   // Tab state
   const [tab, setTab] = useState('en');
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
 
   // Handle input change for both forms
   const handleChange = (e, locale) => {
@@ -148,7 +143,6 @@ function TeamUpdate() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar handleLogout={handleLogout} />
       
       <div className="flex-1 p-4 overflow-auto">
         <div className="max-w-2xl p-6 mx-auto bg-white rounded shadow">

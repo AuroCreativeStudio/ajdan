@@ -55,6 +55,9 @@ import Infiniti from './components/landing/infiniti/LandingPage';
 
 import { detectLanguageByLocation } from './utils/geoLanguage';
 import PrivacyPolicy from './components/pages/PrivacyPolicy';
+import Navbar from './cms/components/Navbar';
+import Sidebar from './cms/components/Sidebar';
+import { logout } from './services/authService';
 
 function LayoutWrapper({ children }) {
   const location = useLocation();
@@ -175,24 +178,150 @@ function PublicRoutes() {
 }
 
 
+function CmsLayout({ children }) {
+  const handleLogout = () => {
+    logout();
+    window.location.href = '/login';
+  };
+
+  return (
+    <div style={{ display: 'flex', minHeight: '100vh' }}>
+      <Sidebar handleLogout={handleLogout} />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8f8f8' }}>
+        <Navbar handleLogout={handleLogout} />
+        <main style={{ flex: 1, padding: '2rem' }}>{children}</main>
+      </div>
+    </div>
+  );
+}
+
 function AppRoutes({ setToken, setUser }) {
   return (
     <Routes>
+      
       {/* <Route path="/" element={<Navigate to="/en" replace />} /> */}
       <Route path="/:lang/*" element={<PublicRoutes />} />
       <Route path="/login" element={<Login setToken={setToken} setUser={setUser} />} />
-      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-      <Route path="/bloglist" element={<ProtectedRoute><BlogListingCms /></ProtectedRoute>} />
-      <Route path="/create" element={<ProtectedRoute><BlogCreate /></ProtectedRoute>} />
-      <Route path="/edit/:id" element={<ProtectedRoute><EditBlog /></ProtectedRoute>} />
-      <Route path="/newsletter" element={<ProtectedRoute><NewsletterCms /></ProtectedRoute>} />
-      <Route path="/contactlist" element={<ProtectedRoute><ContactListing /></ProtectedRoute>} />
-      <Route path="/projectlist" element={<ProtectedRoute><ProjectList /></ProtectedRoute>} />
-      <Route path="/projectUpdate" element={<ProtectedRoute><ProjectUpdate /></ProtectedRoute>} />
-      <Route path="/teamlist" element={<ProtectedRoute><TeamList /></ProtectedRoute>} />
-      <Route path="/teamcreate" element={<ProtectedRoute><TeamCreate /></ProtectedRoute>} />
-      <Route path="/teamupdate" element={<ProtectedRoute><TeamUpdate /></ProtectedRoute>} />
-      <Route path="/popuplist" element={<ProtectedRoute><ProjectPopupList /></ProtectedRoute>} />
+      <Route
+        path="/dashboard"
+        element={
+          <CmsLayout>
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          </CmsLayout>
+        }
+      />
+      <Route
+        path="/bloglist"
+        element={
+          <CmsLayout>
+            <ProtectedRoute>
+              <BlogListingCms />
+            </ProtectedRoute>
+          </CmsLayout>
+        }
+      />
+      <Route
+        path="/create"
+        element={
+          <CmsLayout>
+            <ProtectedRoute>
+              <BlogCreate />
+            </ProtectedRoute>
+          </CmsLayout>
+        }
+      />
+      <Route
+        path="/edit/:id"
+        element={
+          <CmsLayout>
+            <ProtectedRoute>
+              <EditBlog />
+            </ProtectedRoute>
+          </CmsLayout>
+        }
+      />
+      <Route
+        path="/newsletter"
+        element={
+          <CmsLayout>
+            <ProtectedRoute>
+              <NewsletterCms />
+            </ProtectedRoute>
+          </CmsLayout>
+        }
+      />
+      <Route
+        path="/contactlist"
+        element={
+          <CmsLayout>
+            <ProtectedRoute>
+              <ContactListing />
+            </ProtectedRoute>
+          </CmsLayout>
+        }
+      />
+      <Route
+        path="/projectlist"
+        element={
+          <CmsLayout>
+            <ProtectedRoute>
+              <ProjectList />
+            </ProtectedRoute>
+          </CmsLayout>
+        }
+      />
+      <Route
+        path="/projectUpdate"
+        element={
+          <CmsLayout>
+            <ProtectedRoute>
+              <ProjectUpdate />
+            </ProtectedRoute>
+          </CmsLayout>
+        }
+      />
+      <Route
+        path="/teamlist"
+        element={
+          <CmsLayout>
+            <ProtectedRoute>
+              <TeamList />
+            </ProtectedRoute>
+          </CmsLayout>
+        }
+      />
+      <Route
+        path="/teamcreate"
+        element={
+          <CmsLayout>
+            <ProtectedRoute>
+              <TeamCreate />
+            </ProtectedRoute>
+          </CmsLayout>
+        }
+      />
+      <Route
+        path="/teamupdate"
+        element={
+          <CmsLayout>
+            <ProtectedRoute>
+              <TeamUpdate />
+            </ProtectedRoute>
+          </CmsLayout>
+        }
+      />
+      <Route
+        path="/popuplist"
+        element={
+          <CmsLayout>
+            <ProtectedRoute>
+              <ProjectPopupList />
+            </ProtectedRoute>
+          </CmsLayout>
+        }
+      />
       {/* Fallback route for unmatched paths */}
       <Route path="*" element={null} />
     </Routes>

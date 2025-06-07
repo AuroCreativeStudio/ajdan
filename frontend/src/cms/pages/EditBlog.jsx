@@ -2,8 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { fetchBlogBySlug, updateBlog } from '../../services/blogService';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import { logout } from '../../services/authService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -97,10 +95,6 @@ const EditBlog = () => {
       }));
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -284,7 +278,6 @@ const EditBlog = () => {
 
   return (
   <div className="flex h-screen bg-gray-100">
-  <Sidebar handleLogout={handleLogout} />
   <div className="flex-1 overflow-auto">
     <div className="max-w-3xl mx-auto p-4"> {/* Centering container */}
       <h2 className="mb-4 text-2xl font-semibold">Edit News</h2>

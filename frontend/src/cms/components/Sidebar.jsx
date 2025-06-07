@@ -1,77 +1,131 @@
-import React from 'react';
-import { 
-  HiChartPie, 
-  HiNewspaper, 
-  HiMail, 
-  HiPhone, 
-  HiFolder, 
-  HiUserGroup, 
+import React, { useState } from 'react';
+import {
+  HiChartPie,
+  HiNewspaper,
+  HiMail,
+  HiPhone,
+  HiFolder,
+  HiUserGroup,
   HiInformationCircle,
-  HiLogout 
+  HiLogout,
+  HiMenu
 } from 'react-icons/hi';
 import { useLocation } from 'react-router-dom';
+import ajdanLogo from '../../assets/image/ajdan-light-logo.png';
+
 
 function Sidebar({ handleLogout }) {
   const location = useLocation();
   const currentPath = location.pathname;
+  const [collapsed, setCollapsed] = useState(false);
 
   const isActive = (path) => {
-    return currentPath === path || 
-           (path !== '/' && currentPath.startsWith(path));
+    return currentPath === path ||
+      (path !== '/' && currentPath.startsWith(path));
   };
 
   return (
-    <div className="w-64 p-4 bg-white">
-      <h2 className="mb-8 text-2xl font-bold text-blue-600">Dashboard</h2>
-      <nav className="space-y-4">
-        <a 
-          href="/" 
-          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
-        >
-          <HiChartPie className="text-lg" /> Overview
-        </a>
-        <a 
-          href="/bloglist" 
-          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/bloglist') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
-        >
-          <HiNewspaper className="text-lg" /> News
-        </a>
-        <a 
-          href="/newsletter" 
-          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/newsletter') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
-        >
-          <HiMail className="text-lg" /> Newsletter
-        </a>
-        <a 
-          href="/contactlist" 
-          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/contactlist') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
-        >
-          <HiPhone className="text-lg" /> Contact Listing
-        </a>
-        <a 
-          href="/projectlist" 
-          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/projectlist') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
-        >
-          <HiFolder className="text-lg" /> Project Listing
-        </a>
-        <a 
-          href="/teamlist" 
-          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/teamlist') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
-        >
-          <HiUserGroup className="text-lg" /> About Us Team
-        </a>
-        <a 
-          href="/popuplist" 
-          className={`flex items-center gap-2 px-2 py-2 rounded ${isActive('/popuplist') ? 'bg-blue-100 text-blue-600 font-medium' : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'}`}
-        >
-          <HiInformationCircle className="text-lg" /> Popup List
-        </a>
+    <div
+      className={`fixed top-0 left-0 h-screen flex-shrink-0 p-4 bg-main-charcoal1 transition-all duration-300 z-20 ${collapsed ? 'w-[4.5rem]' : 'w-60'
+        }`}
+    >
+      <div className="flex items-center mb-8">
         <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 mt-8 text-red-500 hover:text-red-700"
+          className="p-2 text-blue-600 focus:outline-none"
+          onClick={() => setCollapsed((prev) => !prev)}
+          aria-label="Toggle sidebar"
         >
-          <HiLogout className="text-lg" /> Logout
+          {!collapsed ? (
+            <img
+              src={ajdanLogo}
+              alt="Ajdan Logo"
+              className="transition-all duration-300 w-16"
+            />
+          ) : (
+            <HiMenu className="text-secondary-lavendergray6" />
+          )}
         </button>
+      </div>
+      <nav className="space-y-4">
+        <a
+          href="/"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiChartPie className="text-lg" />
+          {!collapsed && 'Dashboard'}
+        </a>
+        <a
+          href="/bloglist"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/bloglist')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiNewspaper className="text-lg" />
+          {!collapsed && 'News & Blogs'}
+        </a>
+        <a
+          href="/newsletter"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/newsletter')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiMail className="text-lg" />
+          {!collapsed && 'Newsletter'}
+        </a>
+        <a
+          href="/contactlist"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/contactlist')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiPhone className="text-lg" />
+          {!collapsed && 'Contact Listing'}
+        </a>
+        <a
+          href="/projectlist"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/projectlist')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiFolder className="text-lg" />
+          {!collapsed && 'Project Listing'}
+        </a>
+        <a
+          href="/teamlist"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/teamlist')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiUserGroup className="text-lg" />
+          {!collapsed && 'About Us Team'}
+        </a>
+        <a
+          href="/popuplist"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/popuplist')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiInformationCircle className="text-lg" />
+          {!collapsed && 'Project Enquiries'}
+        </a>
+
+          <button
+            type="button"
+            onClick={e => { e.preventDefault(); handleLogout && handleLogout(); }}
+            className="flex items-center gap-2 px-4 py-2 text-[16px] font-semibold text-red-500 hover:text-red-700"
+          >
+
+            {!collapsed && 'Logout'}
+          </button>
       </nav>
     </div>
   );

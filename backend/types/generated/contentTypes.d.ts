@@ -580,14 +580,33 @@ export interface ApiListList extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
-    amenities: Schema.Attribute.Enumeration<
-      ['Gym', 'Pool', 'Smart Home', 'Sea View']
-    > &
+    amenities_ar: Schema.Attribute.JSON &
+      Schema.Attribute.CustomField<
+        'plugin::multi-select.multi-select',
+        [
+          '\u0625\u0637\u0644\u0627\u0644\u0629 \u0639\u0644\u0649 \u0627\u0644\u0628\u062D\u0631',
+          '\u0627\u0644\u0645\u0646\u0632\u0644 \u0627\u0644\u0630\u0643\u064A',
+          '\u0646\u0627\u062F\u064A \u0631\u064A\u0627\u0636\u064A',
+          '\u062D\u0645\u0627\u0645 \u0627\u0644\u0633\u0628\u0627\u062D\u0629',
+        ]
+      > &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
-      }>;
+      }> &
+      Schema.Attribute.DefaultTo<'[]'>;
+    amenities_en: Schema.Attribute.JSON &
+      Schema.Attribute.CustomField<
+        'plugin::multi-select.multi-select',
+        ['Sea View', 'Smart Home', 'Gym', 'Swimming Pool']
+      > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'\n'>;
     building: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -605,20 +624,63 @@ export interface ApiListList extends Struct.CollectionTypeSchema {
       }>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::list.list'>;
+    payment_plan_ar: Schema.Attribute.JSON &
+      Schema.Attribute.CustomField<
+        'plugin::multi-select.multi-select',
+        [
+          '\u0627\u0644\u062A\u0645\u0648\u064A\u0644',
+          '\u062F\u0641\u0639\u0629 \u0645\u0628\u062F\u0626\u064A\u0629',
+        ]
+      > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'[]'>;
+    payment_plan_en: Schema.Attribute.JSON &
+      Schema.Attribute.CustomField<
+        'plugin::multi-select.multi-select',
+        ['Financing', 'Down Payment']
+      > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'[]'>;
     place: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
       }>;
-    Property_type: Schema.Attribute.Enumeration<
-      ['Residential', 'Commercial', 'Mixed-Use']
-    > &
+    property_type_ar: Schema.Attribute.JSON &
+      Schema.Attribute.CustomField<
+        'plugin::multi-select.multi-select',
+        [
+          '\u0633\u0643\u0646\u064A',
+          '\u062A\u062C\u0627\u0631\u064A',
+          '\u0645\u062A\u0639\u062F\u062F \u0627\u0644\u0627\u0633\u062A\u062E\u062F\u0627\u0645\u0627\u062A',
+        ]
+      > &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
-      }>;
+      }> &
+      Schema.Attribute.DefaultTo<'[]'>;
+    property_type_en: Schema.Attribute.JSON &
+      Schema.Attribute.CustomField<
+        'plugin::multi-select.multi-select',
+        ['Residential', 'Commercial', 'Mixed-Use']
+      > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }> &
+      Schema.Attribute.DefaultTo<'[]'>;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
@@ -727,7 +789,12 @@ export interface ApiProjectContactFormProjectContactForm
     publishedAt: Schema.Attribute.DateTime;
     purchase_plan: Schema.Attribute.Enumeration<
       ['Within 1-3 months', 'In 6 months', 'In 1 year']
-    >;
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     title: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getNewsLetter } from '../../services/newsletterService';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import { logout } from '../../services/authService';
 import { format } from 'date-fns';
 import { paginate } from '../../services/paginate';
 import { ToastContainer } from 'react-toastify';
@@ -17,10 +15,7 @@ function NewsletterCms() {
   const currentPage = parseInt(searchParams.get('page')) || 1;
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+
 
   useEffect(() => {
     async function fetchNewsletters() {
@@ -67,7 +62,6 @@ function NewsletterCms() {
   return (
     <div className="flex h-screen bg-gray-100">
       <div className="w-64 bg-white border-r border-gray-200">
-        <Sidebar handleLogout={handleLogout} />
       </div>
       <div className="flex-1 p-6">
         <div className="flex items-center justify-between w-full mb-6">

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchApartmentListCMS } from '../../services/listService';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import { logout } from '../../services/authService';
 import { paginate } from '../../services/paginate';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -18,10 +16,7 @@ function ProjectList() {
   const currentPage = parseInt(searchParams.get('page')) || 1;
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+
 
   useEffect(() => {
     async function fetchProjectList() {
@@ -71,7 +66,6 @@ function ProjectList() {
   return (
     <div className="flex h-screen bg-gray-100">
       <div className="w-64 bg-white border-r border-gray-200">
-        <Sidebar handleLogout={handleLogout} />
       </div>
       <div className="flex-1 p-6">
         <div className="flex items-center justify-between w-full mb-6">
@@ -117,9 +111,9 @@ function ProjectList() {
                               ? project.localizations[0].title.Property_Title
                               : 'N/A'
                       }
-                      
+
                     </td>
-                    
+
                     <td className="px-6 py-4 ">
                       {/* <button
                         className="p-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
@@ -195,9 +189,8 @@ function ProjectList() {
                 <div>
                   <span className="font-medium text-gray-500">Status:</span>
                   <p>
-                    <span className={`inline-block px-3 py-1 text-xs rounded-full font-medium ${
-                      selectedProject.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
-                    }`}>
+                    <span className={`inline-block px-3 py-1 text-xs rounded-full font-medium ${selectedProject.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                      }`}>
                       {selectedProject.status || 'N/A'}
                     </span>
                   </p>

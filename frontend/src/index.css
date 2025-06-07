@@ -1,7 +1,89 @@
 /* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Proxima+Nova:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gurmukhi+MN:wght@400;700&display=swap');
+
+/* Univers is not available on Google Fonts, so use @font-face if you have the font files */
+@font-face {
+  font-family: 'Univers Next Arabic Regular';
+  src: url('/fonts/UniversNextArabic-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-body {
-  @apply font-proxima;
+
+@layer utilities {
+  .font-body {
+    font-family: "Proxima Nova", sans-serif;
+  }
+  .font-univers {
+    font-family: "Univers Next Arabic Regular", sans-serif;
+  }
+
+  /* Ajdan Main Colors */
+  .text-main-charcoal1 { color: #222223; }
+  .bg-main-charcoal1 { background-color: #222223; }
+  .text-main-ivory2 { color: #EFE3D8; }
+  .bg-main-ivory2 { background-color: #EFE3D8; }
+  .text-main-silver3 { color: #CCC7C7; }
+  .bg-main-silver3 { background-color: #CCC7C7; }
+  .text-main-taupe4 { color: #A58C76; }
+  .bg-main-taupe4 { background-color: #A58C76; }
+  .text-main-slatenavy5 { color: #293C47; }
+  .bg-main-slatenavy5 { background-color: #293C47; }
+
+  /* Ajdan Secondary Colors */
+  .text-secondary-dustyblue1 { color: #8AA3B4; }
+  .bg-secondary-dustyblue1 { background-color: #8AA3B4; }
+  .text-secondary-palesky2 { color: #BED5DC; }
+  .bg-secondary-palesky2 { background-color: #BED5DC; }
+  .text-secondary-burntumber3 { color: #833B1C; }
+  .bg-secondary-burntumber3 { background-color: #833B1C; }
+  .text-secondary-rustbronze4 { color: #925323; }
+  .bg-secondary-rustbronze4 { background-color: #925323; }
+  .text-secondary-oxblood5 { color: #4F1515; }
+  .bg-secondary-oxblood5 { background-color: #4F1515; }
+  .text-secondary-lavendergray6 { color: #AEA4B6; }
+  .bg-secondary-lavendergray6 { background-color: #AEA4B6; }
+  .text-secondary-mulberrywine7 { color: #4C2C39; }
+  .bg-secondary-mulberrywine7 { background-color: #4C2C39; }
+
+  /* Ajdan Accent Colors */
+  .text-accent-forestgreen1 { color: #354234; }
+  .bg-accent-forestgreen1 { background-color: #354234; }
+  .text-accent-sagegray2 { color: #6D7A6C; }
+  .bg-accent-sagegray2 { background-color: #6D7A6C; }
 }
+
+body {
+  @apply font-body;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-headline;
+}
+
+
+.ar h1, 
+.ar h2, 
+.ar h3, 
+.ar h4, 
+.ar h5, 
+.ar h6,
+[lang="ar"] h1,
+[lang="ar"] h2,
+[lang="ar"] h3,
+[lang="ar"] h4,
+[lang="ar"] h5,
+[lang="ar"] h6,
+[lang="ar"] h1, [lang="ar"] h2, [lang="ar"] h3, [lang="ar"] h4, [lang="ar"] h5, [lang="ar"] h6,
+[lang="ar"] p, [lang="ar"] span, [lang="ar"] div, [lang="ar"] li, [lang="ar"] a, [lang="ar"] strong, [lang="ar"] em, [lang="ar"] b, [lang="ar"] i, [lang="ar"] th, [lang="ar"] td, [lang="ar"] label, [lang="ar"] input, [lang="ar"] textarea, [lang="ar"] button {
+  @apply font-univers;
+}
+
+.ar, [lang="ar"] {
+  @apply font-univers;
+}
+

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchContactList } from '../../services/contactService';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import { logout } from '../../services/authService';
 import { paginate } from '../../services/paginate';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -17,10 +15,7 @@ function ContactListing() {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+
 
   useEffect(() => {
     async function loadContacts() {
@@ -71,7 +66,6 @@ function ContactListing() {
   return (
     <div className="flex h-screen bg-gray-100">
       <div className="w-64 bg-white border-r border-gray-200">
-        <Sidebar handleLogout={handleLogout} />
       </div>
       <div className="flex-1 p-6">
         <div className="flex items-center justify-between w-full mb-6">

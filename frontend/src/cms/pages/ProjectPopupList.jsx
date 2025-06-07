@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import { logout } from '../../services/authService';
 import { fetchProjectPopups } from '../../services/projectPopupService';
 import { paginate } from '../../services/paginate';
 import { ToastContainer } from 'react-toastify';
@@ -15,11 +13,6 @@ export default function ProjectPopupList() {
   const [selectedPopup, setSelectedPopup] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
 
   useEffect(() => {
     fetchProjectPopups(i18n.language)
@@ -78,7 +71,8 @@ export default function ProjectPopupList() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar handleLogout={handleLogout} />
+         <div className="w-64 bg-white border-r border-gray-200">
+      </div>
       <div className="flex-1 p-6">
         <div className="flex items-center justify-between w-full mb-6">
           <h1 className="text-3xl font-semibold text-gray-800">Project Popups</h1>

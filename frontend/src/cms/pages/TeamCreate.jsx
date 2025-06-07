@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { createTeam } from '../../services/aboutusService';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import { logout } from '../../services/authService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
@@ -107,15 +105,10 @@ function TeamCreate() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <Sidebar handleLogout={handleLogout} />
-      
+    <div className="flex h-screen bg-gray-100">      
       <div className="flex-1 p-4 overflow-auto">
         <div className="max-w-2xl p-6 mx-auto bg-white rounded shadow">
           <h2 className="mb-4 text-2xl font-bold">Create Team Member</h2>

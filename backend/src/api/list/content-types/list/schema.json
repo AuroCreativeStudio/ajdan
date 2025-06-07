@@ -61,13 +61,31 @@
         }
       }
     },
-    "amenities": {
-      "type": "enumeration",
-      "enum": [
-        "Gym",
-        "Pool",
+    "amenities_en": {
+      "type": "customField",
+      "default": "\n",
+      "options": [
+        "Sea View",
         "Smart Home",
-        "Sea View"
+        "Gym",
+        "Swimming Pool"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "customField": "plugin::multi-select.multi-select"
+    },
+    "amenities_ar": {
+      "type": "customField",
+      "default": "[]",
+      "customField": "plugin::multi-select.multi-select",
+      "options": [
+        "إطلالة على البحر",
+        "المنزل الذكي",
+        "نادي رياضي",
+        "حمام السباحة"
       ],
       "pluginOptions": {
         "i18n": {
@@ -75,18 +93,63 @@
         }
       }
     },
-    "Property_type": {
-      "type": "enumeration",
-      "enum": [
+    "property_type_en": {
+      "type": "customField",
+      "default": "[]",
+      "options": [
         "Residential",
         "Commercial",
         "Mixed-Use"
       ],
+      "customField": "plugin::multi-select.multi-select",
       "pluginOptions": {
         "i18n": {
           "localized": true
         }
       }
+    },
+    "property_type_ar": {
+      "type": "customField",
+      "default": "[]",
+      "options": [
+        "سكني",
+        "تجاري",
+        "متعدد الاستخدامات"
+      ],
+      "customField": "plugin::multi-select.multi-select",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "payment_plan_en": {
+      "type": "customField",
+      "default": "[]",
+      "options": [
+        "Financing",
+        "Down Payment"
+      ],
+      "customField": "plugin::multi-select.multi-select",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "payment_plan_ar": {
+      "type": "customField",
+      "default": "[]",
+      "options": [
+        "التمويل",
+        "دفعة مبدئية"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "customField": "plugin::multi-select.multi-select"
     }
   }
 }

@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { createBlogPost } from '../../services/blogService';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../components/Sidebar';
-import { logout } from '../../services/authService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -19,10 +17,7 @@ function BlogCreate() {
   });
 
   const navigate = useNavigate();
-  const handleLogout = () => {
-    logout();
-    navigate('/login'); // Redirect to login on logout
-  };
+
 
   const [images, setImages] = useState({
     image_1: null,
@@ -112,8 +107,7 @@ function BlogCreate() {
 
   return (
  <div className="flex min-h-screen bg-gray-100">
-  <Sidebar handleLogout={handleLogout} />
-  
+
   <div className="flex-grow p-6">
     <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
       <div className="flex items-center justify-between mb-8">
