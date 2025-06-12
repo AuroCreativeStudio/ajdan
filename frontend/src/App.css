@@ -1,5 +1,4 @@
 #root {
-
   margin: 0 auto;
   text-align: center;
 }
@@ -39,3 +38,280 @@
 .read-the-docs {
   color: #888;
 }
+ /* <-------------------------default create & excel button CMS------------------------------> */
+
+.export-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid #cbd5e1;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #475569;
+  background-color: white;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  cursor: pointer;
+  
+  /* Primary color variables */
+  --primary-color: #354234;
+  --primary-hover-bg: #6D7a6C;
+  --primary-hover-border: #6D7a6C;
+  --primary-hover-text: white;
+  --primary-focus-ring: #6D7a6C;
+  --primary-active-bg: #6D7a6C;
+}
+
+.export-button:hover {
+  background-color: var(--primary-hover-bg);
+  border-color: var(--primary-hover-border);
+  color: var(--primary-hover-text);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  transform: translateY(-1px);
+}
+
+.export-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-focus-ring);
+  color: var(--primary-hover-text);
+  background-color: var(--primary-hover-bg);
+}
+
+.export-button:active {
+  background-color: var(--primary-active-bg);
+  transform: translateY(0);
+}
+
+.export-button:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+.export-button svg {
+  width: 20px;
+  height: 20px;
+  transition: fill 0.2s ease;
+  color: #16a34a; /* This is the hex equivalent of text-green-600 */
+}
+
+.export-button:hover svg {
+  color: white; /* SVG turns white on hover */
+}
+
+
+/* <-----------------------------------View Button CMS--------------------------------------> */
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #293C47;
+  background-color: white;
+  color: #293C47;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+
+  /* Custom color variables like in export-button */
+  --primary-color: #293C47;
+  --primary-hover-bg: #293C47;
+  --primary-hover-border: #8aa3b4;
+  --primary-hover-text: white;
+  --primary-focus-ring: #293C47;
+  --primary-active-bg: white;
+}
+
+.action-button:hover {
+  background-color: var(--primary-hover-bg);
+  border-color: var(--primary-hover-border);
+  color: var(--primary-hover-text);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  transform: translateY(-1px);
+}
+
+.action-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-focus-ring);
+  background-color: var(--primary-hover-bg);
+  color: var(--primary-hover-text);
+}
+
+.action-button:active {
+  background-color: var(--primary-active-bg);
+  transform: translateY(0);
+}
+
+.action-button:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+.action-button svg {
+  width: 16px;
+  height: 16px;
+  transition: fill 0.2s ease;
+}
+
+
+/* <-------------------------------------Edit Button CMS--------------------------------------> */
+
+.edit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #a58c76;
+  background-color: white;
+  color: #a58c76;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+
+  /* Green color variables */
+  --primary-color: #a58c76;
+  --primary-hover-bg: #a58c76;
+  --primary-hover-border: #a58c76;
+  --primary-hover-text: white;
+  --primary-focus-ring: #a58c76;
+  --primary-active-bg: white;
+}
+
+.edit-button:hover {
+  background-color: var(--primary-hover-bg);
+  border-color: var(--primary-hover-border);
+  color: var(--primary-hover-text);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  transform: translateY(-1px);
+}
+
+.edit-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-focus-ring);
+  background-color: var(--primary-hover-bg);
+  color: var(--primary-hover-text);
+}
+
+.edit-button:active {
+  background-color: var(--primary-active-bg);
+  transform: translateY(0);
+}
+
+.edit-button:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+.edit-button svg {
+  width: 16px;
+  height: 16px;
+  transition: fill 0.2s ease;
+}
+
+
+/* <----------------------------------Delete Button CMS-----------------------------------> */
+.delete-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+   border: 1px solid #4f1515;
+  background-color: white;
+  color: #4f1515;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+
+  /* Red color variables */
+  --primary-color: #4f1515;
+  --primary-hover-bg: #833b1c;
+  --primary-hover-border: #833b1c;
+  --primary-hover-text: white;
+  --primary-focus-ring: #833b1c;
+  --primary-active-bg: #833b1c;
+}
+
+.delete-button:hover {
+  background-color: var(--primary-hover-bg);
+  border-color: var(--primary-hover-border);
+  color: var(--primary-hover-text);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  transform: translateY(-1px);
+}
+
+.delete-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary-focus-ring);
+  background-color: var(--primary-hover-bg);
+  color: var(--primary-hover-text);
+}
+
+.delete-button:active {
+  background-color: var(--primary-active-bg);
+  transform: translateY(0);
+}
+
+.delete-button:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  box-shadow: none;
+}
+
+.delete-button svg {
+  width: 16px;
+  height: 16px;
+  transition: fill 0.2s ease;
+}
+
+/* <--------------------------------Pagination Tailwind code------------------------------> */
+
+.pagination-container {
+  @apply flex items-center justify-center gap-4 mt-8;
+}
+
+.pagination-button {
+  @apply flex items-center gap-2 rounded-full px-4 py-2;
+  @apply text-gray-700 hover:text-gray-900 hover:bg-gray-100;
+  @apply transition-all duration-200;
+}
+
+.pagination-button:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+.pagination-page-button {
+  @apply w-6 h-6 rounded-full flex items-center justify-center;
+  @apply text-gray-700 hover:bg-gray-100;
+  @apply transition-all duration-200;
+}
+
+.pagination-page-button.active {
+  @apply bg-mainSlatenavy5 text-white hover:bg-mainSlatenavy5;
+}
+
+.pagination-icon {
+  @apply h-4 w-4;
+}
+

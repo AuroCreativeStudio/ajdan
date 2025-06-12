@@ -217,7 +217,7 @@ function AppRoutes({ setToken, setUser }) {
         element={
           <CmsLayout>
             <ProtectedRoute>
-              <BlogListingCms />
+              <BlogListingCms  />
             </ProtectedRoute>
           </CmsLayout>
         }

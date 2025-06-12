@@ -10,8 +10,23 @@ const API_URL = 'http://localhost:1337/';
 const EditBlog = () => {
   const location = useLocation();
   const slug = location.state?.slug;
-  const [tab, setTab] = useState('en');
+  const [language, setLanguage] = useState(location.state?.activeTab || 'en');
+  const [activeTab, setActiveTab] = useState('content');
   const navigate = useNavigate();
+  
+  // Publish data state
+const [publishData, setPublishData] = useState({
+  en: {
+    publish: false,
+  },
+  ar: {
+    publish: false,
+  },
+  sharedDateTime: { // New field for shared date/time
+    publishDate: '', // Format: "YYYY-MM-DD"
+    publishTime: '', // Format: "HH:MM"
+  },
+});
 
   // English form data
   const [formData, setFormData] = useState({
@@ -95,7 +110,6 @@ const EditBlog = () => {
       }));
   };
 
-
   useEffect(() => {
     const fetchData = async () => {
       if (!slug) {
@@ -112,9 +126,27 @@ const EditBlog = () => {
           toast.error('Blog not found!');
           return;
         }
-
+        console.log(blog);
         setBlogId(blog.documentId || null);
         
+        // Parse the date field if it exists
+        const blogDate = blog.date ? new Date(blog.date) : null;
+        const arabicBlog = blog.localizations?.find(loc => loc.locale === 'ar');
+        const arabicBlogDate = arabicBlog?.date ? new Date(arabicBlog.date) : null;
+
+        setPublishData({
+          en: {
+            publish: blog.publish || false,
+            publishDate: blogDate ? blogDate.toISOString().split('T')[0] : '',
+            publishTime: blogDate ? `${String(blogDate.getHours()).padStart(2, '0')}:${String(blogDate.getMinutes()).padStart(2, '0')}` : ''
+          },
+          ar: {
+            publish: arabicBlog?.publish || false,
+            publishDate: arabicBlogDate ? arabicBlogDate.toISOString().split('T')[0] : '',
+            publishTime: arabicBlogDate ? `${String(arabicBlogDate.getHours()).padStart(2, '0')}:${String(arabicBlogDate.getMinutes()).padStart(2, '0')}` : ''
+          }
+        });
+
         setFormData({
           title: blog.title || '',
           description_1: blog.description_1 ? extractText(blog.description_1) : '',
@@ -224,6 +256,15 @@ const EditBlog = () => {
     e.preventDefault();
     
     try {
+      // Format the publish dates
+      const enPublishDateTime = publishData.en.publishDate && publishData.en.publishTime 
+        ? `${publishData.en.publishDate}T${publishData.en.publishTime}:00` 
+        : null;
+      
+      const arPublishDateTime = publishData.ar.publishDate && publishData.ar.publishTime 
+        ? `${publishData.ar.publishDate}T${publishData.ar.publishTime}:00` 
+        : null;
+
       // Upload images and prepare payload for English
       const uploadedImages = {
         image_1: formData.image_1 ? await uploadImage(formData.image_1) : existingImageIds.image_1,
@@ -231,19 +272,23 @@ const EditBlog = () => {
         featured_image: formData.featured_image ? await uploadImage(formData.featured_image) : existingImageIds.featured_image
       };
 
+      // Prepare English payload
       const payload = {
         data: {  
           title: formData.title,
           slug: formData.slug,
           description_1: convertToBlock(formData.description_1),
-          description_2: convertToBlock(formData.description_2),
-          description_3: convertToBlock(formData.description_3),
+          description_2: convertToBlock(formData.description_2)||"",
+          description_3: convertToBlock(formData.description_3)||"",
           meta_description: formData.meta_description || "", 
           meta_keywords: formData.meta_keywords || "",
           image_1: uploadedImages.image_1 || null, 
           image_2: uploadedImages.image_2 || null,
           featured_image: uploadedImages.featured_image || null,
           alt_text_image: formData.alt_text_image || "",
+       publish: typeof publishData.en.publish === "boolean" ? publishData.en.publish : false,
+
+          date: enPublishDateTime||null
         }
       };
 
@@ -261,12 +306,13 @@ const EditBlog = () => {
             meta_description: formDataAr.meta_description || "",
             meta_keywords: formDataAr.meta_keywords || "",
             alt_text_image: formDataAr.alt_text_image || "",
+            publish: publishData.ar.publish,
+            date: arPublishDateTime
           }
         };
-        console.log('Arabic Payload:', payloadAr); 
         await updateBlog(arabicBlogId, payloadAr, 'ar');
       }
-     
+      
       toast.success("Blog updated successfully!");
     } catch (error) {
       toast.error("Update failed: " + error.message);
@@ -276,161 +322,331 @@ const EditBlog = () => {
 
   if (loading) return <div className="py-10 text-center">Loading...</div>;
 
+  const currentFormData = language === 'en' ? formData : formDataAr;
+
   return (
-  <div className="flex h-screen bg-gray-100">
-  <div className="flex-1 overflow-auto">
-    <div className="max-w-3xl mx-auto p-4"> {/* Centering container */}
-      <h2 className="mb-4 text-2xl font-semibold">Edit News</h2>
-      
-      <div className="flex mb-4">
-        <button
-          type="button"
-          className={`px-4 py-2 rounded-t ${tab === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-          onClick={() => setTab('en')}
-        >
-          English
-        </button>
-        <button
-          type="button"
-          className={`px-4 py-2 rounded-t ${tab === 'ar' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-          onClick={() => setTab('ar')}
-        >
-          Arabic
-        </button>
+    <div className="bg-white ml-64 p-6 font-sans">
+      {/* Header */}
+       <label className="flex justify-between items-start mb-2">Title</label>
+      <div className="flex justify-between items-center mb-6">
+        <input
+          type="text"
+          value={currentFormData.title}
+          onChange={(e) => handleChange(e, language)}
+          name="title"
+          className="w-3/5 px-4 py-2 text-l font-body font-univers border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <div className="flex items-center space-x-3">
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded focus:outline-none"
+          >
+            <option value="en">English</option>
+            <option value="ar">Arabic</option>
+          </select>
+     
+          <button
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            onClick={handleSubmit}
+          >
+            Save
+          </button>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {tab === 'en' && (
-          <>
-            {/* English form fields */}
-            {[
-              { label: 'Title', name: 'title', type: 'text' },
-              { label: 'Description 1', name: 'description_1', type: 'textarea' },
-              { label: 'Description 2', name: 'description_2', type: 'textarea' },
-              { label: 'Description 3', name: 'description_3', type: 'textarea' },
-              { label: 'Meta Description', name: 'meta_description', type: 'text' },
-              { label: 'Meta Keywords', name: 'meta_keywords', type: 'text' },
-              { label: 'Alt Text (Image)', name: 'alt_text_image', type: 'text' },
-            ].map(({ label, name, type }) => (
-              <label className="block" key={name}>
-                {label}:
-                {type === 'textarea' ? (
-                  <textarea
-                    name={name}
-                    value={formData[name] || ''}
-                    onChange={(e) => handleChange(e, 'en')}
-                    className="w-full p-2 mt-1 border"
-                    rows={4}
-                  />
-                ) : (
-                  <input
-                    type={type}
-                    name={name}
-                    value={formData[name] || ''}
-                    onChange={(e) => handleChange(e, 'en')}
-                    className="w-full p-2 mt-1 border"
-                  />
+      {/* Body */}
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Left */}
+        <div className="lg:w-2/3 space-y-4">
+          <div className="flex space-x-6 border-b font-headline border-gray-300 pb-2">
+            <button 
+              className={`pb-1 font-semibold ${activeTab === 'content' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-blue-600'}`}
+              onClick={() => setActiveTab('content')}
+            >
+              Content
+            </button>
+            <button 
+              className={`pb-1 font-semibold ${activeTab === 'meta' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-blue-600'}`}
+              onClick={() => setActiveTab('meta')}
+            >
+              Meta
+            </button>
+          </div>
+
+          {activeTab === 'content' && (
+            <>
+              {/* Description 1 with Image 1 */}
+              <div className="bg-white p-5 rounded shadow">
+                <h2 className="text-l font-headline mb-2">Section 1</h2>
+                <textarea
+                  name="description_1"
+                  value={currentFormData.description_1 || ''}
+                  onChange={(e) => handleChange(e, language)}
+                  className="w-full font-body h-32 border border-gray-300 rounded p-3 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                  dir={language === 'ar' ? 'rtl' : 'ltr'}
+                  placeholder="Enter your first description here..."
+                ></textarea>
+                
+                {language === 'en' && (
+                  <>
+                    <h3 className="text-md font-headline mb-2">Image 1</h3>
+                    {existingImages.image_1 && (
+                      <div className="mb-3">
+                        <img 
+                          src={existingImages.image_1} 
+                          alt={`Existing image 1`} 
+                          className="object-cover w-32 h-32 rounded" 
+                        />
+                      </div>
+                    )}
+                    <div className="border-2 font-headline border-dashed border-gray-300 rounded p-4 text-center text-blue-600 cursor-pointer mb-3">
+                      <input
+                        type="file"
+                        name="image_1"
+                        accept="image/*"
+                        onChange={(e) => handleImageChange(e, 'image_1')}
+                        className="hidden font-body"
+                        id="file-upload-image_1"
+                      />
+                      <label htmlFor="file-upload-image_1" className="cursor-pointer">
+                        {existingImages.image_1 ? 'Replace Image 1' : 'Upload Image 1'}
+                      </label>
+                    </div>
+                  </>
                 )}
-              </label>
-            ))}
+              </div>
 
-            <label className="block">
-              Slug:
-              <input
-                type="text"
-                name="slug"
-                value={formData.slug || ''}
-                readOnly
-                className="w-full p-2 mt-1 bg-gray-100 border"
-              />
-            </label>
+              {/* Description 2 with Image 2 */}
+              <div className="bg-white p-5 rounded shadow">
+                <h2 className="text-l font-headline mb-2">Section 2</h2>
+                <textarea
+                  name="description_2"
+                  value={currentFormData.description_2 || ''}
+                  onChange={(e) => handleChange(e, language)}
+                  className="w-full h-32 border font-body border-gray-300 rounded p-3 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                  dir={language === 'ar' ? 'rtl' : 'ltr'}
+                  placeholder="Enter your second description here..."
+                ></textarea>
+                
+                {language === 'en' && (
+                  <>
+                    <h3 className="text-md font-medium mb-2">Image 2</h3>
+                    {existingImages.image_2 && (
+                      <div className="mb-3">
+                        <img 
+                          src={existingImages.image_2} 
+                          alt={`Existing image 2`} 
+                          className="object-cover w-32 h-32 rounded" 
+                        />
+                      </div>
+                    )}
+                    <div className="border-2 border-dashed border-gray-300 rounded p-4 text-center text-blue-600 cursor-pointer mb-3">
+                      <input
+                        type="file"
+                        name="image_2"
+                        accept="image/*"
+                        onChange={(e) => handleImageChange(e, 'image_2')}
+                        className="hidden"
+                        id="file-upload-image_2"
+                      />
+                      <label htmlFor="file-upload-image_2" className="cursor-pointer">
+                        {existingImages.image_2 ? 'Replace Image 2' : 'Upload Image 2'}
+                      </label>
+                    </div>
+                  </>
+                )}
+              </div>
 
-            {/* Image fields */}
-            {['image_1', 'image_2', 'featured_image'].map((field) => (
-              <label key={field} className="block">
-                {field.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}:
-                {existingImages[field] && (
-                  <div className="mb-2">
-                    <img 
-                      src={existingImages[field]} 
-                      alt={`Existing ${field}`} 
-                      className="object-cover w-32 h-32 rounded" 
+              {/* Description 3 */}
+              <div className="bg-white p-5 rounded shadow">
+                <h2 className="text-l font-headline mb-2">Section 3</h2>
+                <textarea
+                  name="description_3"
+                  value={currentFormData.description_3 || ''}
+                  onChange={(e) => handleChange(e, language)}
+                  className="w-full font-body h-32 border border-gray-300 rounded p-3 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                  dir={language === 'ar' ? 'rtl' : 'ltr'}
+                  placeholder="Enter your third description here..."
+                ></textarea>
+              </div>
+
+              {/* Featured Image and Alt Text (English only) */}
+              {language === 'en' && (
+                <div className="bg-white p-5 rounded shadow">
+                  <h2 className="text-l font-headline mb-2">Featured Image</h2>
+                  {existingImages.featured_image && (
+                    <div className="mb-3">
+                      <img 
+                        src={existingImages.featured_image} 
+                        alt="Existing featured image" 
+                        className="object-cover w-32 h-32 rounded" 
+                      />
+                    </div>
+                  )}
+                  <div className="border-2 border-dashed border-gray-300 rounded p-4 text-center text-blue-600 cursor-pointer mb-4">
+                    <input
+                      type="file"
+                      name="featured_image"
+                      accept="image/*"
+                      onChange={(e) => handleImageChange(e, 'featured_image')}
+                      className="hidden"
+                      id="file-upload-featured"
+                    />
+                    <label htmlFor="file-upload-featured" className="cursor-pointer">
+                      {existingImages.featured_image ? 'Replace Featured Image' : 'Upload Featured Image'}
+                    </label>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-headline mb-1">Alt Text for Images</label>
+                    <input
+                      type="text"
+                      placeholder="Enter alt text for all images"
+                      name="alt_text_image"
+                      value={currentFormData.alt_text_image || ''}
+                      onChange={(e) => handleChange(e, language)}
+                      className="w-full px-3 py-2 border font-body border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
-                )}
-                <input
-                  type="file"
-                  name={field}
-                  accept="image/*"
-                  onChange={(e) => handleImageChange(e, field)}
-                  className="w-full p-2 border"
+                </div>
+              )}
+            </>
+          )}
+
+          {activeTab === 'meta' && (
+            <div className="bg-white p-5 rounded shadow space-y-4">
+              <div>
+                <label className="block text-sm font-headline mb-1">Meta Description</label>
+                <textarea
+                  name="meta_description"
+                  value={currentFormData.meta_description || ''}
+                  onChange={(e) => handleChange(e, language)}
+                  className="w-full px-3 py-2 font-body border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={4}
+                  dir={language === 'ar' ? 'rtl' : 'ltr'}
                 />
-              </label>
-            ))}
-          </>
-        )}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-headline mb-1">Meta Keywords</label>
+                <input
+                  type="text"
+                  name="meta_keywords"
+                  value={currentFormData.meta_keywords || ''}
+                  onChange={(e) => handleChange(e, language)}
+                  className="w-full px-3 py-2 border font-body border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  dir={language === 'ar' ? 'rtl' : 'ltr'}
+                />
+                <p className="text-xs text-gray-500 mt-1">Separate keywords with commas</p>
+              </div>
+            </div>
+          )}
+        </div>
 
-        {tab === 'ar' && (
-          <>
-            {/* Arabic form fields */}
-            {[
-              { label: 'العنوان', name: 'title', type: 'text' },
-              { label: 'الوصف 1', name: 'description_1', type: 'textarea' },
-              { label: 'الوصف 2', name: 'description_2', type: 'textarea' },
-              { label: 'الوصف 3', name: 'description_3', type: 'textarea' },
-              { label: 'وصف التعريف', name: 'meta_description', type: 'text' },
-              { label: 'كلمات البحث', name: 'meta_keywords', type: 'text' },
-              { label: 'النص البديل (الصورة)', name: 'alt_text_image', type: 'text' },
-            ].map(({ label, name, type }) => (
-              <label className="block" key={name}>
-                {label}:
-                {type === 'textarea' ? (
-                  <textarea
-                    name={name}
-                    value={formDataAr[name] || ''}
-                    onChange={(e) => handleChange(e, 'ar')}
-                    className="w-full p-2 mt-1 border"
-                    rows={4}
-                    dir="rtl"
-                  />
-                ) : (
-                  <input
-                    type={type}
-                    name={name}
-                    value={formDataAr[name] || ''}
-                    onChange={(e) => handleChange(e, 'ar')}
-                    className="w-full p-2 mt-1 border"
-                    dir="rtl"
-                  />
-                )}
-              </label>
-            ))}
-
-            <label className="block">
-              الرابط:
-              <input
-                type="text"
-                name="slug"
-                value={formDataAr.slug || ''}
-                readOnly
-                className="w-full p-2 mt-1 bg-gray-100 border"
-                dir="rtl"
+        {/* Sidebar */}
+        <div className="lg:w-1/3 space-y-4">
+          <div className="bg-white p-4 rounded shadow">
+            <div className="flex items-center space-x-3">
+              <img
+                src="https://i.pravatar.cc/40"
+                className="w-10 h-10 rounded-full"
+                alt="Author"
               />
-            </label>
-          </>
-        )}
+              <div>
+                <span className="font-headline block">Admin User</span>
+                <span className="text-xs text-gray-500">
+                  {new Date().toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </span>
+              </div>
+            </div>
+          </div>
 
-        <button
-          type="submit"
-          className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
-        >
-          Update Blog
-        </button>
-      </form>
+          <div className="bg-white p-4 rounded shadow">
+            <label className="block text-sm font-headline mb-1">Slug</label>
+            <input
+              type="text"
+              name="slug"
+              value={currentFormData.slug || ''}
+              readOnly
+              className="w-full px-3 py-2 mb-2 border font-body border-gray-300 rounded"
+            />
+          </div>
+
+          {/* Publish Settings */}
+          <div className="bg-white p-4 rounded shadow">
+            <div className="border-t pt-4">
+              <h3 className="font-headline mb-2">Publish Settings ({language.toUpperCase()})</h3>
+              
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm">Published Status</span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    className="sr-only peer" 
+                    checked={publishData[language].published}
+                    onChange={() => setPublishData(prev => ({
+                      ...prev,
+                      [language]: {
+                        ...prev[language],
+                        published: !prev[language].published
+                      }
+                    }))}
+                  />
+                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Publish Date</label>
+                  <input
+                    type="date"
+                    value={publishData[language].publishDate}
+                    onChange={(e) => setPublishData(prev => ({
+                      ...prev,
+                      [language]: {
+                        ...prev[language],
+                        publishDate: e.target.value
+                      }
+                    }))}
+                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1">Publish Time</label>
+                  <input
+                    type="time"
+                    value={publishData[language].publishTime}
+                    onChange={(e) => setPublishData(prev => ({
+                      ...prev,
+                      [language]: {
+                        ...prev[language],
+                        publishTime: e.target.value
+                      }
+                    }))}
+                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                  />
+                </div>
+              </div>
+
+              {publishData[language].publishDate && (
+                <div className="mt-2 text-xs text-gray-500">
+                  Scheduled for: {new Date(`${publishData[language].publishDate}T${publishData[language].publishTime}`).toLocaleString()}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
       <ToastContainer />
     </div>
-  </div>
-</div>
   );
 };
 

@@ -22,6 +22,16 @@ export const postContactDetails = async (formData) => {
     throw error;
   }
 };
+export const deleteContactDetail = async (documentId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/api/userdetails/${documentId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting Contact detail:', error.response?.data || error);
+    throw error;
+  }
+};
+
 // contactService.js
 
 

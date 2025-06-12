@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { updateProjectList } from '../../services/listService';
-// import { useTranslation } from 'react-i18next';
-
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -11,7 +9,6 @@ function ProjectUpdate() {
   const navigate = useNavigate();
   const project = state?.project;
   const arabicProject = project?.localizations?.find(loc => loc.locale === 'ar');
-
 
   const [tab, setTab] = useState('en');
   const [dropdownOpen, setDropdownOpen] = useState({
@@ -30,32 +27,31 @@ function ProjectUpdate() {
   const defaultPropertyTypesAr = ['سكني','تجاري','متعدد الاستخدامات'];
   const defaultPaymentPlansAr = ['التمويل', 'دفعة مبدئية'];
 
-const [form, setForm] = useState({
-  title: project?.title || '',
-  place: project?.place || '',
-  building: project?.building || '',
-  squarefeet: project?.square_feet || '',
-  description: project?.description || '',
-  amenities_en: project?.amenities_en || defaultAmenitiesEn,
-  property_type_en: project?.property_type_en || defaultPropertyTypesEn,
-  payment_plan_en: project?.payment_plan_en || defaultPaymentPlansEn
-});
+  const [form, setForm] = useState({
+    title: project?.title || '',
+    place: project?.place || '',
+    building: project?.building || '',
+    squarefeet: project?.square_feet || '',
+    description: project?.description || '',
+    amenities_en: project?.amenities_en || defaultAmenitiesEn,
+    property_type_en: project?.property_type_en || defaultPropertyTypesEn,
+    payment_plan_en: project?.payment_plan_en || defaultPaymentPlansEn
+  });
 
-const [formAr, setFormAr] = useState({
-  title: project?.title_ar || arabicProject?.title || '',
-  place: arabicProject?.place || '',
-  building: arabicProject?.building || '',
-  squarefeet: arabicProject?.square_feet || '',
-  description: arabicProject?.description || '',
-  amenities_ar: arabicProject?.amenities_ar || defaultAmenitiesAr,
-  property_type_ar: arabicProject?.property_type_ar || defaultPropertyTypesAr,
-  payment_plan_ar: arabicProject?.payment_plan_ar || defaultPaymentPlansAr
-});
+  const [formAr, setFormAr] = useState({
+    title: project?.title_ar || arabicProject?.title || '',
+    place: arabicProject?.place || '',
+    building: arabicProject?.building || '',
+    squarefeet: arabicProject?.square_feet || '',
+    description: arabicProject?.description || '',
+    amenities_ar: arabicProject?.amenities_ar || defaultAmenitiesAr,
+    property_type_ar: arabicProject?.property_type_ar || defaultPropertyTypesAr,
+    payment_plan_ar: arabicProject?.payment_plan_ar || defaultPaymentPlansAr
+  });
 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log("data:", project);
     if (project) {
       setForm({
         title: project.title || '',
@@ -180,10 +176,12 @@ const [formAr, setFormAr] = useState({
     }
     
     return (
-      <div className="mb-4 relative">
-        <label className="block mb-1 font-medium text-gray-700 capitalize">{label}</label>
+      <div className="sm:col-span-2 relative">
+        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+          {label}
+        </label>
         <div 
-          className={`w-full border rounded px-3 py-2 cursor-pointer flex justify-between items-center ${
+          className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 cursor-pointer flex justify-between items-center ${
             locale === 'ar' ? 'text-right' : ''
           }`}
           onClick={() => toggleDropdown(field)}
@@ -204,7 +202,7 @@ const [formAr, setFormAr] = useState({
         </div>
         
         {dropdownOpen[field] && (
-          <div className={`absolute z-10 w-full mt-1 bg-white border rounded shadow-lg max-h-60 overflow-auto ${
+          <div className={`absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto ${
             locale === 'ar' ? 'text-right' : ''
           }`}>
             <div className="p-2">
@@ -230,70 +228,120 @@ const [formAr, setFormAr] = useState({
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      <div className="flex-grow p-6">
-        <div className="max-w-3xl p-6 mx-auto bg-white shadow-lg rounded-xl">
-          <h2 className="mb-4 text-2xl font-semibold text-gray-800">Update Project</h2>
+    <section className="bg-white ml-64 dark:bg-gray-900">
+      <div className="py-8 px-4 mx-auto max-w-4xl lg:py-16">
+        <h2 className="mb-4 text-xl font-bold font-headline text-gray-900 dark:text-white">Update Project</h2>
+        
+        {/* Tabs */}
+        <div className="flex mb-4 border-b border-gray-300">
+          <button
+            type="button"
+            className={`px-4 py-2 rounded-t-lg border-b-2 font-medium transition duration-150 ease-in-out 
+              ${tab === 'en' 
+                ? 'text-primary-700 border-b-black bg-white' 
+                : 'text-gray-700 border-b-transparent'}`}
+            onClick={() => setTab('en')}
+          >
+            English
+          </button>
+          <button
+            type="button"
+            className={`px-4 py-2 rounded-t-lg border-b-2 font-univers transition duration-150 ease-in-out 
+              ${tab === 'ar' 
+                ? 'text-primary-700 border-b-black bg-white' 
+                : 'text-gray-700 border-b-transparent'}`}
+            onClick={() => setTab('ar')}
+          >
+            العربية
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
+            {/* Title and Place in one row (2 columns) */}
+            <div className="sm:col-span-1">
+              <label htmlFor={`title-${tab}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                {tab === 'en' ? 'Title' : 'العنوان'}
+              </label>
+              <input
+                type="text"
+                name="title"
+                id={`title-${tab}`}
+                value={getFieldValue('title', tab)}
+                onChange={(e) => handleChange(e, tab)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                placeholder={tab === 'en' ? 'Type project title' : 'اكتب عنوان المشروع'}
+                disabled
+                dir={tab === 'ar' ? 'rtl' : 'ltr'}
+              />
+            </div>
 
-          <div className="flex mb-6 border-b">
-            <button
-              type="button"
-              onClick={() => setTab('en')}
-              className={`px-5 py-2 text-sm font-medium border-b-2 transition ${
-                tab === 'en'
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-blue-600'
-              }`}
-            >
-              English
-            </button>
-            <button
-              type="button"
-              onClick={() => setTab('ar')}
-              className={`px-5 py-2 text-sm font-medium border-b-2 transition ${
-                tab === 'ar'
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-blue-600'
-              }`}
-            >
-              Arabic
-            </button>
-          </div>
+            <div className="sm:col-span-1">
+              <label htmlFor={`place-${tab}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                {tab === 'en' ? 'Place' : 'المكان'}
+              </label>
+              <input
+                type="text"
+                name="place"
+                id={`place-${tab}`}
+                value={getFieldValue('place', tab)}
+                onChange={(e) => handleChange(e, tab)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                placeholder={tab === 'en' ? 'Type project location' : 'اكتب موقع المشروع'}
+                required
+                dir={tab === 'ar' ? 'rtl' : 'ltr'}
+              />
+            </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {['title', 'place', 'building', 'squarefeet', 'description'].map((field) => (
-              <div key={field}>
-                <label className="block mb-1 font-medium text-gray-700 capitalize">
-                  {field === 'squarefeet' ? 'Square Feet' : field.charAt(0).toUpperCase() + field.slice(1)}
-                </label>
-                {field === 'description' ? (
-                  <textarea
-                    name={field}
-                    value={getFieldValue(field, tab)}
-                    onChange={(e) => handleChange(e, tab)}
-                    className={`w-full border rounded px-3 py-2 ${
-                      tab === 'ar' ? 'text-right' : ''
-                    } ${field === 'title' ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                    rows={3}
-                    dir={tab === 'ar' ? 'rtl' : 'ltr'}
-                    disabled={field === 'title'}
-                  />
-                ) : (
-                  <input
-                    type={field === 'squarefeet' ? 'number' : 'text'}
-                    name={field}
-                    value={getFieldValue(field, tab)}
-                    onChange={(e) => handleChange(e, tab)}
-                    className={`w-full border rounded px-3 py-2 ${
-                      tab === 'ar' ? 'text-right' : ''
-                    } ${field === 'title' ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                    dir={tab === 'ar' ? 'rtl' : 'ltr'}
-                    required={field !== 'building'}
-                    disabled={field === 'title'}
-                  />
-                )}
-              </div>
-            ))}
+            {/* Building and Square Feet in one row (2 columns) */}
+            <div className="sm:col-span-1">
+              <label htmlFor={`building-${tab}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                {tab === 'en' ? 'Building' : 'المبنى'}
+              </label>
+              <input
+                type="text"
+                name="building"
+                id={`building-${tab}`}
+                value={getFieldValue('building', tab)}
+                onChange={(e) => handleChange(e, tab)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                placeholder={tab === 'en' ? 'Type building name' : 'اكتب اسم المبنى'}
+                dir={tab === 'ar' ? 'rtl' : 'ltr'}
+              />
+            </div>
+
+            <div className="sm:col-span-1">
+              <label htmlFor={`squarefeet-${tab}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                {tab === 'en' ? 'Square Feet' : 'قدم مربع'}
+              </label>
+              <input
+                type="number"
+                name="squarefeet"
+                id={`squarefeet-${tab}`}
+                value={getFieldValue('squarefeet', tab)}
+                onChange={(e) => handleChange(e, tab)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                placeholder={tab === 'en' ? 'Type square footage' : 'اكتب المساحة بالقدم المربع'}
+                dir={tab === 'ar' ? 'rtl' : 'ltr'}
+              />
+            </div>
+
+            {/* Description (full width) */}
+            <div className="sm:col-span-2">
+              <label htmlFor={`description-${tab}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                {tab === 'en' ? 'Description' : 'الوصف'}
+              </label>
+              <textarea
+                name="description"
+                id={`description-${tab}`}
+                value={getFieldValue('description', tab)}
+                onChange={(e) => handleChange(e, tab)}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                rows={4}
+                placeholder={tab === 'en' ? 'Type project description' : 'اكتب وصف المشروع'}
+                dir={tab === 'ar' ? 'rtl' : 'ltr'}
+              />
+            </div>
 
             {tab === 'en' ? (
               <>
@@ -308,38 +356,21 @@ const [formAr, setFormAr] = useState({
                 {renderDropdownCheckbox('payment_plan', 'Payment Plan', 'ar')}
               </>
             )}
+          </div>
 
-            <div className="pt-4">
-              <button
-                type="submit"
-                className={`flex items-center justify-center gap-2 px-6 py-2 rounded text-white w-full transition ${
-                  loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'
-                }`}
-                disabled={loading}
-              >
-                {loading && (
-                  <svg
-                    className="w-4 h-4 animate-spin"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M4 4v5h.582m15.043 2A8.978 8.978 0 0112 21a8.978 8.978 0 01-7.625-4.042M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                )}
-                {loading ? 'Updating...' : 'Update Project'}
-              </button>
-            </div>
-          </form>
-        </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="export-button mt-6"
+          >
+            {loading 
+              ? (tab === 'en' ? 'Updating...' : 'جارٍ التحديث...') 
+              : (tab === 'en' ? 'Update Project' : 'تحديث المشروع')}
+          </button>
+        </form>
         <ToastContainer />
       </div>
-    </div>
+    </section>
   );
 }
 

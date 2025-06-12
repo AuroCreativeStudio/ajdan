@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createTeam } from '../../services/aboutusService';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
@@ -6,234 +6,260 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 
 function TeamCreate() {
-  const [formEn, setFormEn] = useState({
+  // For localized fields (managed by Strapi)
+  const [localizedForm, setLocalizedForm] = useState({
     member: '',
-    role: '',
-    image: null,
+    image: null
   });
-  const [formAr, setFormAr] = useState({
-    member: '',
-    role: '',
-    image: null,
+  
+  // For custom role fields
+  const [customRoles, setCustomRoles] = useState({
+    role_en: '',
+    role_ar: ''
   });
-  const [imagePreviewEn, setImagePreviewEn] = useState(null);
-  const [imagePreviewAr, setImagePreviewAr] = useState(null);
+  
+  const [imagePreview, setImagePreview] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState('en');
   const navigate = useNavigate();
 
-  const handleImageChange = async (e, locale) => {
+  // Clean up image preview
+  useEffect(() => {
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
+  }, [imagePreview]);
+
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    
     setUploading(true);
-    if (locale === 'en') setImagePreviewEn(URL.createObjectURL(file));
-    else setImagePreviewAr(URL.createObjectURL(file));
+    
+    // Create preview
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+
     try {
       const formData = new FormData();
       formData.append('files', file);
       const res = await axios.post('http://localhost:1337/api/upload', formData);
+      
       if (res.data && res.data[0]) {
-        if (locale === 'en') {
-          setFormEn((prev) => ({
-            ...prev,
-            image: res.data[0],
-          }));
-        } else {
-          setFormAr((prev) => ({
-            ...prev,
-            image: res.data[0],
-          }));
-        }
-        toast.success('Image uploaded!');
+        setLocalizedForm(prev => ({
+          ...prev,
+          image: res.data[0],
+        }));
+        toast.success('Image uploaded successfully!');
       } else {
-        toast.error('Image upload failed.');
+        throw new Error('Image upload failed');
       }
     } catch (err) {
-      toast.error('Image upload failed.');
+      console.error('Upload error:', err);
+      toast.error('Failed to upload image');
+      setImagePreview(null);
     } finally {
       setUploading(false);
     }
   };
 
-  const handleChange = (e, locale) => {
+  const handleLocalizedChange = (e) => {
     const { name, value } = e.target;
-    if (locale === 'en') {
-      setFormEn((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    } else {
-      setFormAr((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    setLocalizedForm(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleRoleChange = (e, locale) => {
+    const { value } = e.target;
+    setCustomRoles(prev => ({
+      ...prev,
+      [`role_${locale}`]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate English form (required fields)
+    if (!localizedForm.member || !customRoles.role_en) {
+      toast.error('Please fill all required fields in English');
+      return;
+    }
+
     setLoading(true);
+    
     try {
-      let imageValueEn = formEn.image;
-      if (imageValueEn && typeof imageValueEn === 'object' && imageValueEn.id) {
-        imageValueEn = imageValueEn.id;
-      }
-      const submitFormEn = {
-        ...formEn,
-        image: imageValueEn,
+      // Prepare data for both languages
+      const submitData = {
+        // Localized fields (managed by Strapi)
+        member: localizedForm.member,
+        image: localizedForm.image?.id || null,
+        
+        // Custom role fields
+        role_en: customRoles.role_en,
+        role_ar: customRoles.role_ar || customRoles.role_en // Fallback to English if empty
       };
-      const createdEn = await createTeam(submitFormEn, 'en');
-      
-      let imageValueAr = formAr.image;
-      if (imageValueAr && typeof imageValueAr === 'object' && imageValueAr.id) {
-        imageValueAr = imageValueAr.id;
-      }
-      const submitFormAr = {
-        ...formAr,
-        image: imageValueAr,
-      };
-      if (formAr.member || formAr.role || formAr.image) {
-        await createTeam(submitFormAr, 'ar', createdEn.data.id);
-      }
+
+      // Create the team member
+      await createTeam(submitData);
+
       toast.success('Team member created successfully!');
       setTimeout(() => navigate(-1), 1500);
     } catch (error) {
-      toast.error('Failed to create team member.');
+      const errorMessage = error.response?.data?.error?.message || 
+                         error.message || 
+                         'Failed to create team member';
+      toast.error(errorMessage);
+      console.error('Creation error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-
-
   return (
-    <div className="flex h-screen bg-gray-100">      
-      <div className="flex-1 p-4 overflow-auto">
-        <div className="max-w-2xl p-6 mx-auto bg-white rounded shadow">
-          <h2 className="mb-4 text-2xl font-bold">Create Team Member</h2>
-          
-          {/* Tabs */}
-          <div className="flex mb-4">
-            <button
-              type="button"
-              className={`px-4 py-2 rounded-t ${tab === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-              onClick={() => setTab('en')}
-            >
-              English
-            </button>
-            <button
-              type="button"
-              className={`px-4 py-2 rounded-t ${tab === 'ar' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
-              onClick={() => setTab('ar')}
-            >
-              Arabic
-            </button>
-          </div>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
+     <section className="bg-white ml-64 dark:bg-gray-900">
+      <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
+        <h2 className="mb-4 text-xl font-bold font-headline text-ma dark:text-white">
+          {tab === 'en' ? 'Add a new team member' : 'إضافة عضو جديد إلى الفريق'}
+        </h2>
+        
+        {/* Tabs */}
+        <div className="flex mb-4 border-b border-gray-300">
+          <button
+            type="button"
+            className={`px-4 py-2 rounded-t-lg border-b-2 font-medium transition duration-150 ease-in-out 
+              ${tab === 'en' 
+                ? 'text-primary-700 border-b-mainCharcoal1 bg-white' 
+                : 'text-gray-700 border-b-transparent'}`}
+            onClick={() => setTab('en')}
+          >
+            English
+          </button>
+          <button
+            type="button"
+            className={`px-4 py-2 rounded-t-lg border-b-2 font-univers transition duration-150 ease-in-out 
+              ${tab === 'ar' 
+                ? 'text-primary-700 border-b-mainCharcoal bg-white' 
+                : 'text-gray-700 border-b-transparent'}`}
+            onClick={() => setTab('ar')}
+          >
+            العربية
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
             {tab === 'en' && (
               <>
-                <div>
-                  <label className="block mb-1 font-medium">Name</label>
+                <div className="sm:col-span-2">
+                  <label htmlFor="member" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Name *
+                  </label>
                   <input
                     type="text"
                     name="member"
-                    value={formEn.member}
-                    onChange={(e) => handleChange(e, 'en')}
-                    className="w-full px-3 py-2 border rounded"
+                    id="member"
+                    value={localizedForm.member}
+                    onChange={handleLocalizedChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    placeholder="Type member name"
                     required
                   />
                 </div>
-                <div>
-                  <label className="block mb-1 font-medium">Role</label>
-                  <input
-                    type="text"
-                    name="role"
-                    value={formEn.role}
-                    onChange={(e) => handleChange(e, 'en')}
-                    className="w-full px-3 py-2 border rounded"
+                <div className="sm:col-span-2">
+                  <label htmlFor="role-en" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Role *
+                  </label>
+                  <select
+                    id="role-en"
+                    value={customRoles.role_en}
+                    onChange={(e) => handleRoleChange(e, 'en')}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                     required
-                  />
+                  >
+                    <option value="">Select a role</option>
+                    <option value="Board of Director">Board of Directors</option>
+                    <option value="Team">Team</option>
+                  </select>
                 </div>
-                <div>
-                  <label className="block mb-1 font-medium">Image</label>
+                <div className="sm:col-span-2">
+                  <label htmlFor="image" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                    Image
+                  </label>
                   <input
                     type="file"
+                    id="image"
                     accept="image/*"
-                    onChange={(e) => handleImageChange(e, 'en')}
-                    className="w-full px-3 py-2 border rounded"
+                    onChange={handleImageChange}
+                    className="block w-full p-2.5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
                     disabled={uploading}
                   />
-                  {imagePreviewEn && (
-                    <img
-                      src={imagePreviewEn}
-                      alt="Preview"
-                      className="object-contain h-24 mt-2 border rounded"
-                    />
+                  {imagePreview && (
+                    <div className="mt-2">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="object-cover w-full h-48 rounded border"
+                      />
+                    </div>
                   )}
-                  {uploading && <div className="text-sm text-gray-500">Uploading...</div>}
+                  {uploading && <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">Uploading image...</p>}
                 </div>
               </>
             )}
             
             {tab === 'ar' && (
               <>
-                <div>
-                  <label className="block mb-1 font-medium">Name (Arabic)</label>
+                <div className="sm:col-span-2">
+                  <label htmlFor="member-ar" className="block mb-2 text-sm font-univers text-gray-900 dark:text-white">
+                    الاسم
+                  </label>
                   <input
                     type="text"
                     name="member"
-                    value={formAr.member}
-                    onChange={(e) => handleChange(e, 'ar')}
-                    className="w-full px-3 py-2 border rounded"
+                    id="member-ar"
+                    value={localizedForm.member}
+                    onChange={handleLocalizedChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 font-univers text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                    placeholder="اكتب اسم العضو"
                     dir="rtl"
                   />
                 </div>
-                <div>
-                  <label className="block mb-1 font-medium">Role (Arabic)</label>
-                  <input
-                    type="text"
-                    name="role"
-                    value={formAr.role}
-                    onChange={(e) => handleChange(e, 'ar')}
-                    className="w-full px-3 py-2 border rounded"
+                <div className="sm:col-span-2">
+                  <label htmlFor="role-ar" className="block mb-2 text-sm font-univers text-gray-900 dark:text-white">
+                    دور
+                  </label>
+                  <select
+                    id="role-ar"
+                    value={customRoles.role_ar}
+                    onChange={(e) => handleRoleChange(e, 'ar')}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 font-univers text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                     dir="rtl"
-                  />
-                </div>
-                <div>
-                  <label className="block mb-1 font-medium">Image (Arabic)</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleImageChange(e, 'ar')}
-                    className="w-full px-3 py-2 border rounded"
-                    disabled={uploading}
-                  />
-                  {imagePreviewAr && (
-                    <img
-                      src={imagePreviewAr}
-                      alt="Preview"
-                      className="object-contain h-24 mt-2 border rounded"
-                    />
-                  )}
-                  {uploading && <div className="text-sm text-gray-500">Uploading...</div>}
+                  >
+                    <option value="">اختر الدور</option>
+                    <option value="مجلس الإدارة">مجلس الإدارة</option>
+                    <option value="فريق">فريق</option>
+                  </select>
                 </div>
               </>
             )}
-            
-            <button
-              type="submit"
-              className={`px-4 py-2 rounded text-white ${loading ? 'bg-gray-500' : 'bg-blue-600 hover:bg-blue-700'}`}
-              disabled={loading || uploading}
-            >
-              {loading ? 'Creating...' : 'Create'}
-            </button>
-          </form>
-          <ToastContainer />
-        </div>
+          </div>
+         <button
+            type="submit"
+            disabled={loading || uploading}
+            className="export-button mt-12"
+          >
+            {loading 
+              ? (tab === 'en' ? 'Creating...' : 'جارٍ الإنشاء...') 
+              : (tab === 'en' ? 'Add team member' : 'إضافة عضو جديد إلى الفريق')}
+          </button>
+        </form>
+        <ToastContainer position="top-right" autoClose={3000} />
       </div>
-    </div>
+    </section>
   );
 }
 

@@ -26,7 +26,7 @@ function Sidebar({ handleLogout }) {
 
   return (
     <div
-      className={`fixed top-0 left-0 h-screen flex-shrink-0 p-4 bg-main-charcoal1 transition-all duration-300 z-20 ${collapsed ? 'w-[4.5rem]' : 'w-60'
+      className={`fixed top-0 left-0 h-screen flex-shrink-0 p-4 bg-main-charcoal1 transition-all duration-300  ${collapsed ? 'w-[4.5rem]' : 'w-60'
         }`}
     >
       <div className="flex items-center mb-8">
@@ -48,7 +48,7 @@ function Sidebar({ handleLogout }) {
       </div>
       <nav className="space-y-4">
         <a
-          href="/"
+          href='dashboard'
           className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/')
               ? 'text-secondary-lavendergray6 font-medium'
               : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
@@ -57,57 +57,7 @@ function Sidebar({ handleLogout }) {
           <HiChartPie className="text-lg" />
           {!collapsed && 'Dashboard'}
         </a>
-        <a
-          href="/bloglist"
-          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/bloglist')
-              ? 'text-secondary-lavendergray6 font-medium'
-              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
-            }`}
-        >
-          <HiNewspaper className="text-lg" />
-          {!collapsed && 'News & Blogs'}
-        </a>
-        <a
-          href="/newsletter"
-          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/newsletter')
-              ? 'text-secondary-lavendergray6 font-medium'
-              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
-            }`}
-        >
-          <HiMail className="text-lg" />
-          {!collapsed && 'Newsletter'}
-        </a>
-        <a
-          href="/contactlist"
-          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/contactlist')
-              ? 'text-secondary-lavendergray6 font-medium'
-              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
-            }`}
-        >
-          <HiPhone className="text-lg" />
-          {!collapsed && 'Contact Listing'}
-        </a>
-        <a
-          href="/projectlist"
-          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/projectlist')
-              ? 'text-secondary-lavendergray6 font-medium'
-              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
-            }`}
-        >
-          <HiFolder className="text-lg" />
-          {!collapsed && 'Project Listing'}
-        </a>
-        <a
-          href="/teamlist"
-          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/teamlist')
-              ? 'text-secondary-lavendergray6 font-medium'
-              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
-            }`}
-        >
-          <HiUserGroup className="text-lg" />
-          {!collapsed && 'About Us Team'}
-        </a>
-        <a
+          <a
           href="/popuplist"
           className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/popuplist')
               ? 'text-secondary-lavendergray6 font-medium'
@@ -117,6 +67,71 @@ function Sidebar({ handleLogout }) {
           <HiInformationCircle className="text-lg" />
           {!collapsed && 'Project Enquiries'}
         </a>
+          <a
+          href="/contactlist"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/contactlist')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiPhone className="text-lg" />
+          {!collapsed && 'Contact Enquires Forms'}
+        </a>
+          <a
+          href="/newsletter"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/newsletter')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiMail className="text-lg" />
+          {!collapsed && 'Newsletter Enquires'}
+        </a>
+           <a
+          href="/teamlist"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/teamlist')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiUserGroup className="text-lg" />
+          {!collapsed && 'About Us Team'}
+        </a>
+          <a
+          href="/projectlist"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/projectlist')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiFolder className="text-lg" />
+          {!collapsed && 'Project Listing'}
+        </a>
+       
+        <a
+          href="/bloglist"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/bloglist')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiNewspaper className="text-lg" />
+          {!collapsed && 'News'}
+        </a>
+        <a
+          href="/projectlist"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/projectlist')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiFolder className="text-lg" />
+          {!collapsed && 'Roles'}
+        </a>
+      
+      
+     
+      
 
           <button
             type="button"

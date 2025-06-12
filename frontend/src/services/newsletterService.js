@@ -20,3 +20,12 @@ export const getNewsLetter = async () => {
     throw error;
   }
 }
+export const deleteNewsletter = async (documentId) => {
+  try {
+    const response = await axios.delete(`${API_URL}/api/newsletters${documentId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error deleting NewsLetter:', error.response?.data || error);
+    throw error;
+  }
+};
