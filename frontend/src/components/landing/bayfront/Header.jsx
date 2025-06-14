@@ -1,20 +1,21 @@
-import { useState } from 'react';
-import logo from '../../../assets/image/ajdan-dark-logo.png'; // Corrected path for logo
-import LanguageToggle from '../../LanguageToggle'; // Corrected path for LanguageToggle
+// Header.jsx
+import React from 'react';
+import logo from '../../../assets/image/ajdan-light-logo.png';
+import LanguageToggle from '../../LanguageToggle';
 
 const Header = () => {
   return (
-    <header className="bg-white px-6 py-0 relative max-md:px-4 max-md:py-2 max-sm:px-0 max-sm:py-1.5 border-b border-gray-200">
-      <div className="flex items-center justify-between relative z-20">
-        {/* Left: Language Selector */}
-        <div className="text-xl text-black max-md:text-lg max-sm:text-base z-10">
+    <header className="absolute top-0 left-0 w-full z-30 px-6 py-4">
+      <div className="flex items-center justify-between">
+        {/* Language Toggle */}
+        <div className="text-xl text-white">
           <LanguageToggle />
         </div>
 
-        {/* Right: Logo */}
+        {/* Logo */}
         <div>
           <a href="/">
-            <img src={logo} alt="Logo" className="h-24 w-32 object-contain" />
+            <img src={logo} alt="Logo" className="h-8 w-20 object-contain" />
           </a>
         </div>
       </div>
@@ -23,5 +24,3 @@ const Header = () => {
 };
 
 export default Header;
-
-

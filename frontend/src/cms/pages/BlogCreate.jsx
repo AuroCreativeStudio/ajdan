@@ -30,6 +30,7 @@ function BlogCreate() {
   });
 
   const [activeTab, setActiveTab] = useState('content');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -44,21 +45,6 @@ function BlogCreate() {
     }));
   };
 
-  const uploadImage = async (file) => {
-    if (!file) return null;
-
-    const formData = new FormData();
-    formData.append('files', file);
-
-    try {
-      const response = await axios.post('http://localhost:1337/api/upload', formData);
-      return response.data[0]?.id;
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      throw error;
-    }
-  };
-
   const generateSlug = (title) => {
     return title
       .toLowerCase()
@@ -68,117 +54,122 @@ function BlogCreate() {
       .replace(/-+/g, '-');
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const convertToBlock = (text) => {
+    if (!text || typeof text !== 'string') return [];
+    return text
+      .split('\n')
+      .filter(line => line.trim() !== '')
+      .map(line => ({
+        type: 'paragraph',
+        children: [{ type: 'text', text: line }],
+      }));
+  };
 
-     try {
-    // Format the publish date
-    const publishDateTime = publishData.publishDate && publishData.publishTime 
-      ? `${publishData.publishDate}T${publishData.publishTime}:00` 
-      : null;
+  const uploadImage = async (file) => {
+    if (!file) return null;
 
-    // Upload images
-    const uploadedImages = {
-      image_1: images.image_1 ? await uploadImage(images.image_1) : null,
-      image_2: images.image_2 ? await uploadImage(images.image_2) : null,
-      featured_image: images.featured_image ? await uploadImage(images.featured_image) : null
-    };
+    const formData = new FormData();
+    formData.append('files', file);
 
-    // Prepare payload with proper structure
-    const handleSubmit = async (e) => {
+    try {
+      const response = await axios.post(
+        'http://localhost:1337/api/upload', 
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            // 'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+          },
+          timeout: 30000
+        }
+      );
+      return response.data[0]?.id;
+    } catch (error) {
+      console.error('Image upload error:', error);
+      throw new Error(`Failed to upload image: ${error.message}`);
+    }
+  };
+
+const handleSubmit = async (e) => {
   e.preventDefault();
+  setIsSubmitting(true);
 
   try {
-    // Format the publish date
-    const publishDateTime = publishData.publishDate && publishData.publishTime 
-      ? `${publishData.publishDate}T${publishData.publishTime}:00` 
-      : null;
+    
+    if (!formData.title) throw new Error('Title is required');
+
+    // Format date-time
+    let formattedDate = new Date().toISOString();
+    if (publishData.publishDate && publishData.publishTime) {
+      formattedDate = `${publishData.publishDate}T${publishData.publishTime}:00.000Z`;
+    }
 
     // Upload images
-    const uploadedImages = {
-      image_1: images.image_1 ? await uploadImage(images.image_1) : null,
-      image_2: images.image_2 ? await uploadImage(images.image_2) : null,
-      featured_image: images.featured_image ? await uploadImage(images.featured_image) : null
-    };
+    const [image1Id, image2Id, featuredImageId] = await Promise.all([
+      images.image_1 ? uploadImage(images.image_1) : Promise.resolve(null),
+      images.image_2 ? uploadImage(images.image_2) : Promise.resolve(null),
+      images.featured_image ? uploadImage(images.featured_image) : Promise.resolve(null),
+    ].map(p => p.catch(e => {
+      console.error('Image upload failed:', e.message);
+      return null;
+    })));
 
-    // Prepare payload with proper structure
+    // Prepare payload according to your schema
     const payload = {
-    title: formData.title,
-    slug: formData.slug || generateSlug(formData.title),
-    description_1: formData.description_1 ? [
-      { type: "paragraph", children: [{ type: "text", text: formData.description_1 }] }
-    ] : [],
-    description_2: formData.description_2 ? [
-      { type: "paragraph", children: [{ type: "text", text: formData.description_2 }] }
-    ] : [],
-    description_3: formData.description_3 ? [
-      { type: "paragraph", children: [{ type: "text", text: formData.description_3 }] }
-    ] : [],
-    meta_description: formData.meta_description || "",
-    meta_keywords: formData.meta_keywords || "",
-    image_1: uploadedImages.image_1 || null,
-    image_2: uploadedImages.image_2 || null,
-    featured_image: uploadedImages.featured_image || null,
-    alt_text_image: formData.alt_text_image || "",
-    publish: publishData.publish || false,
-    date: publishDateTime || null
-  };
-
-    // Make sure to wrap the payload in a data object if your API expects it
-    const apiPayload = {
-      data: payload
+      data: {
+        title: formData.title,
+        slug: formData.slug || generateSlug(formData.title),
+        description_1: convertToBlock(formData.description_1),
+        description_2: convertToBlock(formData.description_2),
+        description_3: convertToBlock(formData.description_3),
+        meta_description: formData.meta_description || '',
+        meta_keywords: formData.meta_keywords || '',
+        alt_text_image: formData.alt_text_image || '',
+        date: formattedDate, // Use the formatted date
+       
+        publish: publishData.publish, // Use the publish toggle status
+        image_1: image1Id,
+        image_2: image2Id,
+        featured_image: featuredImageId
+      }
     };
 
-    const response = await createBlogPost(apiPayload);
-    console.log('Blog created:', response);
+    console.log("Final payload:", JSON.stringify(payload, null, 2));
+
+    // Send API request
+    const response = await createBlogPost(payload);
+    console.log(response);
     toast.success('Blog created successfully!');
-    navigate('/blogs');
+    navigate('/bloglist');
   } catch (error) {
-    console.error('Error creating blog:', error);
-    if (error.response) {
-      console.error('Response data:', error.response.data);
-      if (error.response.data.error?.details) {
-        toast.error(`Validation error: ${error.response.data.error.message}`);
-      } else {
-        toast.error('Error creating blog. Please try again.');
-      }
-    } else {
-      toast.error('Network error. Please check your connection.');
-    }
+    console.error('Error in handleSubmit:', error);
+       console.error('Full error:', error);
+    console.error('Error response:', error.response?.data); 
+    toast.error(`Error: ${error.message}`);
+  } finally {
+    setIsSubmitting(false);
   }
 };
-
-      const response = await createBlogPost(payload);
-      console.log('Blog created:', response);
-      toast.success('Blog created successfully!');
-      navigate('/blogs'); // Redirect after successful creation
-    } catch (error) {
-      console.error('Error creating blog:', error);
-      if (error.response) {
-        console.error('Response data:', error.response.data);
-      }
-      toast.error('Error creating blog. Please try again.');
-    }
-  };
 
   return (
     <div className="bg-white ml-64 p-6 font-sans">
       {/* Header */}
-      <label className="flex justify-between items-start mb-2">Title</label>
+      <label className="flex justify-between items-start font-headline mb-2">Title</label>
       <div className="flex justify-between items-center mb-6">
         <input
           type="text"
           value={formData.title}
           onChange={handleChange}
           name="title"
-          className="w-3/5 px-4 py-2 text-l font-body font-univers border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-3/5 px-4 py-2 text-l font-body font-univers border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-mainCharcoal1"
         />
         <div className="flex items-center space-x-3">
           <button
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className={`export-button ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
             onClick={handleSubmit}
+            disabled={isSubmitting}
           >
-            Save
+            {isSubmitting ? 'Saving...' : 'Save'}
           </button>
         </div>
       </div>
@@ -189,13 +180,13 @@ function BlogCreate() {
         <div className="lg:w-2/3 space-y-4">
           <div className="flex space-x-6 border-b font-headline border-gray-300 pb-2">
             <button 
-              className={`pb-1 font-semibold ${activeTab === 'content' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-blue-600'}`}
+              className={`pb-1 font-headline ${activeTab === 'content' ? 'text-mainCharcoal1 border-b-2 border-mainCharcoal1' : 'text-gray-500 hover:text-mainCharcoal1'}`}
               onClick={() => setActiveTab('content')}
             >
               Content
             </button>
             <button 
-              className={`pb-1 font-semibold ${activeTab === 'meta' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-blue-600'}`}
+              className={`pb-1 font-headline ${activeTab === 'meta' ? 'text-mainCharcoal1 border-b-2 border-mainCharcoal1' : 'text-gray-500 hover:text-mainCharcoal1'}`}
               onClick={() => setActiveTab('meta')}
             >
               Meta
@@ -211,12 +202,12 @@ function BlogCreate() {
                   name="description_1"
                   value={formData.description_1 || ''}
                   onChange={handleChange}
-                  className="w-full font-body h-32 border border-gray-300 rounded p-3 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                  className="w-full font-univers font-body  h-32 border border-gray-300 rounded p-3 resize-y focus:outline-none focus:ring-2 focus:ring-mainCharcoal1 mb-4"
                   placeholder="Enter your first description here..."
                 ></textarea>
                 
                 <h3 className="text-md font-headline mb-2">Image 1</h3>
-                <div className="border-2 font-headline border-dashed border-gray-300 rounded p-4 text-center text-blue-600 cursor-pointer mb-3">
+                <div className="border-2 font-headline border-dashed border-gray-300 rounded p-4 text-center text-mainCharcoal1 cursor-pointer mb-3">
                   <input
                     type="file"
                     name="image_1"
@@ -226,7 +217,7 @@ function BlogCreate() {
                     id="file-upload-image_1"
                   />
                   <label htmlFor="file-upload-image_1" className="cursor-pointer">
-                    Upload Image 1
+                    {images.image_1 ? images.image_1.name : 'Upload Image 1'}
                   </label>
                 </div>
               </div>
@@ -238,12 +229,12 @@ function BlogCreate() {
                   name="description_2"
                   value={formData.description_2 || ''}
                   onChange={handleChange}
-                  className="w-full h-32 border font-body border-gray-300 rounded p-3 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                  className="w-full h-32 border font-body font-univers border-gray-300 rounded p-3 resize-y focus:outline-none focus:ring-2 focus:ring-mainCharcoal1 mb-4"
                   placeholder="Enter your second description here..."
                 ></textarea>
                 
                 <h3 className="text-md font-medium mb-2">Image 2</h3>
-                <div className="border-2 border-dashed border-gray-300 rounded p-4 text-center text-blue-600 cursor-pointer mb-3">
+                <div className="border-2 border-dashed border-gray-300 rounded p-4 text-center text-mainCharcoal1 cursor-pointer mb-3">
                   <input
                     type="file"
                     name="image_2"
@@ -253,7 +244,7 @@ function BlogCreate() {
                     id="file-upload-image_2"
                   />
                   <label htmlFor="file-upload-image_2" className="cursor-pointer">
-                    Upload Image 2
+                    {images.image_2 ? images.image_2.name : 'Upload Image 2'}
                   </label>
                 </div>
               </div>
@@ -265,7 +256,7 @@ function BlogCreate() {
                   name="description_3"
                   value={formData.description_3 || ''}
                   onChange={handleChange}
-                  className="w-full font-body h-32 border border-gray-300 rounded p-3 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                  className="w-full font-body font-univers h-32 border border-gray-300 rounded p-3 resize-y focus:outline-none focus:ring-2 focus:ring-mainCharcoal1 mb-4"
                   placeholder="Enter your third description here..."
                 ></textarea>
               </div>
@@ -273,7 +264,7 @@ function BlogCreate() {
               {/* Featured Image and Alt Text */}
               <div className="bg-white p-5 rounded shadow">
                 <h2 className="text-l font-headline mb-2">Featured Image</h2>
-                <div className="border-2 border-dashed border-gray-300 rounded p-4 text-center text-blue-600 cursor-pointer mb-4">
+                <div className="border-2 border-dashed border-gray-300 rounded p-4 text-center text-mainCharcoal1 cursor-pointer mb-4">
                   <input
                     type="file"
                     name="featured_image"
@@ -283,7 +274,7 @@ function BlogCreate() {
                     id="file-upload-featured"
                   />
                   <label htmlFor="file-upload-featured" className="cursor-pointer">
-                    Upload Featured Image
+                    {images.featured_image ? images.featured_image.name : 'Upload Featured Image'}
                   </label>
                 </div>
 
@@ -295,7 +286,7 @@ function BlogCreate() {
                     name="alt_text_image"
                     value={formData.alt_text_image || ''}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border font-body border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border font-body border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-mainCharcoal1"
                   />
                 </div>
               </div>
@@ -310,7 +301,7 @@ function BlogCreate() {
                   name="meta_description"
                   value={formData.meta_description || ''}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 font-body border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 font-body font-univers border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-mainCharcoal1"
                   rows={4}
                 />
               </div>
@@ -322,7 +313,7 @@ function BlogCreate() {
                   name="meta_keywords"
                   value={formData.meta_keywords || ''}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border font-body border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border font-body font-univers border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-mainCharcoal1"
                 />
                 <p className="text-xs text-gray-500 mt-1">Separate keywords with commas</p>
               </div>
@@ -361,7 +352,7 @@ function BlogCreate() {
               name="slug"
               value={formData.slug || ''}
               onChange={handleChange}
-              className="w-full px-3 py-2 mb-2 border font-body border-gray-300 rounded"
+              className="w-full px-3 py-2 mb-2 border font-body font-univers border-gray-300 rounded"
             />
             <button
               type="button"
@@ -381,7 +372,7 @@ function BlogCreate() {
               <h3 className="font-headline mb-2">Publish Settings</h3>
               
               <div className="flex items-center justify-between mb-3">
-                <span className="text-sm">Published Status</span>
+                <span className="text-sm font-headline">Published Status</span>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input 
                     type="checkbox" 
@@ -392,13 +383,13 @@ function BlogCreate() {
                       publish: !prev.publish
                     }))}
                   />
-                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accentSagegray2"></div>
                 </label>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Publish Date</label>
+                  <label className="block text-xs text-gray-500 mb-1 font-headline">Publish Date</label>
                   <input
                     type="date"
                     value={publishData.publishDate}
@@ -410,7 +401,7 @@ function BlogCreate() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Publish Time</label>
+                  <label className="block text-xs text-gray-500 mb-1 font-headline">Publish Time</label>
                   <input
                     type="time"
                     value={publishData.publishTime}

@@ -11,8 +11,8 @@ const ITEMS_PER_PAGE = 6;
 function ProjectList() {
   const [projectList, setProjectList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
+  // const [showModal, setShowModal] = useState(false);
+  // const [selectedProject, setSelectedProject] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get('page')) || 1;
   const navigate = useNavigate();
@@ -36,10 +36,10 @@ function ProjectList() {
     fetchProjectList();
   }, []);
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedProject(null);
-  };
+  // const handleCloseModal = () => {
+  //   setShowModal(false);
+  //   setSelectedProject(null);
+  // };
 
   const handleUpdate = (project) => {
     navigate('/projectupdate', { state: { project } });

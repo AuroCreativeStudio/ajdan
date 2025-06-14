@@ -72,23 +72,41 @@ export const fetchBlogBySlug = async (slug, locale = 'en') => {
   }
 };
 
-export const createBlogPost = async (formData) => {
-  return axios.post(`${API_URL}/api/blogs-and-news`, {
-    data: formData, 
-  });
-};
-
-export const updateBlog = async (documentId, data, locale) => {
-
-  let url = `${API_URL.replace(/\/$/, '')}/api/blogs-and-news/${documentId}`;
-  if (locale) {
-    url += `?locale=${locale}`;
-  }
+// blogService.js
+export const createBlogPost = async (data) => {
   try {
-    const response = await axios.put(url, data);
+    const response = await axios.post(
+      'http://localhost:1337/api/blogs-and-news', // Verify this matches your Strapi collection
+      data,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        
+        },
+      }
+    );
     return response.data;
   } catch (error) {
-    console.error('Update blog error:', error.response?.data || error.message);
+    console.error('Error creating blog post:', error);
+    throw error;
+  }
+};
+export const updateBlog = async (id, payload, locale = 'en') => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/api/blogs-and-news/${id}`,  
+      payload,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        },
+        params: { locale }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error updating blog:', error);
     throw error;
   }
 };
