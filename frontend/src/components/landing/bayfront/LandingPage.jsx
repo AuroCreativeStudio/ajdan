@@ -87,6 +87,47 @@ const AjdanBayfront = () => {
         },
     ];
 
+
+const markers = [
+  {
+    id: 1,
+    label: "Exclusive Beach Club",
+    top: "2%",
+    left: "13%",
+    direction: "down"
+  },
+  {
+    id: 2,
+    label: "Fine Dining zone",
+    top: "32%",
+    left: "70%",
+  direction: "up"
+  },
+  {
+    id: 3,
+    label: "Events & Pop-up zone",
+    top: "47%",
+    left: "71%",
+   direction: "up"
+    
+  },
+  {
+    id: 4,
+    label: "Kids zone",
+    top: "76%",
+    left: "57%",
+   direction: "up"
+  },
+  {
+    id: 5,
+    label: "Casual zone",
+    top: "54%",
+    left: "46%",
+   direction: "up"
+  },
+];
+
+
     useEffect(() => {
         const loadData = async () => {
             try {
@@ -148,11 +189,6 @@ const AjdanBayfront = () => {
   </button>
 </div>
 
-
-
-
-
-
   {/* Full-Width Tabs With Gap */}
 <nav className="absolute bottom-0 w-full z-20 grid grid-cols-4 gap-4 bg-gradient-to-t from-black/80 to-transparent text-white font-bold text-xs md:text-base text-center px-2">
   {[
@@ -178,35 +214,61 @@ const AjdanBayfront = () => {
   ))}
 </nav>
 
-
-
 </section>
 
             {/* About Section */}
-            <section
-                className="max-h-screen flex items-center justify-center px-4 md:px-6 py-20 md:py-44 bg-cover bg-center text-white"
-                style={{ backgroundImage: `url(${bayfront1})` }}
-                id="about"
-            >
-                <div className="max-w-6xl mx-auto content-center w-full">
-                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-headline content-center text-right mb-6 md:mb-10 leading-snug">
-                    Where elegant design <br/>
-                    meets a calm shores  to create luxury<br/>
-                    <span className="justify-content-start">lifestyle by khobar's sea.<br/></span>
-                    </h1>
-                    <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6 md:gap-8">
-                        <div className="flex-1">
-                            <p className="font-headline mb-2">{t('bayfront.subtitle')}</p>
-                            <p className="text-xs md:text-sm lg:text-base opacity-90 leading-relaxed font-body">
-                                {t('bayfront.description1')}<br />
-                                {t('bayfront.description2')}<br />
-                                {t('bayfront.description3')}<br />
-                                {t('bayfront.description4')}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+         <section
+  className="min-h-[75vh] flex items-center justify-center px-4 md:px-6 py-20 md:py-44 bg-cover bg-center text-white"
+  style={{ backgroundImage: `url(${bayfront1})` }}
+  id="about"
+>
+  <div className="max-w-6xl mx-auto w-full flex flex-col items-center text-center">
+    <h1 className="text-2xl md:text-4xl lg:text-5xl font-headline mb-6 md:mb-10 leading-snug space-y-2">
+      <div className="text-right">Where elegant design</div>
+      <div className="text-justify">meets a calm shore to create luxury</div>
+      <div className="text-left">lifestyle by Khobar's sea.</div>
+    </h1>
+
+    <div className="flex flex-col lg:flex-row justify-between gap-8 w-full">
+      {/* Left Subheading */}
+      <div className="lg:w-1/3">
+        <p className="font-headline font-semibold text-white mb-2">
+          Coastal Lifestyle Perfected
+        </p>
+      </div>
+
+      {/* Right Description */}
+     <div className="lg:w-2/3">
+  <div className="flex flex-col lg:flex-row justify-between items-start gap-4">
+    {/* Paragraph */}
+    <p className="text-sm md:text-base lg:text-lg text-white/90 leading-relaxed font-body lg:w-3/4">
+      A famous seafront destination offering luxury residences,<br />
+      vibrant retail, fine dining, and world-class leisure experiences.<br />
+      Bayfront transforms Khobar's coastline into a lifestyle <br />
+      landmark aligned with Saudi Vision 2030's forward-thinking<br />
+      vision.
+    </p>
+
+    {/* Button aligned right */}
+  <div className="lg:w-1/4 flex justify-end">
+  <a href="/brochure.pdf" className="group relative inline-block whitespace-nowrap">
+    {/* Hover Background Layer */}
+    <span className="absolute inset-0 bg-transparent group-hover:bg-white transition-colors duration-300 z-0 rounded"></span>
+
+    {/* Border + Text */}
+    <span className="relative z-10 inline-block border border-white group-hover:border-black text-white group-hover:text-black px-6 py-2 text-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
+      Download Brochure
+    </span>
+  </a>
+</div>
+
+
+  </div>
+</div>
+
+    </div>
+  </div>
+</section>
 
             {/* Statistics Section */}
             <div
@@ -272,103 +334,159 @@ const AjdanBayfront = () => {
             </section>
 
             {/* Waves of Luxury Section */}
-            <div className="relative w-full h-screen bg-cover bg-center" style={{ backgroundImage: `url(${bayfront8})` }}>
-                <div className="absolute top-[15%] left-[40%] group">
-                    <div className="relative flex flex-col items-center">
-                        <div className="w-0.5 h-6 bg-white opacity-0 transition-all duration-300 group-hover:opacity-50 group-hover:-translate-y-2"></div>
-                        <div className="w-4 h-4 bg-white rounded-full border-4 border-white shadow-lg transition-all duration-300 group-hover:w-10 group-hover:h-10 group-hover:opacity-30"></div>
-                        <div className="text-white text-sm mt-2 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                            Exclusive Beach Club
-                        </div>
-                    </div>
+     
+ <div
+      className="relative w-full h-screen bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: `url(${bayfront8})` }}
+    >
+      {/* Marker Points */}
+      {markers.map(({ id, label, top, left, direction }) => (
+        <div
+          key={id}
+          className="absolute group"
+          style={{
+            top: `clamp(10px, ${top}, 90%)`,
+            left: `clamp(10px, ${left}, 90%)`,
+          }}
+        >
+          <div className="relative flex flex-col items-center">
+            {/* Top Label & Line (if direction is up) */}
+            {direction === "up" && (
+              <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-2 sm:mb-3">
+                <div className="text-white text-[10px] sm:text-xs md:text-sm mb-1 whitespace-nowrap">
+                  {label}
                 </div>
-                <div className="absolute bottom-10 left-10 text-white text-4xl font-serif">Waves of Luxury</div>
-                <div className="fixed bottom-6 right-6 space-y-2 flex flex-col items-center">
-                    <button className="bg-green-500 w-12 h-12 mt-12 rounded-full flex items-center justify-center shadow-lg">📞</button>
-                </div>
+                <div className="w-px h-12 bg-white" />
+              </div>
+            )}
+
+            {/* Ripple Circle */}
+            <div className="relative w-16 h-16 flex items-center justify-center">
+              {/* Outer ring */}
+              <div className="absolute w-16 h-16 rounded-full bg-white opacity-20 animate-rippleOuter pointer-events-none" />
+              {/* Middle ring */}
+              <div className="absolute w-10 h-10 rounded-full bg-white opacity-40 animate-rippleMiddle pointer-events-none" />
+              {/* Inner static circle */}
+              <div className="w-4 h-4 rounded-full bg-white border-2 border-white z-10" />
             </div>
 
-            {/* Financing Section */}
-            <div className="bg-[#f7f0e9] min-h-screen">
-                <div className="bg-white flex justify-between items-center px-10 py-6 border-b border-[#e8dcd0]">
-                    <h1 className="text-2xl md:text-3xl font-serif text-[#b3703b]">
-                        Financing and Installment Plans
-                    </h1>
-                    <button className="border border-black px-5 py-2 text-sm hover:bg-[#f0e6dd] transition">
-                        Know More
-                    </button>
+            {/* Bottom Label & Line (if direction is down) */}
+            {direction === "down" && (
+              <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mt-2 sm:mt-3">
+                <div className="w-px h-12 bg-white" />
+                <div className="text-white text-[10px] sm:text-xs md:text-sm mt-1 whitespace-nowrap">
+                  {label}
                 </div>
-                <div className="flex flex-col md:flex-row items-center justify-center px-4 py-10 gap-0 md:gap-4">
-                    <div className="bg-white h-auto flex flex-col md:flex-row w-full max-w-7xl rounded shadow-md overflow-hidden">
-                        <div className="md:w-1/2 w-full">
-                            <img
-                                src={bayfront9}
-                                alt="Investment"
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                        <div className="md:w-1/2 w-full p-8">
-                            <h2 className="text-2xl font-serif text-[#b3703b] border-b border-[#e2c6a8] pb-4 mb-6">
-                                Investment Opportunity
-                            </h2>
-                            {[
-                                ['Fine Dining', '8 Units', '500 Sqm'],
-                                ['Casual Dining', '12 Units', '300 Sqm'],
-                                ['Fast Food', '20 Units', '200 Sqm'],
-                                ['Buffet Style', '15 Units', '100 Sqm'],
-                                ['Food Truck', '5 Units', '150 Sqm']
-                            ].map(([type, units, sqm], idx) => (
-                                <div key={idx} className="flex justify-between text-[17px] mb-4">
-                                    <span className="font-semibold text-[#b3703b]">{type}</span>
-                                    <span className="text-gray-700">{units}</span>
-                                    <span className="text-gray-700">{sqm}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+
+      {/* Section Title */}
+      <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 md:bottom-10 md:left-10 text-white text-xl sm:text-2xl md:text-4xl font-chapaza">
+        Waves of Luxury
+      </div>
+    </div>
+
+
+           
+{/* Financing Section */}
+<div className="bg-[#f7f0e9] min-h-[75vh]">
+  {/* Header */}
+  <div className="bg-white flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 sm:px-6 md:px-10 py-4 sm:py-6 border-b border-[#e8dcd0]">
+    <h1 className="text-xl sm:text-2xl md:text-3xl font-serif text-[#b3703b] mb-3 sm:mb-0">
+      Financing and Installment Plans
+    </h1>
+    <button className="group relative inline-block text-xs sm:text-sm self-end sm:self-auto">
+      <span className="absolute inset-0 bg-transparent group-hover:bg-black transition-colors duration-300 rounded z-0" />
+      <span className="relative z-10 inline-block border border-black group-hover:border-white text-black group-hover:text-white px-3 py-1 sm:px-4 sm:py-1.5 md:px-5 md:py-2 transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
+        Know More
+      </span>
+    </button>
+  </div>
+
+  {/* Content */}
+  <div className="flex flex-col md:flex-row items-center justify-center px-2 sm:px-4 py-6 sm:py-10 gap-0 md:gap-4 h-full min-h-[calc(75vh-80px)]">
+    <div className="bg-white h-full flex flex-col md:flex-row w-full max-w-7xl rounded shadow-md overflow-hidden">
+      {/* Left Image - Full width on mobile, half on desktop */}
+      <div className="md:w-1/2 w-full h-48 sm:h-64 md:h-full">
+        <img
+          src={bayfront9}
+          alt="Investment"
+          className="w-full h-full object-cover"
+        />
+      </div>
+
+      {/* Right Text Block */}
+      <div className="md:w-1/2 w-full p-4 sm:p-6 md:p-8 overflow-y-auto">
+        <h2 className="text-xl sm:text-2xl font-serif text-[#b3703b] border-b border-[#e2c6a8] pb-3 sm:pb-4 mb-4 sm:mb-6">
+          Investment Opportunity
+        </h2>
+        <div className="grid gap-3 sm:gap-4 md:gap-6">
+          {[
+            ['Fine Dining', '8 Units', '500 Sqm'],
+            ['Casual Dining', '12 Units', '300 Sqm'],
+            ['Fast Food', '20 Units', '200 Sqm'],
+            ['Buffet Style', '15 Units', '100 Sqm'],
+            ['Food Truck', '5 Units', '150 Sqm'],
+            ['Cafe', '10 units', '250sqm'],
+          ].map(([type, units, sqm], idx) => (
+            <div
+              key={idx}
+              className="flex justify-between items-center text-sm sm:text-base md:text-[17px]"
+            >
+              <span className="font-semibold text-[#b3703b]">{type}</span>
+              <span className="text-gray-700">{units}</span>
+              <span className="text-gray-700">{sqm}</span>
             </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
             {/* Video Section */}
-        {/* Video Section */}
-<div className="relative m-24 bg-white font-serif">
-  <h2 className="text-center text-[#b3703b] text-2xl md:text-3xl px-4 font-semibold mt-8 mb-4">
+<div className="relative mx-4 sm:mx-12 md:mx-24 my-10 bg-white font-serif">
+  <h2 className="text-center text-[#b3703b] text-xl sm:text-2xl md:text-3xl px-4 font-semibold mt-6 sm:mt-8 mb-4">
     Take a glimpse around Bayfront
   </h2>
 
-  <video
-    autoPlay
-    loop
-    muted
-    playsInline
-    className="w-auto h-auto object-cover mx-auto"
-  >
-    <source src={video} type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
+  <div className="w-full max-w-6xl mx-auto">
+    <video
+      autoPlay
+      loop
+      muted
+      playsInline
+      className="w-full h-auto object-cover rounded-md"
+    >
+      <source src={video} type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
 
   {/* ENQUIRE NOW Button - Vertical Left */}
-  
-  <div className="fixed top-1/2 left-4 transform -translate-y-1/2 -rotate-90 origin-left z-40">
-    <button className="bg-white border border-gray-300 text-xs font-medium px-4 py-2 shadow-md hover:bg-gray-100 transition">
+  <div className="fixed top-1/2 left-2 sm:left-4 transform -translate-y-1/2 -rotate-90 origin-left z-40">
+    <button className="bg-white border border-gray-300 text-[10px] sm:text-xs font-medium px-3 sm:px-4 py-1.5 sm:py-2 shadow-md hover:bg-gray-100 transition">
       ENQUIRE NOW
     </button>
   </div>
 
   {/* Floating Buttons - Bottom Right */}
-  <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-40">
-    <button className="w-10 h-10 rounded-full bg-[#a55c29] flex items-center justify-center shadow-md hover:opacity-80">
+  <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 flex flex-col gap-2 sm:gap-3 z-40">
+    <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#a55c29] flex items-center justify-center shadow-md hover:opacity-80">
       <img
         src="https://cdn-icons-png.flaticon.com/512/724/724664.png"
         alt="Call"
-        className="w-5 h-5"
+        className="w-4 h-4 sm:w-5 sm:h-5"
       />
     </button>
-    <button className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center shadow-md hover:opacity-80">
+    <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#25D366] flex items-center justify-center shadow-md hover:opacity-80">
       <img
         src="https://cdn-icons-png.flaticon.com/512/1384/1384023.png"
         alt="WhatsApp"
-        className="w-5 h-5"
+        className="w-4 h-4 sm:w-5 sm:h-5"
       />
     </button>
   </div>
