@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import BayfrontHeader from './Header';
 import BayfrontFooter from './Footer';
@@ -28,6 +28,139 @@ import {
   FaUsers,
 } from 'react-icons/fa';
 
+const DraggableMapWithMarkers = ({ imageSrc, markers }) => {
+  const containerRef = useRef(null);
+  const imageRef = useRef(null);
+  const [dragging, setDragging] = useState(false);
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  // Initialize position to show top-left of image
+  useEffect(() => {
+    if (containerRef.current) {
+      // Start with image aligned to top-left (position 0,0)
+      setPosition({ x: 0, y: 0 });
+    }
+  }, []);
+
+  const startDragging = (e) => {
+    if (e.touches && e.touches.length > 1) return;
+    
+    setDragging(true);
+    const clientX = e.clientX || e.touches[0].clientX;
+    const clientY = e.clientY || e.touches[0].clientY;
+    
+    setStartPos({
+      x: clientX - position.x,
+      y: clientY - position.y,
+    });
+    
+    document.body.style.userSelect = 'none';
+  };
+
+  const stopDragging = () => {
+    setDragging(false);
+    document.body.style.userSelect = '';
+  };
+
+  const onDragging = (e) => {
+    if (!dragging) return;
+    
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    
+    if (!clientX || !clientY) return;
+    
+    // Calculate new position
+    let newX = clientX - startPos.x;
+    let newY = clientY - startPos.y;
+    
+    // Constrain movement to keep image within container
+    const containerWidth = containerRef.current.offsetWidth;
+    const containerHeight = containerRef.current.offsetHeight;
+    const imgWidth = 1920; // Fixed image width
+    const imgHeight = 1080; // Fixed image height
+    
+    // Calculate maximum allowed position (right/bottom edges)
+    const maxX = Math.min(0, containerWidth - imgWidth);
+    const maxY = Math.min(0, containerHeight - imgHeight);
+    
+    // Apply constraints
+    newX = Math.max(maxX, Math.min(0, newX));
+    newY = Math.max(maxY, Math.min(0, newY));
+    
+    setPosition({ x: newX, y: newY });
+  };
+
+  return (
+    <div 
+      ref={containerRef}
+      className="relative w-full h-[70vh] overflow-hidden touch-none bg-gray-100"
+      onMouseLeave={stopDragging}
+    >
+      <div
+        ref={imageRef}
+        className="absolute bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: `url(${imageSrc})`,
+          width: '1920px',
+          height: '1080px',
+          cursor: dragging ? 'grabbing' : 'grab',
+          transform: `translate(${position.x}px, ${position.y}px)`,
+          transition: dragging ? 'none' : 'transform 0.2s ease',
+        }}
+        onMouseDown={startDragging}
+        onMouseUp={stopDragging}
+        onMouseMove={onDragging}
+        onTouchStart={startDragging}
+        onTouchEnd={stopDragging}
+        onTouchMove={onDragging}
+      >
+        {markers.map(({ id, label, top, left, direction }) => (
+          <div
+            key={id}
+            className="absolute group"
+            style={{
+              top: top,
+              left: left,
+            }}
+          >
+            <div className="relative flex flex-col items-center">
+              {direction === "up" && (
+                <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-2 sm:mb-3">
+                  <div className="text-white text-xs sm:text-sm whitespace-nowrap bg-black/50 px-2 py-1 rounded">
+                    {label}
+                  </div>
+                  <div className="w-px h-8 sm:h-12 bg-white" />
+                </div>
+              )}
+
+              <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                <div className="absolute w-full h-full rounded-full bg-white opacity-20 animate-rippleOuter pointer-events-none" />
+                <div className="absolute w-10 h-10 rounded-full bg-white opacity-40 animate-rippleMiddle pointer-events-none" />
+                <div className="w-4 h-4 rounded-full bg-white border-2 border-white z-10" />
+              </div>
+
+              {direction === "down" && (
+                <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mt-2 sm:mt-3">
+                  <div className="w-px h-8 sm:h-12 bg-white" />
+                  <div className="text-white text-xs sm:text-sm mt-1 whitespace-nowrap bg-black/50 px-2 py-1 rounded">
+                    {label}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 md:bottom-10 md:left-10 text-white text-xl sm:text-2xl md:text-4xl font-chapaza z-10 pointer-events-none">
+        Waves of Luxury
+      </div>
+    </div>
+  );
+};
+
 const AjdanBayfront = () => {
     const [data, setData] = useState(null);
     const [showForm, setShowForm] = useState(false);
@@ -43,6 +176,8 @@ const AjdanBayfront = () => {
         { icon: <FaCar className="text-white text-xl" />, label: 'Parking Spaces', value: '495' },
         { icon: <FaUsers className="text-white text-xl" />, label: 'Event Capacity', value: '2500' },
     ];
+
+    
 
     const amenities = [
         {
@@ -87,46 +222,43 @@ const AjdanBayfront = () => {
         },
     ];
 
-
-const markers = [
-  {
-    id: 1,
-    label: "Exclusive Beach Club",
-    top: "2%",
-    left: "13%",
-    direction: "down"
-  },
-  {
-    id: 2,
-    label: "Fine Dining zone",
-    top: "32%",
-    left: "70%",
-  direction: "up"
-  },
-  {
-    id: 3,
-    label: "Events & Pop-up zone",
-    top: "47%",
-    left: "71%",
-   direction: "up"
-    
-  },
-  {
-    id: 4,
-    label: "Kids zone",
-    top: "76%",
-    left: "57%",
-   direction: "up"
-  },
-  {
-    id: 5,
-    label: "Casual zone",
-    top: "54%",
-    left: "46%",
-   direction: "up"
-  },
-];
-
+    const markers = [
+      {
+        id: 1,
+        label: "Exclusive Beach Club",
+        top: "2%",
+        left: "13%",
+        direction: "down"
+      },
+      {
+        id: 2,
+        label: "Fine Dining zone",
+        top: "32%",
+        left: "70%",
+        direction: "up"
+      },
+      {
+        id: 3,
+        label: "Events & Pop-up zone",
+        top: "47%",
+        left: "71%",
+        direction: "up"
+      },
+      {
+        id: 4,
+        label: "Kids zone",
+        top: "76%",
+        left: "57%",
+        direction: "up"
+      },
+      {
+        id: 5,
+        label: "Casual zone",
+        top: "54%",
+        left: "46%",
+        direction: "up"
+      },
+    ];
 
     useEffect(() => {
         const loadData = async () => {
@@ -169,106 +301,96 @@ const markers = [
             <BayfrontHeader />            
             
             {/* Hero Section */}
-          <section
-  className="relative w-full h-screen bg-cover bg-center opacity-90"
-  style={{ backgroundImage: `url(${herosectionimg})` }}
->
-  {/* Overlay */}
-  <div className="absolute inset-0 bg-black bg-opacity-30 z-10"></div>
+            <section
+              className="relative w-full h-screen bg-cover bg-center opacity-90"
+              style={{ backgroundImage: `url(${herosectionimg})` }}
+            >
+              <div className="absolute inset-0 bg-black bg-opacity-30 z-10"></div>
 
-  {/* Button */}
-<div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-20">
-  <button className="group relative inline-block">
-    {/* Background Layer */}
-    <span className="absolute inset-0 bg-transparent group-hover:bg-white transition-colors duration-300 z-0 rounded"></span>
+              <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-20">
+                <button className="group relative inline-block">
+                  <span className="absolute inset-0 bg-transparent group-hover:bg-white transition-colors duration-300 z-0 rounded"></span>
+                  <span className="relative z-10 inline-block border-2 border-white group-hover:border-black text-white group-hover:text-black px-6 py-2 font-semibold text-sm md:text-base transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
+                    Schedule a Tour
+                  </span>
+                </button>
+              </div>
 
-    {/* Border + Text Layer */}
-    <span className="relative z-10 inline-block border-2 border-white group-hover:border-black text-white group-hover:text-black px-6 py-2 font-semibold text-sm md:text-base transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
-      Schedule a Tour
-    </span>
-  </button>
-</div>
-
-  {/* Full-Width Tabs With Gap */}
-<nav className="absolute bottom-0 w-full z-20 grid grid-cols-4 gap-4 bg-gradient-to-t from-black/80 to-transparent text-white font-bold text-xs md:text-base text-center px-2">
-  {[
-    { href: "#about", label: t('about') },
-    { href: "#statistics", label: t('statistics') },
-    { href: "#amenities", label: t('amenities') },
-    { href: "#investment", label: t('investment') },
-  ].map((item, index) => (
-    <a
-      key={index}
-      href={item.href}
-      className="group relative py-4 border-t-2 border-gray-600 overflow-hidden"
-    >
-      <span className="relative inline-block">
-        {item.label}
-        <span
-          className="absolute left-[calc(100%+32px)] top-1/2 -translate-y-1/2 transition-all duration-700 ease-in-out group-hover:translate-x-[100%] group-hover:opacity-0"
-        >
-          →
-        </span>
-      </span>
-    </a>
-  ))}
-</nav>
-
-</section>
+              <nav className="absolute bottom-0 w-full z-20 grid grid-cols-4 gap-4 bg-gradient-to-t from-black/80 to-transparent text-white font-bold text-xs md:text-base text-center px-2">
+                {[
+                  { href: "#about", label: t('about') },
+                  { href: "#statistics", label: t('statistics') },
+                  { href: "#amenities", label: t('amenities') },
+                  { href: "#investment", label: t('investment') },
+                ].map((item, index) => (
+                  <a
+                    key={index}
+                    href={item.href}
+                    className="group relative py-4 border-t-2 border-gray-600 overflow-hidden"
+                  >
+                    <span className="relative inline-block">
+                      {item.label}
+                      <span
+                        className="absolute left-[calc(100%+32px)] top-1/2 -translate-y-1/2 transition-all duration-700 ease-in-out group-hover:translate-x-[100%] group-hover:opacity-0"
+                      >
+                        →
+                      </span>
+                    </span>
+                  </a>
+                ))}
+              </nav>
+            </section>
 
             {/* About Section */}
-         <section
-  className="min-h-[75vh] flex items-center justify-center px-4 md:px-6 py-20 md:py-44 bg-cover bg-center text-white"
+    <section
+  className="min-h-[75vh] flex items-center justify-center px-4 md:px-6 py-16 md:py-32 bg-cover bg-center text-white"
   style={{ backgroundImage: `url(${bayfront1})` }}
   id="about"
 >
-  <div className="max-w-6xl mx-auto w-full flex flex-col items-center text-center">
-    <h1 className="text-2xl md:text-4xl lg:text-5xl font-headline mb-6 md:mb-10 leading-snug space-y-2">
-      <div className="text-right">Where elegant design</div>
-      <div className="text-justify">meets a calm shore to create luxury</div>
-      <div className="text-left">lifestyle by Khobar's sea.</div>
+  <div className="max-w-6xl mx-auto w-full flex flex-col items-center text-center md:text-left">
+    {/* Heading */}
+    <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-chapaza mb-6 md:mb-10 leading-snug">
+      <div className="text-right md:text-right">Where elegant design</div>
+      <div className="text-center md:text-justify">meets a calm shore to create luxury</div>
+      <div className="text-left md:text-left">lifestyle by Khobar's sea.</div>
     </h1>
 
-    <div className="flex flex-col lg:flex-row justify-between gap-8 w-full">
-      {/* Left Subheading */}
-      <div className="lg:w-1/3">
-        <p className="font-headline font-semibold text-white mb-2">
+    {/* Content Row */}
+    <div className="flex flex-col lg:flex-row justify-between gap-6 sm:gap-8 w-full">
+      {/* Left Text */}
+      <div className="lg:w-1/3 text-center lg:text-left">
+        <p className="font-headline font-semibold text-white text-base sm:text-lg md:text-xl mb-2">
           Coastal Lifestyle Perfected
         </p>
       </div>
 
-      {/* Right Description */}
-     <div className="lg:w-2/3">
-  <div className="flex flex-col lg:flex-row justify-between items-start gap-4">
-    {/* Paragraph */}
-    <p className="text-sm md:text-base lg:text-lg text-white/90 leading-relaxed font-body lg:w-3/4">
-      A famous seafront destination offering luxury residences,<br />
-      vibrant retail, fine dining, and world-class leisure experiences.<br />
-      Bayfront transforms Khobar's coastline into a lifestyle <br />
-      landmark aligned with Saudi Vision 2030's forward-thinking<br />
-      vision.
-    </p>
+      {/* Right Text + Button */}
+      <div className="lg:w-2/3 w-full">
+        <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
+          {/* Paragraph */}
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white/90 leading-relaxed font-body text-center lg:text-left lg:w-3/4">
+            A famous seafront destination offering luxury residences,
+            vibrant retail, fine dining, and world-class leisure experiences.
+            Bayfront transforms Khobar's coastline into a lifestyle
+            landmark aligned with Saudi Vision 2030's forward-thinking vision.
+          </p>
 
-    {/* Button aligned right */}
-  <div className="lg:w-1/4 flex justify-end">
-  <a href="/brochure.pdf" className="group relative inline-block whitespace-nowrap">
-    {/* Hover Background Layer */}
-    <span className="absolute inset-0 bg-transparent group-hover:bg-white transition-colors duration-300 z-0 rounded"></span>
-
-    {/* Border + Text */}
-    <span className="relative z-10 inline-block border border-white group-hover:border-black text-white group-hover:text-black px-6 py-2 text-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
-      Download Brochure
-    </span>
-  </a>
-</div>
-
-
-  </div>
-</div>
-
+          {/* Brochure Button */}
+          <div className="lg:w-1/4 w-full flex justify-center lg:justify-end mt-4 lg:mt-0">
+            <a href="/brochure.pdf" className="group relative inline-block whitespace-nowrap">
+              <span className="absolute inset-0 bg-transparent group-hover:bg-white transition-colors duration-300 z-0 rounded"></span>
+              <span className="relative z-10 inline-block border border-white group-hover:border-black text-white group-hover:text-black px-5 py-2 text-xs sm:text-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
+                Download Brochure
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
+
+
 
             {/* Statistics Section */}
             <div
@@ -294,262 +416,214 @@ const markers = [
             </div>
 
             {/* Amenities Section */}
-            <section className="relative bg-[#fdf8f4] py-8 md:py-12 px-4 md:px-6 lg:px-16" id="amenities">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8">
-                    <h2 className="text-2xl md:text-3xl font-semibold text-[#8B5E3C] mb-4 md:mb-0">
-                        {t('amenities')}
-                    </h2>
-                 <div className="relative inline-block">
-  <button
-    onClick={() => setShowForm(true)}
-    className="group relative inline-block"
-  >
-    {/* Background Layer */}
-    <span className="absolute inset-0 bg-white group-hover:bg-black transition-colors duration-300 rounded z-0"></span>
-
-    {/* Border + Text Layer */}
-    <span className="relative z-10 inline-block border-2 border-black group-hover:border-white text-black group-hover:text-white px-6 py-2 font-semibold text-sm md:text-base transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
-      {t('enquire_now')}
-    </span>
-  </button>
-</div>
-
-
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 mb-8 md:mb-12">
-                    {amenities.map((item, index) => (
-                        <div key={index} className="text-left">
-                            <div className="overflow-hidden rounded">
-                                <img
-                                    src={item.image}
-                                    alt={item.title}
-                                    className="w-full h-48 sm:h-56 md:h-64 lg:h-72 object-cover transform transition-transform duration-1000 ease-in-out hover:scale-110"
-                                />
-                            </div>
-                            <h3 className="font-semibold mt-2 text-sm md:text-base">{t(`amenities.${index}.title`)}</h3>
-                            <p className="text-xs md:text-sm text-gray-600">{t(`amenities.${index}.subtitle`)}</p>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Waves of Luxury Section */}
-     
- <div
-      className="relative w-full h-screen bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: `url(${bayfront8})` }}
-    >
-      {/* Marker Points */}
-      {markers.map(({ id, label, top, left, direction }) => (
-        <div
-          key={id}
-          className="absolute group"
-          style={{
-            top: `clamp(10px, ${top}, 90%)`,
-            left: `clamp(10px, ${left}, 90%)`,
-          }}
-        >
-          <div className="relative flex flex-col items-center">
-            {/* Top Label & Line (if direction is up) */}
-            {direction === "up" && (
-              <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-2 sm:mb-3">
-                <div className="text-white text-[10px] sm:text-xs md:text-sm mb-1 whitespace-nowrap">
-                  {label}
-                </div>
-                <div className="w-px h-12 bg-white" />
-              </div>
-            )}
-
-            {/* Ripple Circle */}
-            <div className="relative w-16 h-16 flex items-center justify-center">
-              {/* Outer ring */}
-              <div className="absolute w-16 h-16 rounded-full bg-white opacity-20 animate-rippleOuter pointer-events-none" />
-              {/* Middle ring */}
-              <div className="absolute w-10 h-10 rounded-full bg-white opacity-40 animate-rippleMiddle pointer-events-none" />
-              {/* Inner static circle */}
-              <div className="w-4 h-4 rounded-full bg-white border-2 border-white z-10" />
-            </div>
-
-            {/* Bottom Label & Line (if direction is down) */}
-            {direction === "down" && (
-              <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mt-2 sm:mt-3">
-                <div className="w-px h-12 bg-white" />
-                <div className="text-white text-[10px] sm:text-xs md:text-sm mt-1 whitespace-nowrap">
-                  {label}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      ))}
-
-      {/* Section Title */}
-      <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 md:bottom-10 md:left-10 text-white text-xl sm:text-2xl md:text-4xl font-chapaza">
-        Waves of Luxury
-      </div>
-    </div>
-
-
-           
-{/* Financing Section */}
-<div className="bg-[#f7f0e9] min-h-[75vh]">
-  {/* Header */}
-  <div className="bg-white flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 sm:px-6 md:px-10 py-4 sm:py-6 border-b border-[#e8dcd0]">
-    <h1 className="text-xl sm:text-2xl md:text-3xl font-serif text-[#b3703b] mb-3 sm:mb-0">
-      Financing and Installment Plans
-    </h1>
-    <button className="group relative inline-block text-xs sm:text-sm self-end sm:self-auto">
-      <span className="absolute inset-0 bg-transparent group-hover:bg-black transition-colors duration-300 rounded z-0" />
-      <span className="relative z-10 inline-block border border-black group-hover:border-white text-black group-hover:text-white px-3 py-1 sm:px-4 sm:py-1.5 md:px-5 md:py-2 transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
-        Know More
-      </span>
-    </button>
-  </div>
-
-  {/* Content */}
-  <div className="flex flex-col md:flex-row items-center justify-center px-2 sm:px-4 py-6 sm:py-10 gap-0 md:gap-4 h-full min-h-[calc(75vh-80px)]">
-    <div className="bg-white h-full flex flex-col md:flex-row w-full max-w-7xl rounded shadow-md overflow-hidden">
-      {/* Left Image - Full width on mobile, half on desktop */}
-      <div className="md:w-1/2 w-full h-48 sm:h-64 md:h-full">
-        <img
-          src={bayfront9}
-          alt="Investment"
-          className="w-full h-full object-cover"
-        />
-      </div>
-
-      {/* Right Text Block */}
-      <div className="md:w-1/2 w-full p-4 sm:p-6 md:p-8 overflow-y-auto">
-        <h2 className="text-xl sm:text-2xl font-serif text-[#b3703b] border-b border-[#e2c6a8] pb-3 sm:pb-4 mb-4 sm:mb-6">
-          Investment Opportunity
+         <section className="relative bg-[#fdf8f4] py-8 md:py-12 px-4 md:px-6 lg:px-16" id="amenities">
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8">
+        <h2 className="text-2xl md:text-3xl font-semibold text-[#8B5E3C] mb-4 md:mb-0">
+            Amenities
         </h2>
-        <div className="grid gap-3 sm:gap-4 md:gap-6">
-          {[
-            ['Fine Dining', '8 Units', '500 Sqm'],
-            ['Casual Dining', '12 Units', '300 Sqm'],
-            ['Fast Food', '20 Units', '200 Sqm'],
-            ['Buffet Style', '15 Units', '100 Sqm'],
-            ['Food Truck', '5 Units', '150 Sqm'],
-            ['Cafe', '10 units', '250sqm'],
-          ].map(([type, units, sqm], idx) => (
-            <div
-              key={idx}
-              className="flex justify-between items-center text-sm sm:text-base md:text-[17px]"
+        <div className="relative inline-block">
+            <button
+                onClick={() => setShowForm(true)}
+                className="group relative inline-block"
             >
-              <span className="font-semibold text-[#b3703b]">{type}</span>
-              <span className="text-gray-700">{units}</span>
-              <span className="text-gray-700">{sqm}</span>
-            </div>
-          ))}
+                <span className="absolute inset-0 bg-white group-hover:bg-black transition-colors duration-300 rounded z-0"></span>
+                <span className="relative z-10 inline-block border-2 border-black group-hover:border-white text-black group-hover:text-white px-6 py-2 font-semibold text-sm md:text-base transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
+                    Enquire Now
+                </span>
+            </button>
         </div>
-      </div>
     </div>
-  </div>
-</div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 mb-8 md:mb-12">
+        {amenities.map((item, index) => (
+            <div key={index} className="text-left">
+                <div className="overflow-hidden rounded">
+                    <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-48 sm:h-56 md:h-64 lg:h-72 object-cover transform transition-transform duration-1000 ease-in-out hover:scale-110"
+                    />
+                </div>
+                <h3 className="font-semibold mt-2 text-sm md:text-base">
+                    {item.title}
+                </h3>
+                <p className="text-xs md:text-sm text-gray-600">
+                    {item.subtitle}
+                </p>
+            </div>
+        ))}
+    </div>
+</section>
+
+            {/* Waves of Luxury Section - Replaced with DraggableMapWithMarkers */}
+            <DraggableMapWithMarkers imageSrc={bayfront8} markers={markers} />
+
+            {/* Financing Section */}
+            <div className="bg-[#f7f0e9] min-h-[75vh]">
+              <div className="bg-white flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 sm:px-6 md:px-10 py-4 sm:py-6 border-b border-[#e8dcd0]">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-serif text-[#b3703b] mb-3 sm:mb-0">
+                  Financing and Installment Plans
+                </h1>
+                <button className="group relative inline-block text-xs sm:text-sm self-end sm:self-auto">
+                  <span className="absolute inset-0 bg-transparent group-hover:bg-black transition-colors duration-300 rounded z-0" />
+                  <span className="relative z-10 inline-block border border-black group-hover:border-white text-black group-hover:text-white px-3 py-1 sm:px-4 sm:py-1.5 md:px-5 md:py-2 transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
+                    Know More
+                  </span>
+                </button>
+              </div>
+
+              <div className="flex flex-col md:flex-row items-center justify-center px-2 sm:px-4 py-6 sm:py-10 gap-0 md:gap-4 h-full min-h-[calc(75vh-80px)]">
+                <div className="bg-white h-full flex flex-col md:flex-row w-full max-w-7xl rounded shadow-md overflow-hidden">
+                  <div className="md:w-1/2 w-full h-48 sm:h-64 md:h-full">
+                    <img
+                      src={bayfront9}
+                      alt="Investment"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  <div className="md:w-1/2 w-full p-4 sm:p-6 md:p-8 overflow-y-auto">
+                    <h2 className="text-xl sm:text-2xl font-serif text-[#b3703b] border-b border-[#e2c6a8] pb-3 sm:pb-4 mb-4 sm:mb-6">
+                      Investment Opportunity
+                    </h2>
+                    <div className="grid gap-3 sm:gap-4 md:gap-6">
+                      {[
+                        ['Fine Dining', '8 Units', '500 Sqm'],
+                        ['Casual Dining', '12 Units', '300 Sqm'],
+                        ['Fast Food', '20 Units', '200 Sqm'],
+                        ['Buffet Style', '15 Units', '100 Sqm'],
+                        ['Food Truck', '5 Units', '150 Sqm'],
+                        ['Cafe', '10 units', '250sqm'],
+                      ].map(([type, units, sqm], idx) => (
+                        <div
+                          key={idx}
+                          className="flex justify-between items-center text-sm sm:text-base md:text-[17px]"
+                        >
+                          <span className="font-semibold text-[#b3703b]">{type}</span>
+                          <span className="text-gray-700">{units}</span>
+                          <span className="text-gray-700">{sqm}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             {/* Video Section */}
-<div className="relative mx-4 sm:mx-12 md:mx-24 my-10 bg-white font-serif">
-  <h2 className="text-center text-[#b3703b] text-xl sm:text-2xl md:text-3xl px-4 font-semibold mt-6 sm:mt-8 mb-4">
-    Take a glimpse around Bayfront
-  </h2>
+            <div className="relative mx-4 sm:mx-12 md:mx-24 my-10 bg-white font-serif">
+              <h2 className="text-center text-[#b3703b] text-xl sm:text-2xl md:text-3xl px-4 font-semibold mt-6 sm:mt-8 mb-4">
+                Take a glimpse around Bayfront
+              </h2>
 
-  <div className="w-full max-w-6xl mx-auto">
-    <video
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="w-full h-auto object-cover rounded-md"
+              <div className="w-full max-w-6xl mx-auto">
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-auto object-cover rounded-md"
+                >
+                  <source src={video} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+
+              <div className="fixed top-1/2 left-2 sm:left-4 transform -translate-y-1/2 -rotate-90 origin-left z-40">
+                <button className="bg-white border border-gray-300 text-[10px] sm:text-xs font-medium px-3 sm:px-4 py-1.5 sm:py-2 shadow-md hover:bg-gray-100 transition">
+                  ENQUIRE NOW
+                </button>
+              </div>
+
+              <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 flex flex-col gap-2 sm:gap-3 z-40">
+                <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#a55c29] flex items-center justify-center shadow-md hover:opacity-80">
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/724/724664.png"
+                    alt="Call"
+                    className="w-4 h-4 sm:w-5 sm:h-5"
+                  />
+                </button>
+                <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#25D366] flex items-center justify-center shadow-md hover:opacity-80">
+                  <img
+                    src="https://cdn-icons-png.flaticon.com/512/1384/1384023.png"
+                    alt="WhatsApp"
+                    className="w-4 h-4 sm:w-5 sm:h-5"
+                  />
+                </button>
+              </div>
+            </div>
+
+            {/* Carousel Section */}
+        <div className="relative w-full h-screen overflow-hidden">
+  {carouselSlides.map((slide, index) => (
+    <div
+      key={index}
+      className={`absolute inset-0 transition-opacity duration-700 ${
+        index === currentSlide ? 'opacity-100 z-10 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'
+      }`}
     >
-      <source src={video} type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </div>
-
-  {/* ENQUIRE NOW Button - Vertical Left */}
-  <div className="fixed top-1/2 left-2 sm:left-4 transform -translate-y-1/2 -rotate-90 origin-left z-40">
-    <button className="bg-white border border-gray-300 text-[10px] sm:text-xs font-medium px-3 sm:px-4 py-1.5 sm:py-2 shadow-md hover:bg-gray-100 transition">
-      ENQUIRE NOW
-    </button>
-  </div>
-
-  {/* Floating Buttons - Bottom Right */}
-  <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 flex flex-col gap-2 sm:gap-3 z-40">
-    <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#a55c29] flex items-center justify-center shadow-md hover:opacity-80">
       <img
-        src="https://cdn-icons-png.flaticon.com/512/724/724664.png"
-        alt="Call"
-        className="w-4 h-4 sm:w-5 sm:h-5"
+        src={slide.image}
+        alt={`Slide ${index}`}
+        className="w-full h-full object-cover"
       />
+      <div className="absolute bottom-6 sm:bottom-10 left-4 sm:left-10 text-white text-lg sm:text-2xl md:text-3xl font-semibold break-words max-w-xs sm:max-w-md md:max-w-lg">
+        {slide.label}
+      </div>
+    </div>
+  ))}
+
+  {/* Navigation Buttons */}
+  <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 flex items-center gap-3 z-20">
+    <button
+      onClick={prevSlide}
+      className="bg-white p-2 sm:p-3 rounded-full shadow hover:bg-gray-100 transition"
+    >
+      <span className="text-base sm:text-xl">&#8592;</span>
     </button>
-    <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#25D366] flex items-center justify-center shadow-md hover:opacity-80">
-      <img
-        src="https://cdn-icons-png.flaticon.com/512/1384/1384023.png"
-        alt="WhatsApp"
-        className="w-4 h-4 sm:w-5 sm:h-5"
-      />
+    <button
+      onClick={nextSlide}
+      className="bg-white p-2 sm:p-3 rounded-full shadow hover:bg-gray-100 transition"
+    >
+      <span className="text-base sm:text-xl">&#8594;</span>
     </button>
   </div>
 </div>
 
 
-            {/* Carousel Section */}
-            <div className="relative w-full h-screen overflow-hidden">
-                {carouselSlides.map((slide, index) => (
-                    <div
-                        key={index}
-                        className={`absolute inset-0 transition-opacity duration-700 ${
-                            index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-                        }`}
-                    >
-                        <img
-                            src={slide.image}
-                            alt={`Slide ${index}`}
-                            className="w-full h-full object-cover"
-                        />
-                        <div className="absolute bottom-10 left-10 text-white text-3xl font-semibold">
-                            {slide.label}
-                        </div>
-                    </div>
-                ))}
-              
-                <div className="absolute bottom-6 right-6 flex items-center gap-3 z-20">
-                    <button
-                        onClick={prevSlide}
-                        className="bg-white p-2 rounded-full shadow hover:bg-gray-100"
-                    >
-                        <span className="text-xl">&#8592;</span>
-                    </button>
-                    <button
-                        onClick={nextSlide}
-                        className="bg-white p-2 rounded-full shadow hover:bg-gray-100"
-                    >
-                        <span className="text-xl">&#8594;</span>
-                    </button>
-                </div>
-            </div>
-    <div className="flex flex-col md:flex-row items-center justify-center bg-[#f8f1eb] p-6 md:p-12">
-      {/* Map Image */}
-      <div className="w-full md:w-[600px]">
-        <img
-          src={map}
-          alt="Map showing Bayfront location"
-          className="rounded-md w-full h-auto"
-        />
-      </div>
+            <div className="flex flex-col md:flex-row items-center justify-center bg-[#f8f1eb] p-6 md:p-12">
+             <div className="relative w-full md:w-[600px]">
+  {/* Map Image */}
+  <img
+    src={map}
+    alt="Map showing Bayfront location"
+    className="rounded-md w-full h-auto"
+  />
 
-      {/* Text Section */}
-      <div className="mt-8 md:mt-0 md:pl-16 max-w-md text-center md:text-left">
-        <h2 className="text-4xl text-[#a35726] font-semibold leading-tight">
-          Locate<br />Bayfront
-        </h2>
-        <p className="mt-6 text-[#00323d] text-base leading-relaxed">
-          <span className="inline-block mr-2">📍</span>
-          Prince Turkey Street, Alkurnais, Al Khobar 34446,<br />
-          Saudi Arabia
-        </p>
-      </div>
+  {/* Blinking Highlight */}
+  <div className="absolute top-[49%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 z-10">
+    <div className="relative">
+      {/* Outer blinking circle */}
+      <div className="w-6 h-6 bg-red-600 rounded-full opacity-70 animate-blink"></div>
+
+      {/* Static center dot */}
+      <div className="w-3 h-3 bg-gray-300 rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"></div>
     </div>
+  </div>
+</div>
+
+
+              <div className="mt-8 md:mt-0 md:pl-16 max-w-md text-center md:text-left">
+                <h2 className="text-4xl text-[#a35726] font-semibold leading-tight">
+                  Locate<br />Bayfront
+                </h2>
+                <p className="mt-6 text-[#00323d] text-base leading-relaxed">
+                  <span className="inline-block mr-2">📍</span>
+                  Prince Turkey Street, Alkurnais, Al Khobar 34446,<br />
+                  Saudi Arabia
+                </p>
+              </div>
+            </div>
+            
             <BayfrontFooter />
             <ContactForm 
                 show={showForm} 

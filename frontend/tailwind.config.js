@@ -17,7 +17,8 @@ module.exports = withMT({
       animation: {
         marquee: 'marquee 40s linear infinite',
         rippleOuter: 'rippleOuter 2s infinite ease-in-out 0.5s',
-        rippleMiddle: 'rippleMiddle 2s infinite ease-in-out ',
+        rippleMiddle: 'rippleMiddle 2s infinite ease-in-out',
+        blink: 'blink 1.5s infinite',
       },
       keyframes: {
         marquee: {
@@ -32,16 +33,17 @@ module.exports = withMT({
           '0%, 100%': { opacity: '0' },
           '50%': { opacity: '0.3' },
         },
+        blink: { 
+          '0%, 100%': { opacity: '1', transform: 'scale(1)' },
+          '50%': { opacity: '0.4', transform: 'scale(1.5)' },
+        },
       },
       colors: {
-        // Ajdan Main Colors
         mainCharcoal1: '#222223',
         mainIvory2: '#EFE3D8',
         mainSilver3: '#CCC7C7',
         mainTaupe4: '#A58C76',
         mainSlatenavy5: '#293C47',
-
-        // Ajdan Secondary Colors
         secondaryDustyblue1: '#8AA3B4',
         secondaryPalesky2: '#BED5DC',
         secondaryBurntumber3: '#833B1C',
@@ -49,8 +51,6 @@ module.exports = withMT({
         secondaryOxblood5: '#4F1515',
         secondaryLavendergray6: '#AEA4B6',
         secondaryMulberrywine7: '#4C2C39',
-
-        // Ajdan Accent Colors
         accentForestgreen1: '#354234',
         accentSagegray2: '#6D7A6C',
       },
