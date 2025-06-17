@@ -23,32 +23,35 @@ function Footer() {
   };
 
   return (
-    <footer className="bg-[#073746] text-white px-4 py-10 sm:px-6 lg:px-8">
+    <footer className="bg-[#073746] text-white px-4 py-2 sm:px-6 lg:px-8">
       {/* Footer Top - Email Subscription */}
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 w-full">
-          <p className="text-base sm:text-lg whitespace-nowrap text-center md:text-left mb-4 md:mb-0">
-            Embrace What's About to Arrive
-          </p>
-          <form onSubmit={handleSubmit} className="w-full md:w-auto min-w-[280px] max-w-md">
-            <div className="flex border border-gray-400 rounded overflow-hidden w-full">
-              <input
-                type="email"
-                placeholder="Your Email here"
-                className="flex-grow px-4 py-2 text-white bg-transparent outline-none placeholder-gray-300 text-sm sm:text-base"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <Button 
-                type="submit"
-                className="bg-white text-[#073746] font-bold px-4 sm:px-6 py-2 rounded-none text-sm sm:text-base whitespace-nowrap"
-              >
-                Send Now
-              </Button>
-            </div>
-          </form>
-        </div>
+      <div className="flex mt-8 flex-col md:flex-row items-center justify-center mx-auto mb-8 w-full max-w-screen-lg px-4">
+  {/* Text */}
+  <p className="text-base sm:text-lg whitespace-nowrap text-center md:text-left mb-4 md:mb-0 md:mr-4">
+    Embrace What's About to Arrive
+  </p>
+
+  {/* Form */}
+  <form onSubmit={handleSubmit} className="w-full md:w-auto min-w-[280px] max-w-md">
+    <div className="flex border border-gray-400 rounded overflow-hidden w-full">
+      <input
+        type="email"
+        placeholder="Your Email here"
+        className="flex-grow px-6 py-1 text-white bg-transparent outline-none placeholder-gray-300 text-sm sm:text-base"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <Button 
+        type="submit"
+        className="bg-white text-[#073746] font-bold px-2 sm:px-6 py-2 rounded-none text-sm sm:text-base whitespace-nowrap"
+      >
+        Send Now
+      </Button>
+    </div>
+  </form>
+</div>
 
         {/* Footer Middle - Logo and Social */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
