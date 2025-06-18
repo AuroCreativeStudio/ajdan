@@ -11,8 +11,9 @@ module.exports = withMT({
       fontFamily: {
         headline: ['"Gurmukhi MN"', 'sans-serif'],
         body: ['"Proxima Nova"', 'sans-serif'],
-        chapaza: ['"chapaza "', 'sans-serif'],
         univers: ['"Univers Next Arabic Regular"', 'sans-serif'],
+        chapaza: ['"Chapaza"', 'sans-serif'],
+        commuter: ['"Commuter Sans"', 'sans-serif'],
       },
       animation: {
         marquee: 'marquee 40s linear infinite',

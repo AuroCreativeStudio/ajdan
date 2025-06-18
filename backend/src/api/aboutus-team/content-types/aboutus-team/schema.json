@@ -4,7 +4,8 @@
   "info": {
     "singularName": "aboutus-team",
     "pluralName": "aboutus-teams",
-    "displayName": "AboutusTeam"
+    "displayName": "AboutusTeam",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -32,14 +33,39 @@
       }
     },
     "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
       ],
-      "type": "media",
-      "multiple": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "role_en": {
+      "type": "enumeration",
+      "enum": [
+        "Board of Directors",
+        "Team"
+      ],
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "role_ar": {
+      "type": "enumeration",
+      "enum": [
+        "مجلس الإدارة",
+        "فريق"
+      ],
       "pluginOptions": {
         "i18n": {
           "localized": true

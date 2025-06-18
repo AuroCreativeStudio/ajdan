@@ -401,6 +401,7 @@ export interface ApiAboutAbout extends Struct.SingleTypeSchema {
 export interface ApiAboutusTeamAboutusTeam extends Struct.CollectionTypeSchema {
   collectionName: 'aboutus_teams';
   info: {
+    description: '';
     displayName: 'AboutusTeam';
     pluralName: 'aboutus-teams';
     singularName: 'aboutus-team';
@@ -441,6 +442,23 @@ export interface ApiAboutusTeamAboutusTeam extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    role_ar: Schema.Attribute.Enumeration<
+      [
+        '\u0645\u062C\u0644\u0633 \u0627\u0644\u0625\u062F\u0627\u0631\u0629',
+        '\u0641\u0631\u064A\u0642',
+      ]
+    > &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    role_en: Schema.Attribute.Enumeration<['Board of Directors', 'Team']> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -470,9 +488,21 @@ export interface ApiBlogsAndNewBlogsAndNew extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    author: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    date: Schema.Attribute.DateTime &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     description_1: Schema.Attribute.Blocks &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -721,10 +751,28 @@ export interface ApiNewsletterNewsletter extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
+    concern_policy: Schema.Attribute.Boolean &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    datetime: Schema.Attribute.DateTime &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     email: Schema.Attribute.Email &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    ip_address: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;

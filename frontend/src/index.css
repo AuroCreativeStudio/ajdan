@@ -9,6 +9,19 @@
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: 'Chapaza', 'sans-serif';
+  src: url('/fonts/ChapazaItalic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Commuter Sans';
+  src: url('/fonts/commuterssans-regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 
 @tailwind base;
 @tailwind components;
@@ -20,6 +33,12 @@
   }
   .font-univers {
     font-family: "Univers Next Arabic Regular", sans-serif;
+  }
+    .font-chapaza {
+    font-family: "Chapaza", sans-serif;
+  }
+   .font-commuter {
+  font-family: 'Commuter Sans', sans-serif;
   }
 
   /* Ajdan Main Colors */
