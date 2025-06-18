@@ -260,6 +260,15 @@ const AjdanBayfront = () => {
       },
     ];
 
+const investmentData = [
+  ["Fine Dining", "8 Units", "500 Sqm"],
+  ["Casual Dining", "12 Units", "300 Sqm"],
+  ["Fast Food", "20 Units", "200 Sqm"],
+  ["Buffet Style", "15 Units", "100 Sqm"],
+  ["Food Truck", "5 Units", "150 Sqm"],
+  ["Cafe", "10 Units", "250 Sqm"],
+];
+
     useEffect(() => {
         const loadData = async () => {
             try {
@@ -311,13 +320,13 @@ const AjdanBayfront = () => {
               <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-20">
                 <button className="group relative inline-block">
                   <span className="absolute inset-0 bg-transparent group-hover:bg-white transition-colors duration-300 z-0 rounded"></span>
-                  <span className="relative z-10 inline-block border-2 border-white group-hover:border-black text-white group-hover:text-black px-6 py-2 font-semibold text-sm md:text-base transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
+                  <span className="relative z-10 inline-block border-2 border-white group-hover:border-black text-white group-hover:text-black px-6 py-2 font-chapaza text-sm md:text-base transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
                     Schedule a Tour
                   </span>
                 </button>
               </div>
 
-              <nav className="absolute bottom-0 w-full z-20 grid grid-cols-4 gap-4 bg-gradient-to-t from-black/80 to-transparent text-white font-bold text-xs md:text-base text-center px-2">
+              <nav className="absolute bottom-0 w-full z-20 grid grid-cols-4 gap-4 bg-gradient-to-t from-black/80 to-transparent text-white font-chapaza text-xs md:text-base text-center px-2">
                 {[
                   { href: "#about", label: t('about') },
                   { href: "#statistics", label: t('statistics') },
@@ -360,7 +369,7 @@ const AjdanBayfront = () => {
     <div className="flex flex-col lg:flex-row justify-between gap-6 sm:gap-8 w-full">
       {/* Left Text */}
       <div className="lg:w-1/3 text-center lg:text-left">
-        <p className="font-headline font-semibold text-white text-base sm:text-lg md:text-xl mb-2">
+        <p className="font-chapaza  text-white text-base sm:text-lg md:text-xl mb-2">
           Coastal Lifestyle Perfected
         </p>
       </div>
@@ -369,7 +378,7 @@ const AjdanBayfront = () => {
       <div className="lg:w-2/3 w-full">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
           {/* Paragraph */}
-          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white/90 leading-relaxed font-body text-center lg:text-left lg:w-3/4">
+          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white/90 leading-relaxed font-commuter text-center lg:text-left lg:w-3/4">
             A famous seafront destination offering luxury residences,
             vibrant retail, fine dining, and world-class leisure experiences.
             Bayfront transforms Khobar's coastline into a lifestyle
@@ -406,9 +415,9 @@ const AjdanBayfront = () => {
                             <div>{item.icon}</div>
                             <div>
                                 <p className="text-xs md:text-sm mb-1">{t(`stats.${item.label.toLowerCase().replace(' ', '_')}`)}</p>
-                                <h2 className="text-base md:text-lg font-semibold">
+                                <h2 className="text-base md:text-lg font-commuter">
                                     {item.value}{" "}
-                                    {item.unit && <span className="text-xs md:text-sm font-normal">{item.unit}</span>}
+                                    {item.unit && <span className="text-xs md:text-sm font-commuter">{item.unit}</span>}
                                 </h2>
                             </div>
                         </div>
@@ -419,7 +428,7 @@ const AjdanBayfront = () => {
             {/* Amenities Section */}
          <section className="relative bg-[#fdf8f4] py-8 md:py-12 px-4 md:px-6 lg:px-16" id="amenities">
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8">
-        <h2 className="text-2xl md:text-3xl font-semibold text-[#8B5E3C] mb-4 md:mb-0">
+        <h2 className="text-2xl md:text-3xl font-chapaza text-[#8B5E3C] mb-4 md:mb-0">
             Amenities
         </h2>
         <div className="relative inline-block">
@@ -428,7 +437,7 @@ const AjdanBayfront = () => {
                 className="group relative inline-block"
             >
                 <span className="absolute inset-0 bg-white group-hover:bg-black transition-colors duration-300 rounded z-0"></span>
-                <span className="relative z-10 inline-block border-2 border-black group-hover:border-white text-black group-hover:text-white px-6 py-2 font-semibold text-sm md:text-base transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
+                <span className="relative z-10 inline-block border-2 border-black group-hover:border-white text-black group-hover:text-white px-6 py-2 font-chapaza text-sm md:text-base transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
                     Enquire Now
                 </span>
             </button>
@@ -444,7 +453,7 @@ const AjdanBayfront = () => {
                         className="w-full h-48 sm:h-56 md:h-64 lg:h-72 object-cover transform transition-transform duration-1000 ease-in-out hover:scale-110"
                     />
                 </div>
-                <h3 className="font-semibold mt-2 text-sm md:text-base">
+                <h3 className="font-commuter mt-2 text-sm md:text-base">
                     {item.title}
                 </h3>
                 <p className="text-xs md:text-sm text-gray-600">
@@ -461,7 +470,7 @@ const AjdanBayfront = () => {
             {/* Financing Section */}
             <div className="bg-[#f7f0e9] min-h-[75vh]">
               <div className="bg-white flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 sm:px-6 md:px-10 py-4 sm:py-6 border-b border-[#e8dcd0]">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-serif text-[#b3703b] mb-3 sm:mb-0">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-chapaza text-[#b3703b] mb-3 sm:mb-0">
                   Financing and Installment Plans
                 </h1>
                 <button className="group relative inline-block text-xs sm:text-sm self-end sm:self-auto">
@@ -472,47 +481,45 @@ const AjdanBayfront = () => {
                 </button>
               </div>
 
-              <div className="flex flex-col md:flex-row items-center justify-center px-2 sm:px-4 py-6 sm:py-10 gap-0 md:gap-4 h-full min-h-[calc(75vh-80px)]">
-                <div className="bg-white h-full flex flex-col md:flex-row w-full max-w-7xl rounded shadow-md overflow-hidden">
-                  <div className="md:w-1/2 w-full h-48 sm:h-64 md:h-full">
-                    <img
-                      src={bayfront9}
-                      alt="Investment"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+              <div className="flex flex-col md:flex-row items-center justify-center px-2 sm:px-4 py-6 sm:py-10 gap-4 h-full min-h-[calc(75vh-80px)]">
+      <div className="bg-white flex flex-col md:flex-row w-full max-w-7xl rounded shadow-md overflow-hidden">
+        
+        {/* Left: Image */}
+        <div className="md:w-1/2 w-full h-48 sm:h-64 md:h-full">
+          <img
+            src={bayfront9}
+            alt="Investment"
+            className="w-full h-full object-cover"
+          />
+        </div>
 
-                  <div className="md:w-1/2 w-full p-4 sm:p-6 md:p-8 overflow-y-auto">
-                    <h2 className="text-xl sm:text-2xl font-serif text-[#b3703b] border-b border-[#e2c6a8] pb-3 sm:pb-4 mb-4 sm:mb-6">
-                      Investment Opportunity
-                    </h2>
-                    <div className="grid gap-3 sm:gap-4 md:gap-6">
-                      {[
-                        ['Fine Dining', '8 Units', '500 Sqm'],
-                        ['Casual Dining', '12 Units', '300 Sqm'],
-                        ['Fast Food', '20 Units', '200 Sqm'],
-                        ['Buffet Style', '15 Units', '100 Sqm'],
-                        ['Food Truck', '5 Units', '150 Sqm'],
-                        ['Cafe', '10 units', '250sqm'],
-                      ].map(([type, units, sqm], idx) => (
-                        <div
-                          key={idx}
-                          className="flex justify-between items-center text-sm sm:text-base md:text-[17px]"
-                        >
-                          <span className="font-semibold text-[#b3703b]">{type}</span>
-                          <span className="text-gray-700">{units}</span>
-                          <span className="text-gray-700">{sqm}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+        {/* Right: Content */}
+        <div className="md:w-1/2 w-full p-4 sm:p-6 md:p-8 overflow-y-auto">
+          <h2 className="text-xl sm:text-2xl font-chapaza text-[#b3703b] pb-3 sm:pb-4 mb-4 sm:mb-6">
+            Investment Opportunity
+          </h2>
+
+          <div className="grid gap-3 sm:gap-4 md:gap-5">
+            {investmentData.map(([type, units, sqm], idx) => (
+              <div
+                key={idx}
+                className="flex justify-between items-center text-sm sm:text-base md:text-lg"
+              >
+                <span className="font-commuter text-[#b3703b] w-1/3">{type}</span>
+                <span className="text-gray-700  w-1/3 text-center">{units}</span>
+                <span className="text-gray-700  w-1/3 text-center">{units}</span>
+                <span className="text-gray-700 w-1/3 text-right">{sqm}</span>
               </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
             </div>
 
             {/* Video Section */}
-            <div className="relative mx-4 sm:mx-12 md:mx-24 my-10 bg-white font-serif">
-              <h2 className="text-center text-[#b3703b] text-xl sm:text-2xl md:text-3xl px-4 font-semibold mt-6 sm:mt-8 mb-4">
+            <div className="relative mx-4 sm:mx-12 md:mx-24 my-10 bg-white font-commuter">
+              <h2 className="text-center text-[#b3703b] text-xl sm:text-2xl md:text-3xl px-4 font-chapaza mt-6 sm:mt-8 mb-4">
                 Take a glimpse around Bayfront
               </h2>
 
@@ -532,7 +539,7 @@ const AjdanBayfront = () => {
               <div className="fixed top-1/2 left-2 sm:left-4 transform -translate-y-1/2 -rotate-90 origin-left z-40">
                 <button 
                    onClick={() => setShowForm(true)} 
-                className="bg-white border border-gray-300 text-[10px] sm:text-xs font-medium px-3 sm:px-4 py-1.5 sm:py-2 shadow-md hover:bg-gray-100 transition">
+                className="bg-white border border-gray-300 text-[10px] sm:text-xs font-chapaza px-3 sm:px-4 py-1.5 sm:py-2 shadow-md hover:bg-gray-100 transition">
                   ENQUIRE NOW
                 </button>
               </div>
@@ -569,7 +576,7 @@ const AjdanBayfront = () => {
         alt={`Slide ${index}`}
         className="w-full h-full object-cover"
       />
-      <div className="absolute bottom-6 sm:bottom-10 left-4 sm:left-10 text-white text-lg sm:text-2xl md:text-3xl font-semibold break-words max-w-xs sm:max-w-md md:max-w-lg">
+      <div className="absolute bottom-6 sm:bottom-10 left-4 sm:left-10 text-white text-lg sm:text-2xl md:text-3xl font-chapaza break-words max-w-xs sm:max-w-md md:max-w-lg">
         {slide.label}
       </div>
     </div>
@@ -616,7 +623,7 @@ const AjdanBayfront = () => {
 
 
               <div className="mt-8 md:mt-0 md:pl-16 max-w-md text-center md:text-left">
-                <h2 className="text-4xl text-[#a35726] font-semibold leading-tight">
+                <h2 className="text-4xl text-[#a35726] font-chapaza leading-tight">
                   Locate<br />Bayfront
                 </h2>
                 <p className="mt-6 text-[#00323d] text-base leading-relaxed">

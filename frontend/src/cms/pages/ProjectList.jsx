@@ -16,8 +16,7 @@ function ProjectList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get('page')) || 1;
   const navigate = useNavigate();
-  
-   const lang = window.location.pathname.split('/')[1] || 'en'; 
+  const lang = window.location.pathname.split('/')[1] || 'en'; 
 
   useEffect(() => {
     async function fetchProjectList() {

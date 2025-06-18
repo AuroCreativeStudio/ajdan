@@ -13,29 +13,33 @@ function BlogList() {
   useEffect(() => {
     fetchBlogs(i18n.language)
       .then(data => {
-        const sanitizedBlogs = (data?.data || []).map(blog => {
-          const b = blog.attributes ? blog.attributes : blog;
+        const sanitizedBlogs = (data?.data || [])
+          .map(blog => {
+            const b = blog.attributes ? blog.attributes : blog;
+            console.log(blog);
 
-          let imageUrl = null;
-          if (Array.isArray(b.featured_image) && b.featured_image[0]?.url) {
-            imageUrl = b.featured_image[0].url.startsWith('http')
-              ? b.featured_image[0].url
-              : `http://localhost:1337${b.featured_image[0].url}`;
-          } else if (b.featured_image?.url) {
-            imageUrl = b.featured_image.url.startsWith('http')
-              ? b.featured_image.url
-              : `http://localhost:1337${b.featured_image.url}`;
-          }
+            let imageUrl = null;
+            if (Array.isArray(b.featured_image) && b.featured_image[0]?.url) {
+              imageUrl = b.featured_image[0].url.startsWith('http')
+                ? b.featured_image[0].url
+                : `http://localhost:1337${b.featured_image[0].url}`;
+            } else if (b.featured_image?.url) {
+              imageUrl = b.featured_image.url.startsWith('http')
+                ? b.featured_image.url
+                : `http://localhost:1337${b.featured_image.url}`;
+            }
 
-          return {
-            id: b.documentId || blog.id,
-            slug: b.slug,
-            title: b.title || 'Untitled',
-            descriptionBlocks: Array.isArray(b.description_1) ? b.description_1 : [],
-            imageUrl,
-            altText: b.alt_text_image || 'No description',
-          };
-        });
+            return {
+              id: b.documentId || blog.id,
+              slug: b.slug,
+              title: b.title || 'Untitled',
+              descriptionBlocks: Array.isArray(b.description_1) ? b.description_1 : [],
+              imageUrl,
+              altText: b.alt_text_image || 'No description',
+              publish: b.publish // Include publish status in the sanitized blog object
+            };
+          })
+          .filter(blog => blog.publish === true); // Filter to only include published blogs
 
         setBlogs(sanitizedBlogs);
       })
@@ -100,7 +104,7 @@ function BlogList() {
                     WebkitLineClamp: 2,
                     WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
-                    minHeight: '3em', // Ensures space for 2 lines
+                    minHeight: '3em',
                     lineHeight: '1.5em'
                   }}
                 >
@@ -113,7 +117,7 @@ function BlogList() {
                     WebkitLineClamp: 3,
                     WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
-                    minHeight: '4.5em', // Ensures space for 3 lines
+                    minHeight: '4.5em',
                     lineHeight: '1.5em'
                   }}
                 >
