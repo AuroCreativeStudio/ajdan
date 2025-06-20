@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import DeletePopup from './DeletePopup';
 
 function NewsletterCms() {
-  const [allNewsletters, setAllNewsletters] = useState([]);
+  const [newsletters, setNewsletters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get('page')) || 1;
@@ -16,17 +16,14 @@ function NewsletterCms() {
   
   const pageSize = 20;
   
-  // Filter to only show accepted newsletters
-  const acceptedNewsletters = allNewsletters.filter(newsletter => newsletter.concent_policy === true);
-  
-  const paginatedNewsletters = paginate(acceptedNewsletters, currentPage, pageSize);
-  const totalPages = Math.ceil(acceptedNewsletters.length / pageSize);
+  const paginatedNewsletters = paginate(newsletters, currentPage, pageSize);
+  const totalPages = Math.ceil(newsletters.length / pageSize);
 
   useEffect(() => {
     async function fetchNewsletters() {
       try {
         const data = await getNewsLetter();
-        setAllNewsletters(Array.isArray(data) ? data : data.data);
+        setNewsletters(Array.isArray(data) ? data : data.data);
         console.log("data:", data);
       } catch (error) {
         console.error('Error fetching newsletters:', error);
@@ -38,12 +35,11 @@ function NewsletterCms() {
     fetchNewsletters();
   }, []);
 
-    const handleExport = () => {
-    if (!acceptedNewsletters.length) return;
-    const header = ['Email', 'Status', 'Subscribed At'];
-    const rows = acceptedNewsletters.map((n) => [
+  const handleExport = () => {
+    if (!newsletters.length) return;
+    const header = ['Email', 'Subscribed At'];
+    const rows = newsletters.map((n) => [
       n.email,
-      'Accepted',
       n.createdAt ? format(new Date(n.createdAt), 'yyyy-MM-dd') : '',
     ]);
     const csvContent = [header, ...rows]
@@ -53,7 +49,7 @@ function NewsletterCms() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'accepted-newsletter-list.csv';
+    a.download = 'newsletter-subscribers.csv';
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -133,16 +129,11 @@ function NewsletterCms() {
                       Loading...
                     </td>
                   </tr>
-                ) : acceptedNewsletters.length > 0 ? (
+                ) : newsletters.length > 0 ? (
                   paginatedNewsletters.map((newsletter, idx) => (
                     <tr key={newsletter.id || idx} className="bg-white border-b font-body border-gray-200">
                       <td className="px-6 py-4">{(currentPage - 1) * pageSize + idx + 1}</td>
                       <td className="px-6 py-4">{newsletter.email}</td>
-                         <td className="px-6 py-4">
-                        <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
-                          Accepted
-                        </span>
-                      </td>
                       <td className="px-6 py-4">
                         {newsletter.createdAt
                           ? format(new Date(newsletter.createdAt), 'yyyy-MM-dd HH:mm')
@@ -175,7 +166,7 @@ function NewsletterCms() {
                 ) : (
                   <tr>
                     <td colSpan="4" className="px-6 py-4 text-center text-gray-400">
-                      No accepted newsletter subscriptions found.
+                      No newsletter subscriptions found.
                     </td>
                   </tr>
                 )}

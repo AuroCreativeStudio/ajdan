@@ -1,22 +1,57 @@
-// src/pages/Dashboard.jsx
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { fetchContactList } from '../../services/contactService';
 import { fetchProjectPopups } from '../../services/projectPopupService';
-import { subscribeToNewsletter } from '../../services/newsletterService';
+import { getNewsLetter } from '../../services/newsletterService';
 import { Bar } from 'react-chartjs-2';
 import { Chart, BarElement, CategoryScale, LinearScale } from 'chart.js';
 
-// Register required Chart.js components
 Chart.register(BarElement, CategoryScale, LinearScale);
 
 function Dashboard({ token, user }) {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
-  const [contactFormCount, setContactFormCount] = useState(0);
-  const [projectPopupCount, setProjectPopupCount] = useState(0);
-  const [newsletterCount, setNewsletterCount] = useState(0);
+  const [contactList, setContactList] = useState([]);
+  const [projectList, setProjectList] = useState([]);
+  const [newsletterList, setNewsletterList] = useState([]);
+  const [filter, setFilter] = useState('30days'); // 'today', '7days', '30days'
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Filter data based on selected time period (for graph only)
+  const getGraphData = () => {
+    const now = new Date();
+    let cutoffDate;
+
+    switch(filter) {
+      case 'today':
+        cutoffDate = new Date(now.setHours(0, 0, 0, 0));
+        break;
+      case '7days':
+        cutoffDate = new Date(now.setDate(now.getDate() - 7));
+        break;
+      case '30days':
+        cutoffDate = new Date(now.setDate(now.getDate() - 30));
+        break;
+      default:
+        cutoffDate = new Date(0); // All time
+    }
+
+    const filterItems = (items) => {
+      return items.filter(item => {
+        const itemDate = new Date(item.attributes?.createdAt || item.createdAt || 0);
+        return itemDate >= cutoffDate;
+      }).length;
+    };
+
+    return {
+      contactCount: filterItems(contactList),
+      projectCount: filterItems(projectList),
+      newsletterCount: filterItems(newsletterList),
+    };
+  };
+
+  const { contactCount, projectCount, newsletterCount } = getGraphData();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -26,134 +61,159 @@ function Dashboard({ token, user }) {
   }, [navigate]);
 
   useEffect(() => {
-    fetchContactList().then(data => {
-      setContactFormCount(Array.isArray(data?.data) ? data.data.length : Array.isArray(data) ? data.length : 0);
-    });
-    fetchProjectPopups().then(data => {
-      setProjectPopupCount(Array.isArray(data?.data) ? data.data.length : Array.isArray(data) ? data.length : 0);
-    });
-    subscribeToNewsletter().then(data => {
-      setNewsletterCount(Array.isArray(data?.data) ? data.data.length : Array.isArray(data) ? data.length : 0);
-    });
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        
+        const contactData = await fetchContactList();
+        const processedContacts = Array.isArray(contactData?.data) ? contactData.data : Array.isArray(contactData) ? contactData : [];
+        setContactList(processedContacts);
+
+        const projectData = await fetchProjectPopups();
+        const processedProjects = Array.isArray(projectData?.data) ? projectData.data : Array.isArray(projectData) ? projectData : [];
+        setProjectList(processedProjects);
+
+        const newsletterData = await getNewsLetter();
+        const processedNewsletters = Array.isArray(newsletterData?.data) ? newsletterData.data : Array.isArray(newsletterData) ? newsletterData :[];
+        setNewsletterList(processedNewsletters);
+        console.log("contact List",processedNewsletters);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  // Chart data for last 30 days (dummy data, replace with real if available)
+  // Chart data configuration
   const chartData = {
-    labels: ['Contact Forms', 'Project Popups', 'Newsletters'],
+    labels: ['Contact Forms', 'Project Enquiries', 'Newsletters'],
     datasets: [
       {
-        label: 'Last 30 Days',
-        data: [contactFormCount, projectPopupCount, newsletterCount],
-        backgroundColor: [
-          '#8AA3B4', // Contact Forms
-          '#AEA4B6', // Project Popups
-          '#A58C76', // Newsletters
-        ],
+        label: 'Submissions',
+        data: [contactCount, projectCount, newsletterCount],
+        backgroundColor: ['#8AA3B4', '#AEA4B6', '#A58C76'],
+        borderColor: ['#6C8A9D', '#978D9F', '#8C7560'],
+        borderWidth: 1,
       },
     ],
   };
 
   const chartOptions = {
     responsive: true,
-    plugins: {
+    plugins: { 
       legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return `${context.dataset.label}: ${context.raw}`;
+          }
+        }
+      }
     },
     scales: {
-      y: { beginAtZero: true, ticks: { stepSize: 1 } },
+      y: { 
+        beginAtZero: true, 
+        ticks: { 
+          stepSize: 1,
+          precision: 0
+        } 
+      },
     },
   };
+
+  if (isLoading) {
+    return (
+      <div className="bg-gray-100 ml-64 p-8 font-sans min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-blue-600"></div>
+          <p className="mt-2 text-gray-600">Loading dashboard data...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-100 ml-64 p-8 font-sans min-h-screen">
       <div className="flex flex-col gap-8">
-
         {/* Greeting Card */}
         <div className="flex flex-col md:flex-row justify-between items-center bg-indigo-500 text-white rounded-xl p-8">
           <div>
-            <h2 className="text-2xl font-semibold mb-2">Good Morning, {user?.username || "William"}!</h2>
-            <p className="mb-4">Here’s what’s happening with your store today.</p>
+            <h2 className="text-2xl font-semibold mb-2">Good Morning, {user?.username || "Admin"}!</h2>
+            <p className="mb-4">Here's what's happening with your website today.</p>
             <div className="flex gap-4">
               <div className="bg-white/20 px-4 py-3 rounded-lg">
-                <span className="block text-lg font-semibold">86 New orders</span>
-                <small className="text-sm">Awaiting processing</small>
+                <span className="block text-lg font-semibold">{contactList.length} Contacts</span>
+                <small className="text-sm">Total submissions</small>
               </div>
               <div className="bg-white/20 px-4 py-3 rounded-lg">
-                <span className="block text-lg font-semibold">35 Products</span>
-                <small className="text-sm">Out of stock</small>
+                <span className="block text-lg font-semibold">{projectList.length} Projects</span>
+                <small className="text-sm">Total enquiries</small>
               </div>
             </div>
-          </div>
-          <div className="mt-6 md:mt-0">
           </div>
         </div>
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          {/* Total Sales Chart */}
+          {/* Stats Chart */}
           <div className="col-span-1 lg:col-span-2 bg-white rounded-xl p-6 shadow">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Total Sales</h3>
-              <select className="border border-gray-300 rounded px-3 py-1 text-sm">
-                <option>Monthly</option>
+              <h3 className="text-xl font-semibold">Submission Statistics</h3>
+              <select 
+                className="border border-gray-300 rounded px-3 py-1 text-sm bg-white"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                <option value="30days">Last 30 Days</option>
+                <option value="7days">Last 7 Days</option>
+                <option value="today">Today</option>
               </select>
             </div>
-            <div className="h-52 bg-gray-200 rounded flex items-center justify-center text-gray-500">
-              <Bar
-                data={chartData}
-                options={chartOptions}
-                redraw // Ensures chart is destroyed and recreated to avoid canvas reuse error
-              />
+            <div className="h-52">  
+              <Bar data={chartData} options={chartOptions} />
             </div>
           </div>
 
           {/* Side Cards */}
           <div className="flex flex-col gap-6">
-            {/* Total Orders */}
+            {/* Contact Form Card */}
             <div className="bg-white rounded-xl p-6 shadow">
-              <h4 className="text-lg font-semibold">Total Entries of Contact Forms</h4>
-              <p className="text-xl font-bold mt-2">
-                {contactFormCount}
-              </p>
-              <div className="h-14 bg-gray-200 rounded my-4 flex items-center justify-center text-gray-500 text-sm">
-                [Orders Chart]
+              <div className="flex justify-between items-center mb-2">
+                <h4 className="text-lg font-semibold">Contact Form Submissions</h4>
               </div>
+              <p className="text-2xl font-bold text-gray-800 mb-4">{contactList.length}</p>
               <div className="flex justify-between text-sm text-gray-600">
-                <span>Recent 30 days</span>
-                <span>Pending 38%</span>
+                <span>Recent submissions</span>
+                <span>Total</span>
               </div>
             </div>
 
-            {/* Total Customers */}
+            {/* Newsletter Card */}
             <div className="bg-white rounded-xl p-6 shadow">
-              <h4 className="text-lg font-semibold">Total Newsletter Subscriptions</h4>
-              <p className="text-xl font-bold mt-2">
-                {newsletterCount}
-              </p>
-              <div className="h-14 bg-gray-200 rounded my-4 flex items-center justify-center text-gray-500 text-sm">
-                [Customers Chart]
+              <div className="flex justify-between items-center mb-2">
+                <h4 className="text-lg font-semibold">Newsletter Subscribers</h4>
               </div>
+              <p className="text-2xl font-bold text-gray-800 mb-4">{newsletterList.length}</p>
               <div className="flex justify-between text-sm text-gray-600">
-                <span>Recent 30 days</span>
-                <span>Others 25%</span>
+                <span>Recent signups</span>
+                <span>Total</span>
               </div>
             </div>
 
-            {/* Total Revenue */}
+            {/* Project Popup Card */}
             <div className="bg-white rounded-xl p-6 shadow">
-              <h4 className="text-lg font-semibold">Total Enquiries of Project Listing</h4>
-              <p className="text-xl font-bold mt-2">
-                {projectPopupCount}
-              </p>
-              <div className="h-14 bg-gray-200 rounded my-4 flex items-center justify-center text-gray-500 text-sm">
-                [Revenue Chart]
+              <div className="flex justify-between items-center mb-2">
+                <h4 className="text-lg font-semibold">Project Enquiries</h4>
               </div>
+              <p className="text-2xl font-bold text-gray-800 mb-4">{projectList.length}</p>
               <div className="flex justify-between text-sm text-gray-600">
-                <span>Recent 30 days</span>
-                <span>Others 25%</span>
+                <span>Recent enquiries</span>
+                <span>Total</span>
               </div>
             </div>
-
           </div>
         </div>
       </div>
