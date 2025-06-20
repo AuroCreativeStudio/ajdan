@@ -84,22 +84,20 @@ function TeamList() {
   };
 
   return (
-    <>
+   <>
       <div className="flex h-screen bg-white">
-        <div className="w-64 bg-white">
-        </div>
-        <div className="flex-1 flex flex-col overflow-hidden"> 
+        <div className="w-64 bg-white"></div>
+        <div className="flex-1 flex flex-col">
           <div className="flex items-center justify-between w-full p-6">
-            <h1 className="text-3xl font-headline text-gray-800">
+            <h1 className="text-3xl text-gray-800 font-headline">
               {activeTab === 'board' ? 'Board of Directors' : 'Team'} List
             </h1>
-          
-          <button
-            onClick={() => navigate('/create')}
-            className="export-button"
-          >
-            Create
-          </button>
+            <button
+              onClick={() => navigate('/teamcreate')}
+              className="export-button"
+            >
+              Create
+            </button>
           </div>
           
           {/* Tabs */}
@@ -140,10 +138,10 @@ function TeamList() {
             </div>
           </div>
 
-          <div className="flex-1 p-6">
-            <div className="relative">
+          <div className="flex-1 overflow-auto px-6 pb-4">
+            <div className="bg-white rounded-lg shadow-sm">
               <table className="w-full text-sm text-left text-gray-500">
-                <thead className="text-xs text-gray-700 uppercase font-headline bg-gray-50">
+                <thead className="text-xs text-gray-700 uppercase bg-gray-50 font-headline">
                   <tr>
                     <th className="px-6 py-3">#</th>
                     <th className="px-6 py-3">Name</th>
@@ -161,7 +159,7 @@ function TeamList() {
                     </tr>
                   ) : sortedTeam.length > 0 ? (
                     paginatedTeam.map((member, idx) => (
-                      <tr key={member.documentId || idx} className="bg-white border-b border-gray-200">
+                      <tr key={member.documentId || idx} className="bg-white border-b font-body border-gray-200">
                         <td className="px-6 py-4">{((currentPage - 1) * ITEMS_PER_PAGE) + idx + 1}</td>
                         <td className="px-6 py-4">{member.name || member.member || 'N/A'}</td>
                         <td className="px-6 py-4">{member.role_en || 'N/A'}</td>
@@ -172,7 +170,7 @@ function TeamList() {
                             className="w-12 h-12 object-cover rounded-full"
                           />
                         </td>
-                        <td className="px-6 py-4 ">
+                        <td className="px-6 py-4">
                           <button
                             className="action-button mr-2"
                             onClick={() => navigate('/teamupdate', { state: { member } })}
@@ -188,7 +186,7 @@ function TeamList() {
                           </button>
                           <DeletePopup
                             customTrigger={
-                              <button className="action-button">
+                              <button className="action-button ml-2">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4">
                                   <path d="M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20" 
                                   stroke="currentColor" 
@@ -219,35 +217,37 @@ function TeamList() {
           </div>
           
           {/* Pagination */}
-          <div className="pagination-container">
-            <button
-              className="pagination-button"
-              onClick={prevPage}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            
-            <div className="flex items-center gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button 
-                  key={page} 
-                  className={`pagination-page-button ${currentPage === page ? 'active' : ''}`}
-                  onClick={() => handlePageChange(page)}
-                >
-                  {page}
-                </button>
-              ))}
+          {totalPages > 1 && (
+            <div className="pagination-container mb-0">
+              <button
+                className="pagination-button"
+                onClick={prevPage}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              
+              <div className="flex items-center gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button 
+                    key={page} 
+                    className={`pagination-page-button ${currentPage === page ? 'active' : ''}`}
+                    onClick={() => handlePageChange(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+              
+              <button
+                className="pagination-button"
+                onClick={nextPage}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
             </div>
-            
-            <button
-              className="pagination-button"
-              onClick={nextPage}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
+          )}
         </div>
       </div>
       <ToastContainer />

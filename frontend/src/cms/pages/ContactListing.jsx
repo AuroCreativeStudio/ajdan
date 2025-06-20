@@ -95,18 +95,18 @@ function ContactListing() {
   };
 
   return (
-    <div className="flex p-0 h-screen bg-white">
+   <div className="flex h-screen bg-white">
       <div className="w-64 bg-white"></div>
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex items-center justify-between w-full mb-6">
-          <h1 className="text-3xl font-headline text-gray-800 mb-4">Contact List</h1>
+      <div className="flex-1 flex flex-col">
+        <div className="flex items-center justify-between w-full p-6">
+          <h1 className="text-3xl text-gray-800 font-headline">Contact List</h1>
           <button onClick={handleExport} className="export-button">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               viewBox="0 0 30 30" 
               width="20" 
               height="20" 
-              className="text-green-600 font-headline group-hover:text-white"
+              className="text-green-600 group-hover:text-white font-headline"
             >
               <path 
                 fill="currentColor" 
@@ -124,10 +124,10 @@ function ContactListing() {
             Export Data
           </button>
         </div>
-        <div className="flex-1 p-6">
-          <div className="relative">
+        <div className="flex-1 overflow-auto px-6 pb-4">
+          <div className="bg-white rounded-lg shadow-sm">
             <table className="w-full text-sm text-left text-gray-500">
-              <thead className="text-xs text-gray-700 uppercase font-headline">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50 font-headline">
                 <tr>
                   <th className="px-6 py-3">Name</th>
                   <th className="px-6 py-3">Email</th>
@@ -144,42 +144,40 @@ function ContactListing() {
                   </tr>
                 ) : contactLists && contactLists.length > 0 ? (
                   paginatedContacts.map((contact, idx) => (
-                    <tr key={contact.id || idx} className="bg-white border-b border-gray-200">
+                    <tr key={contact.id || idx} className="bg-white border-b font-body border-gray-200">
                       <td className="px-6 py-4">{contact.name}</td>
                       <td className="px-6 py-4">{contact.email}</td>
                       <td className="px-6 py-4">{contact.terms ? 'Accepted' : 'Rejected'}</td>
                       <td className="px-6 py-4">
-            <button
-              className="action-button"
-              onClick={() => handleView(contact)}
-            >
-             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <button
+                          className="action-button"
+                          onClick={() => handleView(contact)}
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                             <path d="M12 19C16.4183 19 20 12 20 12C20 12 16.4183 5 12 5C7.58172 5 4 12 4 12C4 12 7.58172 19 12 19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                           </svg>
-              View 
-            </button>
-            <DeletePopup
-              customTrigger={
-                <button className="action-button ml-2">
-                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142
-                    2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086
-                    21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"/>
-                  </svg>
-                  Delete
-                </button>
-              }
-              message={`Are you sure you want to delete the contact "${contact.name}"?`}
-              itemId={contact.id}
-              onConfirm={() => handleDelete(contact.id)}
-            />
-          </td>
+                          View 
+                        </button>
+                        <DeletePopup
+                          customTrigger={
+                            <button className="action-button ml-2">
+                              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" 
+                                stroke="currentColor" 
+                                strokeWidth="2" 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round"/>
+                              </svg>
+                              Delete
+                            </button>
+                          }
+                          message={`Are you sure you want to delete the contact "${contact.name}"?`}
+                          itemId={contact.id}
+                          onConfirm={() => handleDelete(contact.id)}
+                        />
+                      </td>
                     </tr>
                   ))
                 ) : (

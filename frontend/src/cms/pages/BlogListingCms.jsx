@@ -138,67 +138,78 @@ const toggleFilterDropdown = () => {
 
 
 
-  <div className="flex items-center space-x-4">
-     <div className="relative inline-block  text-left">
-        <button
-          onClick={toggleFilterDropdown}
-          className="export-button"
-        >
-          Filter with tabs
-          <svg className="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
+ <div className="flex items-center space-x-4">
+  <div className="relative inline-block text-left">
+    <button
+      onClick={toggleFilterDropdown}
+      className="export-button flex items-center"
+    >
+      Filter with tabs
+      <svg 
+        className="ml-2 h-5 w-5" 
+        xmlns="http://www.w3.org/2000/svg" 
+        fill="none" 
+        viewBox="0 0 24 24" 
+        stroke="currentColor"
+      >
+        <path 
+          strokeLinecap="round" 
+          strokeLinejoin="round" 
+          strokeWidth="2" 
+          d="M19 9l-7 7-7-7" 
+        />
+      </svg>
+    </button>
 
-        {isFilterOpen && (
-          <div className="origin-top-right absolute z-50 mt-2 w-80 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-            <div className="px-4 py-3 text-sm text-gray-300 border-b border-gray-600 flex space-x-4">
-              <button className="text-mainCharcoal1 font-medium">Filter Date</button>
+    {isFilterOpen && (
+      <div className="origin-top-right absolute right-0 z-50 mt-2 w-80 rounded-lg shadow-lg bg-white ring-1 ring-gray-200">
+        <div className="px-4 py-3 text-sm text-gray-700 border-b border-gray-200">
+          <span className="font-medium text-gray-900">Filter Date</span>
+        </div>
+        <div className="px-4 py-4 space-y-3 text-sm">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-gray-700 mb-1">From</label>
+              <input
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
-            <div className="px-4 py-4 space-y-3 text-sm text-white">
-             <div className="grid grid-cols-2 gap-4">
-  <div>
-    <label className="block text-mainCharcoal1 mb-1">From</label>
-    <input
-      type="date"
-      value={fromDate}
-      onChange={(e) => setFromDate(e.target.value)}
-      className="w-full rounded-md text-mainCharcoal1 border border-gray-600 px-3 py-2 focus:outline-none"
-    />
-  </div>
-  <div>
-    <label className="block text-mainCharcoal1 mb-1">To</label>
-    <input
-      type="date"
-      value={toDate}
-      onChange={(e) => setToDate(e.target.value)}
-      className="w-full rounded-md text-mainCharcoal1 border border-gray-600 px-3 py-2 focus:outline-none"
-    />
-  </div>
-</div>
-<button
-  onClick={applyDateFilter}
-  className="w-full mt-4 bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
->
-  Apply Filter
-</button>
-{filteredBlogs.length > 0 && (
-  <button
-    onClick={() => {
-      setFilteredBlogs([]);
-      setFromDate('');
-      setToDate('');
-      setCurrentPage(1);
-    }}
-    className="w-full mt-2 bg-gray-500 text-white py-2 px-4 rounded-md hover:bg-gray-600 transition-colors"
-  >
-    Clear Filter
-  </button>
-)}
+            <div>
+              <label className="block text-gray-700 mb-1">To</label>
+              <input
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
           </div>
-        )}
+          <button
+            onClick={applyDateFilter}
+            className="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Apply Filter
+          </button>
+          {filteredBlogs.length > 0 && (
+            <button
+              onClick={() => {
+                setFilteredBlogs([]);
+                setFromDate('');
+                setToDate('');
+                setCurrentPage(1);
+              }}
+              className="w-full mt-2 bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+            >
+              Clear Filter
+            </button>
+          )}
+        </div>
       </div>
+    )}
+  </div>
 </div>
           <button
             onClick={() => navigate('/create')}
@@ -241,14 +252,14 @@ const toggleFilterDropdown = () => {
           </div>
         </td>
         <td className="px-6 py-4">
-  <span
-    className={`inline-block px-3 py-1 text-sm rounded-full ${
-      blog.publish ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-    }`}
-  >
+     <span
+       className={`inline-block px-3 py-1 text-sm rounded-full ${
+        blog.publish ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+     }`}
+    >
     {blog.publish ? 'Published' : 'Draft'}
-  </span>
-</td>
+    </span>
+   </td>
 
                     <td className="px-6 py-4">
                       <div className="flex flex-col space-y-2">

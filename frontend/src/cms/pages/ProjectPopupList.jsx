@@ -99,18 +99,18 @@ export default function ProjectPopupList() {
   };
 
   return (
-    <div className="flex h-screen bg-white">
+     <div className="flex h-screen bg-white">
       <div className="w-64 bg-white"></div>
-      <div className="flex-1 flex flex-col overflow-hidden"> 
-        <div className="flex items-center justify-between w-full mb-7">
-          <h1 className="text-3xl font-headline text-gray-800">Project Enquires</h1>
+      <div className="flex-1 flex flex-col"> 
+        <div className="flex items-center justify-between w-full p-6">
+          <h1 className="text-3xl text-gray-800 font-headline">Project Enquires</h1>
           <button onClick={handleExport} className="export-button">
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               viewBox="0 0 30 30" 
               width="20" 
               height="20" 
-              className="text-green-600 font-headline group-hover:text-white"
+              className="text-green-600 group-hover:text-white font-headline"
             >
               <path 
                 fill="currentColor" 
@@ -120,10 +120,10 @@ export default function ProjectPopupList() {
             Export Data
           </button>
         </div>
-        <div className="flex-1 p-8">
-          <div className="relative">
-            <table className="w-full text-sm text-left text-gray-700">
-              <thead className="text-xs uppercase bg-gray-50 font-headline">
+        <div className="flex-1 overflow-auto px-6 pb-4">
+          <div className="bg-white rounded-lg shadow-sm">
+            <table className="w-full text-sm text-left text-gray-500">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50 font-headline">
                 <tr>
                   <th className="px-6 py-3">Title</th>
                   <th className="px-6 py-3">User</th>
@@ -135,8 +135,8 @@ export default function ProjectPopupList() {
               <tbody>
                 {paginatedPopups.length > 0 ? (
                   paginatedPopups.map((popup) => (
-                    <tr key={popup.id} className="border-b hover:bg-gray-50">
-                      <td className="px-6 py-4 font-body text-gray-900">{popup.title}</td>
+                    <tr key={popup.id} className="bg-white border-b font-body border-gray-200">
+                      <td className="px-6 py-4">{popup.title}</td>
                       <td className="px-6 py-4">{popup.username}</td>
                       <td className="px-6 py-4">{popup.phone}</td>
                       <td className="px-6 py-4">{popup.purchase_plan}</td>
@@ -153,9 +153,14 @@ export default function ProjectPopupList() {
                         </button>
                         <DeletePopup
                           customTrigger={
-                            <button className="action-button ">
+                            <button className="action-button ml-2">
                               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" 
+                                stroke="currentColor" 
+                                strokeWidth="2" 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round"/>
                               </svg>
                               Delete
                             </button>
@@ -178,7 +183,6 @@ export default function ProjectPopupList() {
             </table>
           </div>
         </div>
-
         {/* Pagination */}
         <div className="pagination-container">
           <button

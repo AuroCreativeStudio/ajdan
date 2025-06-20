@@ -18,6 +18,8 @@ import video from '../../../assets/landing images/Sandbox.mp4';
 import coursol2 from '../../../assets/landing images/bayfrontcoursal2.jpg';
 import coursol3 from '../../../assets/landing images/bayfrontcoursol3.jpg';
 import map from '../../../assets/landing images/map.png';
+import { motion } from "framer-motion";
+
 import {
   FaVectorSquare,
   FaStore,
@@ -28,105 +30,165 @@ import {
   FaUsers,
 } from 'react-icons/fa';
 
+// const DraggableMapWithMarkers = ({ imageSrc, markers }) => {
+//   const containerRef = useRef(null);
+//   const imageRef = useRef(null);
+//   const [dragging, setDragging] = useState(false);
+//   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+//   const [position, setPosition] = useState({ x: 0, y: 0 });
+
+//   // Initialize position to show top-left of image
+//   useEffect(() => {
+//     if (containerRef.current) {
+//       // Start with image aligned to top-left (position 0,0)
+//       setPosition({ x: 0, y: 0 });
+//     }
+//   }, []);
+
+//   const startDragging = (e) => {
+//     if (e.touches && e.touches.length > 1) return;
+    
+//     setDragging(true);
+//     const clientX = e.clientX || e.touches[0].clientX;
+//     const clientY = e.clientY || e.touches[0].clientY;
+    
+//     setStartPos({
+//       x: clientX - position.x,
+//       y: clientY - position.y,
+//     });
+    
+//     document.body.style.userSelect = 'none';
+//   };
+
+//   const stopDragging = () => {
+//     setDragging(false);
+//     document.body.style.userSelect = '';
+//   };
+
+//   const onDragging = (e) => {
+//     if (!dragging) return;
+    
+//     const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+//     const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    
+//     if (!clientX || !clientY) return;
+    
+//     // Calculate new position
+//     let newX = clientX - startPos.x;
+//     let newY = clientY - startPos.y;
+    
+//     // Constrain movement to keep image within container
+//     const containerWidth = containerRef.current.offsetWidth;
+//     const containerHeight = containerRef.current.offsetHeight;
+//     const imgWidth = 1920; // Fixed image width
+//     const imgHeight = 1080; // Fixed image height
+    
+//     // Calculate maximum allowed position (right/bottom edges)
+//     const maxX = Math.min(0, containerWidth - imgWidth);
+//     const maxY = Math.min(0, containerHeight - imgHeight);
+    
+//     // Apply constraints
+//     newX = Math.max(maxX, Math.min(0, newX));
+//     newY = Math.max(maxY, Math.min(0, newY));
+    
+//     setPosition({ x: newX, y: newY });
+//   };
+
+//   return (
+//     <div 
+//       ref={containerRef}
+//       className="relative w-full h-[70vh] overflow-hidden touch-none bg-gray-100"
+//       onMouseLeave={stopDragging}
+//     >
+//       <div
+//         ref={imageRef}
+//         className="absolute bg-cover bg-center bg-no-repeat"
+//         style={{
+//           backgroundImage: `url(${imageSrc})`,
+//           width: '1920px',
+//           height: '1080px',
+//           cursor: dragging ? 'grabbing' : 'grab',
+//           transform: `translate(${position.x}px, ${position.y}px)`,
+//           transition: dragging ? 'none' : 'transform 0.2s ease',
+//         }}
+//         onMouseDown={startDragging}
+//         onMouseUp={stopDragging}
+//         onMouseMove={onDragging}
+//         onTouchStart={startDragging}
+//         onTouchEnd={stopDragging}
+//         onTouchMove={onDragging}
+//       >
+//         {markers.map(({ id, label, top, left, direction }) => (
+//           <div
+//             key={id}
+//             className="absolute group"
+//             style={{
+//               top: top,
+//               left: left,
+//             }}
+//           >
+//             <div className="relative flex flex-col items-center">
+//               {direction === "up" && (
+//                 <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-2 sm:mb-3">
+//                   <div className="text-white text-xs sm:text-sm whitespace-nowrap bg-black/50 px-2 py-1 rounded">
+//                     {label}
+//                   </div>
+//                   <div className="w-px h-8 sm:h-12 bg-white" />
+//                 </div>
+//               )}
+
+//               <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+//                 <div className="absolute w-full h-full rounded-full bg-white opacity-20 animate-rippleOuter pointer-events-none" />
+//                 <div className="absolute w-10 h-10 rounded-full bg-white opacity-40 animate-rippleMiddle pointer-events-none" />
+//                 <div className="w-4 h-4 rounded-full bg-white border-2 border-white z-10" />
+//               </div>
+
+//               {direction === "down" && (
+//                 <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mt-2 sm:mt-3">
+//                   <div className="w-px h-8 sm:h-12 bg-white" />
+//                   <div className="text-white text-xs sm:text-sm mt-1 whitespace-nowrap bg-black/50 px-2 py-1 rounded">
+//                     {label}
+//                   </div>
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+
+//       <div className="absolute  bottom-4 left-4 sm:bottom-6 sm:left-6 md:bottom-10 md:left-10 text-white text-xl sm:text-2xl md:text-4xl font-chapaza z-10 pointer-events-none">
+//         Waves of Luxury
+//       </div>
+//     </div>
+//   );
+// };
+
+
+
+
+
 const DraggableMapWithMarkers = ({ imageSrc, markers }) => {
-  const containerRef = useRef(null);
-  const imageRef = useRef(null);
-  const [dragging, setDragging] = useState(false);
-  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-
-  // Initialize position to show top-left of image
-  useEffect(() => {
-    if (containerRef.current) {
-      // Start with image aligned to top-left (position 0,0)
-      setPosition({ x: 0, y: 0 });
-    }
-  }, []);
-
-  const startDragging = (e) => {
-    if (e.touches && e.touches.length > 1) return;
-    
-    setDragging(true);
-    const clientX = e.clientX || e.touches[0].clientX;
-    const clientY = e.clientY || e.touches[0].clientY;
-    
-    setStartPos({
-      x: clientX - position.x,
-      y: clientY - position.y,
-    });
-    
-    document.body.style.userSelect = 'none';
-  };
-
-  const stopDragging = () => {
-    setDragging(false);
-    document.body.style.userSelect = '';
-  };
-
-  const onDragging = (e) => {
-    if (!dragging) return;
-    
-    const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-    const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-    
-    if (!clientX || !clientY) return;
-    
-    // Calculate new position
-    let newX = clientX - startPos.x;
-    let newY = clientY - startPos.y;
-    
-    // Constrain movement to keep image within container
-    const containerWidth = containerRef.current.offsetWidth;
-    const containerHeight = containerRef.current.offsetHeight;
-    const imgWidth = 1920; // Fixed image width
-    const imgHeight = 1080; // Fixed image height
-    
-    // Calculate maximum allowed position (right/bottom edges)
-    const maxX = Math.min(0, containerWidth - imgWidth);
-    const maxY = Math.min(0, containerHeight - imgHeight);
-    
-    // Apply constraints
-    newX = Math.max(maxX, Math.min(0, newX));
-    newY = Math.max(maxY, Math.min(0, newY));
-    
-    setPosition({ x: newX, y: newY });
-  };
-
   return (
-    <div 
-      ref={containerRef}
-      className="relative w-full h-[70vh] overflow-hidden touch-none bg-gray-100"
-      onMouseLeave={stopDragging}
+    <div
+      className="relative w-full h-screen overflow-hidden bg-gray-100"
     >
+      {/* Fixed background image */}
       <div
-        ref={imageRef}
-        className="absolute bg-cover bg-center bg-no-repeat"
+        className="absolute top-0 left-0 bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `url(${imageSrc})`,
-          width: '1920px',
-          height: '1080px',
-          cursor: dragging ? 'grabbing' : 'grab',
-          transform: `translate(${position.x}px, ${position.y}px)`,
-          transition: dragging ? 'none' : 'transform 0.2s ease',
+          width: '100%',
+          height: '100%',
         }}
-        onMouseDown={startDragging}
-        onMouseUp={stopDragging}
-        onMouseMove={onDragging}
-        onTouchStart={startDragging}
-        onTouchEnd={stopDragging}
-        onTouchMove={onDragging}
       >
         {markers.map(({ id, label, top, left, direction }) => (
           <div
             key={id}
             className="absolute group"
-            style={{
-              top: top,
-              left: left,
-            }}
+            style={{ top, left }}
           >
             <div className="relative flex flex-col items-center">
-              {direction === "up" && (
+              {direction === 'up' && (
                 <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-2 sm:mb-3">
                   <div className="text-white text-xs sm:text-sm whitespace-nowrap bg-black/50 px-2 py-1 rounded">
                     {label}
@@ -141,7 +203,7 @@ const DraggableMapWithMarkers = ({ imageSrc, markers }) => {
                 <div className="w-4 h-4 rounded-full bg-white border-2 border-white z-10" />
               </div>
 
-              {direction === "down" && (
+              {direction === 'down' && (
                 <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mt-2 sm:mt-3">
                   <div className="w-px h-8 sm:h-12 bg-white" />
                   <div className="text-white text-xs sm:text-sm mt-1 whitespace-nowrap bg-black/50 px-2 py-1 rounded">
@@ -154,6 +216,7 @@ const DraggableMapWithMarkers = ({ imageSrc, markers }) => {
         ))}
       </div>
 
+      {/* Optional overlay text */}
       <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 md:bottom-10 md:left-10 text-white text-xl sm:text-2xl md:text-4xl font-chapaza z-10 pointer-events-none">
         Waves of Luxury
       </div>
@@ -403,27 +466,48 @@ const investmentData = [
 
 
             {/* Statistics Section */}
-            <div
-                className="relative h-auto md:h-screen bg-cover bg-center flex items-center px-4 md:pl-16 py-20 md:py-0 text-white"
-                style={{ backgroundImage: `url(${bayfront2})` }}
-                id="statistics"
-            >
-                <div className="absolute inset-0 bg-black/40 z-0" />
-                <div className="relative z-10 flex flex-col gap-4 md:gap-6 max-w-xs w-full mx-auto md:mx-0">
-                    {stats.map((item, index) => (
-                        <div key={index} className="flex items-start gap-3 md:gap-4">
-                            <div>{item.icon}</div>
-                            <div>
-                                <p className="text-xs md:text-sm mb-1">{t(`stats.${item.label.toLowerCase().replace(' ', '_')}`)}</p>
-                                <h2 className="text-base md:text-lg font-commuter">
-                                    {item.value}{" "}
-                                    {item.unit && <span className="text-xs md:text-sm font-commuter">{item.unit}</span>}
-                                </h2>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+           <div
+  className="relative h-auto md:h-screen bg-cover bg-center flex items-center font-chapaza px-4 md:pl-16 py-20 md:py-0 text-white"
+  style={{ backgroundImage: `url(${bayfront2})` }}
+  id="statistics"
+>
+  <div className="absolute inset-0 bg-black/40 z-0" />
+  
+  <div className="relative z-10 flex flex-col gap-4 md:gap-6 max-w-xs w-full mx-auto md:mx-0">
+    {stats.map((item, index) => (
+     <motion.div
+  key={index}
+  initial={{ opacity: 0, y: 20 }} // smaller offset for a gentler slide
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true, amount: 0.3 }}
+  transition={{
+    duration: 0.8,             // smoother and longer duration
+    ease: "easeOut",           // smoother easing
+    delay: index * 0.15        // staggered but not too slow
+  }}
+  className="flex items-start gap-3 md:gap-4"
+>
+  <div>{item.icon}</div>
+  <div>
+    <p className="text-xs md:text-sm mb-1">
+      {t(`stats.${item.label.toLowerCase().replace(' ', '_')}`)}
+    </p>
+    <h2 className="text-base md:text-lg font-commuter">
+      {item.value}{" "}
+      {item.unit && (
+        <span className="text-xs md:text-sm font-commuter">{item.unit}</span>
+      )}
+    </h2>
+  </div>
+</motion.div>
+
+    ))}
+  </div>
+</div>
+
+
+
+
 
             {/* Amenities Section */}
          <section className="relative bg-[#fdf8f4] py-8 md:py-12 px-4 md:px-6 lg:px-16" id="amenities">
@@ -481,40 +565,40 @@ const investmentData = [
                 </button>
               </div>
 
-              <div className="flex flex-col md:flex-row items-center justify-center px-2 sm:px-4 py-6 sm:py-10 gap-4 h-full min-h-[calc(75vh-80px)]">
-      <div className="bg-white flex flex-col md:flex-row w-full max-w-7xl rounded shadow-md overflow-hidden">
-        
-        {/* Left: Image */}
-        <div className="md:w-1/2 w-full h-48 sm:h-64 md:h-full">
-          <img
-            src={bayfront9}
-            alt="Investment"
-            className="w-full h-full object-cover"
-          />
-        </div>
+          <div className="flex flex-col md:flex-row items-center justify-center px-2 sm:px-4 py-6 sm:py-10 gap-4 h-full min-h-[90vh]">
+  <div className="bg-white flex flex-col md:flex-row w-full max-w-7xl rounded shadow-md overflow-hidden">
 
-        {/* Right: Content */}
-        <div className="md:w-1/2 w-full p-4 sm:p-6 md:p-8 overflow-y-auto">
-          <h2 className="text-xl sm:text-2xl font-chapaza text-[#b3703b] pb-3 sm:pb-4 mb-4 sm:mb-6">
-            Investment Opportunity
-          </h2>
+    {/* Left: Image */}
+    <div className="md:w-1/2 w-full h-[400px] md:h-auto overflow-hidden">
+      <img
+        src={bayfront9}
+        alt="Investment"
+        className="w-full h-full object-cover object-top scale-110"
+      />
+    </div>
 
-          <div className="grid gap-3 sm:gap-4 md:gap-5">
-            {investmentData.map(([type, units, sqm], idx) => (
-              <div
-                key={idx}
-                className="flex justify-between items-center text-sm sm:text-base md:text-lg"
-              >
-                <span className="font-commuter text-[#b3703b] w-1/3">{type}</span>
-                <span className="text-gray-700  w-1/3 text-center">{units}</span>
-                <span className="text-gray-700  w-1/3 text-center">{units}</span>
-                <span className="text-gray-700 w-1/3 text-right">{sqm}</span>
-              </div>
-            ))}
+    {/* Right: Content */}
+    <div className="md:w-1/2 w-full p-4 sm:p-6 md:p-8 overflow-y-auto">
+      <h2 className="text-xl sm:text-2xl font-chapaza text-[#b3703b] pb-3 sm:pb-4 mb-4 sm:mb-6">
+        Investment Opportunity
+      </h2>
+
+      <div className="grid gap-4">
+        {investmentData.map(([type, units, sqm], idx) => (
+          <div
+            key={idx}
+            className="flex justify-between items-center text-sm sm:text-base md:text-lg"
+          >
+            <span className="font-commuter text-[#b3703b] w-1/3">{type}</span>
+            <span className="text-gray-700 w-1/3 text-center">{units}</span>
+            <span className="text-gray-700 w-1/3 text-right">{sqm}</span>
           </div>
-        </div>
+        ))}
       </div>
     </div>
+  </div>
+</div>
+
             </div>
 
             {/* Video Section */}

@@ -88,7 +88,7 @@ function NewsletterCms() {
   return (
     <div className="flex h-screen bg-white">
       <div className="w-64 bg-white"></div>
-      <div className="flex-1 flex flex-col overflow-hidden"> 
+      <div className="flex-1 flex flex-col "> 
         <div className="flex items-center justify-between w-full p-6">
           <h1 className="text-3xl text-gray-800 font-headline">Newsletter Subscriptions</h1>
           <button onClick={handleExport} className="export-button">

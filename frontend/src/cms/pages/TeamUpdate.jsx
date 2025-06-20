@@ -25,16 +25,16 @@ function TeamUpdate() {
   // Find Arabic localization if exists
   const arabicMember = member?.localizations?.find(loc => loc.locale === 'ar');
 
-  // Form state for both locales
+  // Initialize forms with the correct field names
   const [formEn, setFormEn] = useState({
     member: member?.member || member?.name || '',
-    role: member?.role_en || member?.role || '',
+    role_en: member?.role_en || member?.role || '',
     image: member?.image || null,
   });
 
   const [formAr, setFormAr] = useState({
     member: arabicMember?.member || arabicMember?.name || '',
-    role: arabicMember?.role_ar || arabicMember?.role || '',
+    role_ar: arabicMember?.role_ar || arabicMember?.role || '',
     image: arabicMember?.image || null,
   });
 
@@ -44,12 +44,12 @@ function TeamUpdate() {
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState('en');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState({ en: false, ar: false });
 
-  // Role options - updated to match your dropdown pattern
+  // Role options
   const roleOptions = {
     en: [
-      { value: 'Board of Director', label: 'Board of Directors' },
+      { value: 'Board of Directors', label: 'Board of Directors' },
       { value: 'Team', label: 'Team' }
     ],
     ar: [
@@ -58,7 +58,6 @@ function TeamUpdate() {
     ]
   };
 
-  // Handle input change for both forms
   const handleChange = (e, locale) => {
     const { name, value } = e.target;
     if (locale === 'en') {
@@ -68,17 +67,19 @@ function TeamUpdate() {
     }
   };
 
-  // Handle role selection from dropdown
-  const handleRoleSelect = (value, locale) => {
-    if (locale === 'en') {
-      setFormEn(prev => ({ ...prev, role: value }));
-    } else {
-      setFormAr(prev => ({ ...prev, role: value }));
-    }
-    setDropdownOpen(false);
+  const toggleDropdown = (locale) => {
+    setDropdownOpen(prev => ({ ...prev, [locale]: !prev[locale] }));
   };
 
-  // Handle image upload for both forms
+  const handleRoleSelect = (value, locale) => {
+    if (locale === 'en') {
+      setFormEn(prev => ({ ...prev, role_en: value }));
+    } else {
+      setFormAr(prev => ({ ...prev, role_ar: value }));
+    }
+    setDropdownOpen(prev => ({ ...prev, [locale]: false }));
+  };
+
   const handleImageChange = async (e, locale) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -108,56 +109,78 @@ function TeamUpdate() {
 const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
-  
+
   try {
-    // Prepare data in the exact format your API expects
+    // Prepare payloads for both locales
     const payloadEn = {
-      member: formEn.member,
-      role_en: formEn.role,  // Note: role_en instead of role
-      locale: 'en'
+      data: {
+        member: formEn.member,
+        role_en: formEn.role_en,
+        image: formEn.image?.id || member?.image?.id,
+        locale: 'en'
+      }
     };
 
     const payloadAr = {
-      member: formAr.member,
-      role_ar: formAr.role,  // Note: role_ar instead of role
-      locale: 'ar'
+      data: {
+        member: formAr.member,
+        role_ar: formAr.role_ar,
+        image: formAr.image?.id || arabicMember?.image?.id,
+        locale: 'ar'
+      }
     };
 
-    // Update English version
-    await updateTeam(member.documentId, payloadEn, 'en');
+    // Get the documentId (from either member or arabicMember)
+    const documentId = member?.documentId || arabicMember?.documentId;
     
-    // Update Arabic version if exists
-    if (arabicMember?.documentId) {
-      await updateTeam(arabicMember.documentId, payloadAr, 'ar');
-    } else if (formAr.member || formAr.role) {
-      // Create Arabic version if it doesn't exist
-      await createTeam({
-        ...payloadAr,
-        localizations: [member.documentId]
-      });
+    if (!documentId) {
+      throw new Error('No documentId found for team member');
     }
-    
+
+    // Update English version
+    await axios.put(
+      `http://localhost:1337/api/aboutus-teams/${documentId}?locale=en`,
+      payloadEn,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
+    );
+
+    // Update Arabic version - use same documentId but with locale=ar
+    await axios.put(
+      `http://localhost:1337/api/aboutus-teams/${documentId}?locale=ar`,
+      payloadAr,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
+    );
+
     toast.success('Team member updated successfully!');
     setTimeout(() => navigate(-1), 1500);
   } catch (error) {
-    console.error('Full error:', {
+    console.error('Update error:', {
       status: error.response?.status,
-      message: error.response?.data?.error?.message,
+      message: error.message || error.response?.data?.error?.message,
       details: error.response?.data
     });
     
-    toast.error(
-      error.response?.data?.error?.message || 
-      'Failed to update team member. Please check console for details.'
-    );
+    if (error.response?.status === 404) {
+      toast.error('Team member not found. Please check the document ID.');
+    } else {
+      toast.error(error.message || error.response?.data?.error?.message || 'Update failed');
+    }
   } finally {
     setLoading(false);
   }
 };
-  // Render role dropdown similar to your ProjectUpdate component
+
   const renderRoleDropdown = (locale) => {
-    const currentRole = locale === 'en' ? formEn.role : formAr.role;
-    const options = locale === 'en' ? roleOptions.en : roleOptions.ar;
+    const currentRole = locale === 'en' ? formEn.role_en : formAr.role_ar;
+    const options = roleOptions[locale];
     
     return (
       <div className="sm:col-span-2 relative">
@@ -168,13 +191,13 @@ const handleSubmit = async (e) => {
           className={`bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 cursor-pointer flex justify-between items-center ${
             locale === 'ar' ? 'text-right' : ''
           }`}
-          onClick={() => setDropdownOpen(!dropdownOpen)}
+          onClick={() => toggleDropdown(locale)}
         >
           <span>
             {currentRole || (locale === 'en' ? 'Select role...' : 'اختر الدور...')}
           </span>
           <svg 
-            className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
+            className={`w-4 h-4 transition-transform ${dropdownOpen[locale] ? 'rotate-180' : ''}`}
             fill="none" 
             viewBox="0 0 24 24" 
             stroke="currentColor"
@@ -183,7 +206,7 @@ const handleSubmit = async (e) => {
           </svg>
         </div>
         
-        {dropdownOpen && (
+        {dropdownOpen[locale] && (
           <div className={`absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-auto ${
             locale === 'ar' ? 'text-right' : ''
           }`}>
@@ -223,7 +246,7 @@ const handleSubmit = async (e) => {
                 : 'text-gray-700 border-b-transparent'}`}
             onClick={() => {
               setTab('en');
-              setDropdownOpen(false);
+              setDropdownOpen({ en: false, ar: false });
             }}
           >
             English
@@ -236,7 +259,7 @@ const handleSubmit = async (e) => {
                 : 'text-gray-700 border-b-transparent'}`}
             onClick={() => {
               setTab('ar');
-              setDropdownOpen(false);
+              setDropdownOpen({ en: false, ar: false });
             }}
           >
             العربية
@@ -262,7 +285,6 @@ const handleSubmit = async (e) => {
               />
             </div>
 
-            {/* Role dropdown */}
             {renderRoleDropdown(tab)}
 
             <div className="sm:col-span-2">
@@ -302,7 +324,7 @@ const handleSubmit = async (e) => {
               : (tab === 'en' ? 'Update team member' : 'تحديث عضو الفريق')}
           </button>
         </form>
-        <ToastContainer />
+        <ToastContainer position={tab === 'ar' ? 'top-left' : 'top-right'} />
       </div>
     </section>
   );
