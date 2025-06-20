@@ -32,6 +32,11 @@ import TeamList from './cms/pages/TeamList';
 import TeamCreate from './cms/pages/TeamCreate';
 import TeamUpdate from './cms/pages/TeamUpdate';
 import ProjectPopupList from './cms/pages/ProjectPopupList';
+import UserList from './cms/pages/UserList';
+import UserForm from './cms/pages/UserForm';
+import RoleList from './cms/pages/RoleList';
+import RoleForm from './cms/pages/RoleForm';
+import RoleProtectedRoute from './cms/components/RoleProtectedRoute';
 
 import Ajdan2Page from './components/landing/ajdan-II/LandingPage';
 import AjdanIsland from './components/landing/ajdan-island/LandingPage';
@@ -73,8 +78,14 @@ function LayoutWrapper({ children }) {
     location.pathname.startsWith('/teamlist') ||
     location.pathname.startsWith('/teamcreate') ||
     location.pathname.startsWith('/teamupdate') ||
-    location.pathname.startsWith('/popuplist')
-    || location.pathname.startsWith('/en/ajdanII')
+    location.pathname.startsWith('/popuplist') ||
+    location.pathname.startsWith('/userlist') ||
+    location.pathname.startsWith('/user-create') ||
+    location.pathname.startsWith('/user-edit') ||
+    location.pathname.startsWith('/rolelist') ||
+    location.pathname.startsWith('/role-create') ||
+    location.pathname.startsWith('/role-edit') ||
+    location.pathname.startsWith('/en/ajdanII')
     || location.pathname.startsWith('/ar/ajdanII')
     || location.pathname.startsWith('/en/ajdan-island')
     || location.pathname.startsWith('/ar/ajdan-island')
@@ -151,7 +162,7 @@ function PublicRoutes() {
       <Route path="/blogs" element={<BlogList locale={lang} />} />
       <Route path="/blog/:slug" element={<BlogSingle locale={lang} />} />
       <Route path="/aboutus" element={<Aboutus />} />
-<Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
+      <Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
 
       <Route path="/ajdanII" element={<Ajdan2Page />} />
       <Route path="/ajdan-island" element={<AjdanIsland />} />
@@ -195,7 +206,7 @@ function CmsLayout({ children }) {
   );
 }
 
-function AppRoutes({ setToken, setUser }) {
+function AppRoutes({ setToken, setUser, user }) {
   return (
     <Routes>
       
@@ -322,6 +333,66 @@ function AppRoutes({ setToken, setUser }) {
           </CmsLayout>
         }
       />
+      <Route
+        path="/userlist"
+        element={
+          <ProtectedRoute>
+            <CmsLayout>
+              <UserList />
+            </CmsLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/user-create"
+        element={
+          <ProtectedRoute>
+            <CmsLayout>
+              <UserForm />
+            </CmsLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/user-edit/:id"
+        element={
+          <ProtectedRoute>
+            <CmsLayout>
+              <UserForm />
+            </CmsLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/rolelist"
+        element={
+          <ProtectedRoute>
+            <CmsLayout>
+              <RoleList />
+            </CmsLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/role-create"
+        element={
+          <ProtectedRoute>
+            <CmsLayout>
+              <RoleForm />
+            </CmsLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/role-edit/:id"
+        element={
+          <ProtectedRoute>
+            <CmsLayout>
+              <RoleForm />
+            </CmsLayout>
+          </ProtectedRoute>
+        }
+      />
       {/* Fallback route for unmatched paths */}
       <Route path="*" element={null} />
     </Routes>
@@ -348,7 +419,13 @@ function App() {
     '/teamlist',
     '/teamcreate',
     '/teamupdate',
-    '/popuplist'
+    '/popuplist',
+    '/userlist',
+    '/user-create',
+    '/user-edit',
+    '/rolelist',
+    '/role-create',
+    '/role-edit'
   ];
 
   useEffect(() => {
@@ -377,7 +454,7 @@ function App() {
   return (
     <Router>
       <LayoutWrapper>
-        <AppRoutes setToken={setToken} setUser={setUser} />
+        <AppRoutes setToken={setToken} setUser={setUser} user={user} />
       </LayoutWrapper>
     </Router>
   );

@@ -24,10 +24,14 @@ function Sidebar({ handleLogout }) {
       (path !== '/' && currentPath.startsWith(path));
   };
 
+  // Detect direction from document.dir or i18n.language
+  const dir = document.dir || 'ltr';
+  const isRtl = dir === 'rtl';
+
   return (
     <div
-      className={`fixed top-0 left-0 h-screen flex-shrink-0 p-4 bg-main-charcoal1 transition-all duration-300  ${collapsed ? 'w-[4.5rem]' : 'w-60'
-        }`}
+      className={`fixed top-0 ${isRtl ? 'right-0' : 'left-0'} h-screen flex-shrink-0 p-4 bg-main-charcoal1 transition-all duration-300 z-20 ${collapsed ? 'w-[4.5rem]' : 'w-60'} flex flex-col items-center`}
+      style={{ direction: dir }}
     >
       <div className="flex items-center mb-8">
         <button
@@ -119,8 +123,19 @@ function Sidebar({ handleLogout }) {
           {!collapsed && 'News'}
         </a>
         <a
-          href="/projectlist"
-          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/projectlist')
+          href="/userlist"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/userlist')
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiFolder className="text-lg" />
+          {!collapsed && 'Users'}
+        </a>
+      
+              <a
+          href="/rolelist"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/rolelist')
               ? 'text-secondary-lavendergray6 font-medium'
               : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
             }`}
@@ -129,10 +144,6 @@ function Sidebar({ handleLogout }) {
           {!collapsed && 'Roles'}
         </a>
       
-      
-     
-      
-
           <button
             type="button"
             onClick={e => { e.preventDefault(); handleLogout && handleLogout(); }}
