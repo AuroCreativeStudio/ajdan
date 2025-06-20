@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
+import { CmsLangContext } from '../../App';
 import ajdanLogo from '../../assets/image/ajdan-light-logo.png';
 import { FaUserCircle } from 'react-icons/fa'; // Add an icon
 import { useTranslation } from 'react-i18next';
@@ -6,8 +7,9 @@ import { Switch } from "@material-tailwind/react";
 
 
 const Navbar = ({ handleLogout }) => {
+  const { cmsLang, setCmsLang } = useContext(CmsLangContext);
   const { i18n } = useTranslation();
-  const [isEnglish, setIsEnglish] = useState(i18n.language === 'en');
+const [isEnglish, setIsEnglish] = useState(cmsLang === 'en');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const trigger = useRef(null);
   const dropdown = useRef(null);
@@ -22,11 +24,18 @@ const Navbar = ({ handleLogout }) => {
     return () => document.removeEventListener('click', clickHandler);
   }, [dropdownOpen]);
 
+  useEffect(() => {
+  setIsEnglish(cmsLang === 'en');
+}, [cmsLang]);
+useEffect(() => {
+  i18n.changeLanguage(cmsLang);
+}, [cmsLang]);
+
   const handleToggle = () => {
-    const newLang = isEnglish ? 'ar' : 'en';
-    i18n.changeLanguage(newLang);
+    const newLang = cmsLang === 'ar' ? 'en' : 'ar';
+    setCmsLang(newLang);
+    localStorage.setItem('cmsLang', newLang);
     document.dir = newLang === 'ar' ? 'rtl' : 'ltr';
-    setIsEnglish(newLang === 'en');
   };
 
   return (
@@ -48,8 +57,10 @@ const Navbar = ({ handleLogout }) => {
         {dropdownOpen && (
           <div
             ref={dropdown}
-            className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50"
+            className={`absolute mt-2 w-56 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 ${document.dir === 'rtl' ? 'left-0' : 'right-0'
+              }`}
           >
+
             <div className="px-4 py-3 border-b">
               <p className="text-sm font-semibold">Andrio Miller</p>
               <p className="text-sm text-gray-500">miller@company.com</p>
@@ -63,17 +74,17 @@ const Navbar = ({ handleLogout }) => {
               >
                 View Profile
               </button>
-  <div className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-    <span>{isEnglish ? 'EN' : 'AR'}</span>
-    <Switch
-      checked={!isEnglish}
-      onChange={handleToggle}
-      className="!bg-gray-300 checked:!bg-blue-500"
-      circleProps={{
-        className: "before:bg-white",
-      }}
-    />
-  </div>
+              <div className="flex items-center justify-between px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                <span>{isEnglish ? 'EN' : 'AR'}</span>
+                <Switch
+                  checked={isEnglish}
+                  onChange={handleToggle}
+                  className="!bg-gray-300 checked:!bg-blue-500"
+                  circleProps={{
+                    className: "before:bg-white",
+                  }}
+                />
+              </div>
 
               <button
                 className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100"

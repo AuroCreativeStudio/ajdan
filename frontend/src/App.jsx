@@ -1,7 +1,7 @@
 import './App.css';
 import './index.css';
 import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useParams, useNavigate } from "react-router-dom";
 
 import Header from './components/Header';
@@ -63,6 +63,9 @@ import PrivacyPolicy from './components/pages/PrivacyPolicy';
 import Navbar from './cms/components/Navbar';
 import Sidebar from './cms/components/Sidebar';
 import { logout } from './services/authService';
+
+// Add CMS language context
+export const CmsLangContext = createContext();
 
 function LayoutWrapper({ children }) {
   const location = useLocation();
@@ -190,19 +193,23 @@ function PublicRoutes() {
 
 
 function CmsLayout({ children }) {
-  const handleLogout = () => {
-    logout();
-    window.location.href = '/login';
-  };
+  const [cmsLang, setCmsLang] = useState(() => localStorage.getItem('cmsLang') || 'ar');
 
+  useEffect(() => {
+    document.dir = cmsLang === 'ar' ? 'rtl' : 'ltr';
+  }, [cmsLang]);
+
+  // Provide context to all CMS children
   return (
-    <div style={{ display: 'flex', minHeight: '100vh' }}>
-      <Sidebar handleLogout={handleLogout} />
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8f8f8' }}>
-        <Navbar handleLogout={handleLogout} />
-        <main style={{ flex: 1, padding: '2rem' }}>{children}</main>
+    <CmsLangContext.Provider value={{ cmsLang, setCmsLang }}>
+      <div style={{ display: 'flex', minHeight: '100vh' }}>
+        <Sidebar />
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#f8f8f8' }}>
+          <Navbar />
+          <main style={{ flex: 1, padding: '2rem' }}>{children}</main>
+        </div>
       </div>
-    </div>
+    </CmsLangContext.Provider>
   );
 }
 
