@@ -230,7 +230,7 @@ const handleSubmit = async (e) => {
   if (!member) return <div className="mt-20 text-center text-gray-600">No team member data provided.</div>;
 
   return (
-    <section className="bg-white ml-64 dark:bg-gray-900">
+    <section className="bg-white mx-auto  dark:bg-gray-900">
       <div className="py-8 px-4 mx-auto max-w-2xl lg:py-16">
         <h2 className="mb-4 text-xl font-bold font-headline text-gray-900 dark:text-white">
           {tab === 'en' ? 'Update team member' : 'تحديث عضو الفريق'}

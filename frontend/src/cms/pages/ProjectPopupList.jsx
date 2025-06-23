@@ -15,11 +15,12 @@ export default function ProjectPopupList() {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  useEffect(() => { 
     fetchProjectPopups(i18n.language)
       .then(data => {
         const sanitizedPopups = (data?.data || []).map(popup => ({
-          id: popup.id,
+         id: popup.id,
+          documentId: popup.documentId || popup.id,
           title: popup.title || 'Untitled',
           slug: popup.slug || '',
           username: popup.username || 'N/A',
@@ -47,17 +48,21 @@ export default function ProjectPopupList() {
     setSelectedPopup(null);
   };
 
-  const handleDelete = async (popupId) => {
-    try {
-      await deleteProjectPopup(popupId);
-      toast.success("Contact deleted successfully");
-      setPopups(prev => prev.filter(popup => popup.id !== popupId));
-    } catch (error) {
-      console.error("Delete failed:", error.response?.data || error.message);
-      toast.error("Failed to delete contact");
+const handleDelete = async (documentId) => {
+  try {
+    const response = await deleteProjectPopup(documentId);
+    
+    if (response.success) {
+      toast.success("Project Enquiry deleted successfully");
+      setPopups(prev => prev.filter(popup => popup.documentId !== documentId));
+    } else {
+      throw new Error(response.error?.message || "Failed to delete Project Enquiry");
     }
-  };
-
+  } catch (error) {
+    console.error('Delete error:', error);
+    toast.error(error.message || "Failed to delete Project Enquiry");
+  }
+};
   const handleExport = () => {
     if (!popups.length) return;
     const header = ['Title', 'User', 'Phone', 'Email', 'Purchase Plan', 'Message', 'Description'];
@@ -166,8 +171,8 @@ export default function ProjectPopupList() {
                             </button>
                           }
                           message={`Are you sure you want to delete the project enquiry "${popup.title}"?`}
-                          itemId={popup.id}
-                          onConfirm={() => handleDelete(popup.id)}
+                          itemId={popup.documentId}
+                          onConfirm={() => handleDelete(popup.documentId)}
                         />
                       </td>
                     </tr>

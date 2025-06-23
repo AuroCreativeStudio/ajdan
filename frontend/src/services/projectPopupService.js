@@ -11,9 +11,18 @@ export const fetchProjectPopups = async () => {
 export const deleteProjectPopup = async (documentId) => {
   try {
     const response = await axios.delete(`http://localhost:1337/api/project-contact-forms/${documentId}`);
-    return response.data;
+    // Return consistent response structure
+    return { 
+      success: true,
+      data: response.data,
+      deleted: true // Add this for backward compatibility
+    };
   } catch (error) {
     console.error('Error deleting Project Enquire detail:', error.response?.data || error);
-    throw error;
+    // Return consistent error structure
+    return {
+      success: false,
+      error: error.response?.data || error.message
+    };
   }
 };

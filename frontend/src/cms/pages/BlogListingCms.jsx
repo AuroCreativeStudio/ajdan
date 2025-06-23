@@ -14,13 +14,14 @@ export default function BlogListingCms() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const navigate = useNavigate();
- const [fromDate, setFromDate] = useState('');
-const [filteredBlogs, setFilteredBlogs] = useState([]);
-const [toDate, setToDate] = useState(''); 
+  const [fromDate, setFromDate] = useState('');
+  const [filteredBlogs, setFilteredBlogs] = useState([]);
+  const [toDate, setToDate] = useState(''); 
 
   const pageSize = 6;
   const paginatedBlogs = paginate(filteredBlogs.length > 0 ? filteredBlogs : blogs, currentPage, pageSize);
-const totalPages = Math.ceil((filteredBlogs.length > 0 ? filteredBlogs : blogs).length / pageSize);
+  
+  const totalPages = Math.ceil((filteredBlogs.length > 0 ? filteredBlogs : blogs).length / pageSize);
 
   useEffect(() => {
     document.documentElement.dir = 'ltr';

@@ -1,0 +1,8 @@
+/* rtl.css */
+[dir="rtl"] .toggle-switch .rtl-pl-10 {
+  padding-left: 2.5rem !important; /* 40px */
+}
+
+[dir="ltr"] .toggle-switch .rtl-pl-10 {
+  padding-left: 0 !important;
+}

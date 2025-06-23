@@ -11,6 +11,7 @@ export const subscribeToNewsletter = async (data) => {
     throw error;
   }
 };
+
 export const getNewsLetter = async () => {
   try {
     const response = await axios.get(`${API_URL}/api/newsletters`);
@@ -20,12 +21,13 @@ export const getNewsLetter = async () => {
     throw error;
   }
 }
-export const deleteNewsletter = async (documentId) => {
+// In your newsletterService.js
+export const deleteNewsletter = async (id) => {
   try {
-    const response = await axios.delete(`${API_URL}/api/newsletters${documentId}`);
+    const response = await axios.delete(`${API_URL}/api/newsletters/${id}`);
     return response.data;
   } catch (error) {
-    console.error('Error deleting NewsLetter:', error.response?.data || error);
+    console.error('Error deleting NewsLetter:', error.response?.data || error.message);
     throw error;
   }
 };

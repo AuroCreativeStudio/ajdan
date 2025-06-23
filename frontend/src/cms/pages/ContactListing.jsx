@@ -50,7 +50,7 @@ function ContactListing() {
     try {
       await deleteContactDetail(contactId);
       toast.success("Contact deleted successfully");
-      setContactLists(prev => prev.filter(contact => contact.id !== contactId));
+      setContactLists(prev => prev.filter(contact => contact.documentId !== contactId));
     
     } catch (error) {
       console.error("Delete failed:", error.response?.data || error.message);
@@ -174,8 +174,8 @@ function ContactListing() {
                             </button>
                           }
                           message={`Are you sure you want to delete the contact "${contact.name}"?`}
-                          itemId={contact.id}
-                          onConfirm={() => handleDelete(contact.id)}
+                          itemId={contact.documentId}
+                          onConfirm={() => handleDelete(contact.documentId)}
                         />
                       </td>
                     </tr>

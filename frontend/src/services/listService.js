@@ -27,6 +27,7 @@ return (response.data.data || []).map(item => {
         property_type_ar: localizedItem.property_type_ar || item.property_type_ar || [],
         payment_plan_en: item.payment_plan_en || [],
         payment_plan_ar: localizedItem.payment_plan_ar || item.payment_plan_ar || [],
+        
       };
     });
 
@@ -36,26 +37,51 @@ return (response.data.data || []).map(item => {
   }
 };
 
-export const updateProjectList = async (documentId, updateFields, locale) => {
-  const url = `${API_URL}/api/lists/${documentId}?locale=${locale}`;
-
+export const updateProjectList = async (documentId, data, locale = 'en') => {
   try {
-    const payload = {
+    // 1. First verify the document exists
+    const checkResponse = await axios.get(
+      `${import.meta.env.VITE_API_URL || 'http://localhost:1337'}/api/lists/${documentId}?populate=*`
+    );
+
+    if (!checkResponse.data.data) {
+      throw new Error(`Document with ID ${documentId} not found`);
+    }
+
+    // 2. Prepare the update payload
+    const updatePayload = {
       data: {
-        ...updateFields
-      },
+        ...data,
+        locale
+      }
     };
 
-    console.log('Payload for update:', payload);
+    // 3. Execute the update
+    const response = await axios.put(
+      `${import.meta.env.VITE_API_URL || 'http://localhost:1337'}/api/lists/${documentId}`,
+      updatePayload,
+      {
+        params: { populate: '*' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(localStorage.getItem('jwt') && {
+            'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+          })
+        }
+      }
+    );
 
-    const response = await axios.put(url, payload);
-
-    return response.data;
+    return response.data.data;
   } catch (error) {
-    console.error('Error updating project:', error.response?.data || error.message);
+    console.error('Update failed:', {
+      documentId,
+      error: error.response?.data || error.message,
+      payload: error.config?.data
+    });
     throw error;
   }
 };
+
 
 // Example fetch for a single project
 export const fetchSingleProject = async (id) => {

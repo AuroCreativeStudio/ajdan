@@ -1,12 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import { fetchApartmentListCMS } from '../../services/listService';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { paginate } from '../../services/paginate';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import image from '../../assets/image/one.jpg';
 
+const BASE_URL = import.meta.env.VITE_STRAPI_URL || 'http://localhost:1337';
+
 const ITEMS_PER_PAGE = 6;
+
+function getImageUrl(featureImage) {
+  const defaultImage = image;
+
+  if (!featureImage || !Array.isArray(featureImage) || featureImage.length === 0) {
+    return defaultImage;
+  }
+
+  const imageObj = featureImage[0];
+  const formats = imageObj.formats || {};
+  const preferredFormat = formats.large || formats.medium || formats.small || formats.thumbnail;
+
+  const getFullUrl = (path) => {
+    try {
+      new URL(path);
+      return path;
+    } catch {
+      return `${BASE_URL}${path}`;
+    }
+  };
+
+  if (preferredFormat?.url) {
+    return getFullUrl(preferredFormat.url);
+  }
+
+  if (imageObj.url) {
+    return getFullUrl(imageObj.url);
+  }
+
+  return defaultImage;
+}
+
 
 function ProjectList() {
   const [projectList, setProjectList] = useState([]);
@@ -99,7 +133,16 @@ function ProjectList() {
                     paginatedProjects.map((project, idx) => (
                       <tr key={project.id || idx} className="bg-white border-b font-body border-gray-200">
                         <td className="px-6 py-4">
-                          <img src={image} alt="feature" className="w-20 h-14 object-cover rounded" />
+                <img
+                            src={getImageUrl(project.feature_image)}
+                            alt={project.title?.Property_Title || "project image"}
+                            className="w-32 h-16  object-cover "
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "https://docs.material-tailwind.com/img/team-3.jpg";
+                            }}
+                          />
+
                         </td>
                         <td className="px-6 py-4">{project.title}</td>
                         <td className="px-6 py-4 font-univers">

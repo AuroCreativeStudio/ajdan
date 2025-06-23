@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { updateProjectList } from '../../services/listService';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+import image from '../../assets/image/one.jpg';
 
 function ProjectUpdate() {
   const { state } = useLocation();
@@ -10,7 +12,10 @@ function ProjectUpdate() {
   const project = state?.project;
   const arabicProject = project?.localizations?.find(loc => loc.locale === 'ar');
 
+  // State definitions
   const [tab, setTab] = useState('en');
+  const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState({
     amenities: false,
     property_type: false,
@@ -27,6 +32,17 @@ function ProjectUpdate() {
   const defaultPropertyTypesAr = ['سكني','تجاري','متعدد الاستخدامات'];
   const defaultPaymentPlansAr = ['التمويل', 'دفعة مبدئية'];
 
+  const getImageUrl = (img) => {
+    if (!img) return image;
+    if (img.url) {
+      return img.url.startsWith('http') ? img.url : `${process.env.REACT_APP_API_URL || 'http://localhost:1337'}${img.url}`;
+    }
+    if (typeof img === 'string') {
+      return img;
+    }
+    return image;
+  };
+
   const [form, setForm] = useState({
     title: project?.title || '',
     place: project?.place || '',
@@ -35,7 +51,8 @@ function ProjectUpdate() {
     description: project?.description || '',
     amenities_en: project?.amenities_en || defaultAmenitiesEn,
     property_type_en: project?.property_type_en || defaultPropertyTypesEn,
-    payment_plan_en: project?.payment_plan_en || defaultPaymentPlansEn
+    payment_plan_en: project?.payment_plan_en || defaultPaymentPlansEn,
+    feature_image: project?.feature_image || null
   });
 
   const [formAr, setFormAr] = useState({
@@ -46,10 +63,12 @@ function ProjectUpdate() {
     description: arabicProject?.description || '',
     amenities_ar: arabicProject?.amenities_ar || defaultAmenitiesAr,
     property_type_ar: arabicProject?.property_type_ar || defaultPropertyTypesAr,
-    payment_plan_ar: arabicProject?.payment_plan_ar || defaultPaymentPlansAr
+    payment_plan_ar: arabicProject?.payment_plan_ar || defaultPaymentPlansAr,
+    feature_image: arabicProject?.feature_image || null
   });
 
-  const [loading, setLoading] = useState(false);
+  const [imagePreviewEn, setImagePreviewEn] = useState(() => getImageUrl(project?.feature_image));
+  const [imagePreviewAr, setImagePreviewAr] = useState(() => getImageUrl(arabicProject?.feature_image));
 
   useEffect(() => {
     if (project) {
@@ -61,7 +80,8 @@ function ProjectUpdate() {
         description: project.description || '',
         amenities_en: project.amenities_en || defaultAmenitiesEn,
         property_type_en: project.property_type_en || defaultPropertyTypesEn,
-        payment_plan_en: project.payment_plan_en || defaultPaymentPlansEn
+        payment_plan_en: project.payment_plan_en || defaultPaymentPlansEn,
+        feature_image: project.feature_image || null,
       });
 
       setFormAr(prev => ({
@@ -73,8 +93,12 @@ function ProjectUpdate() {
         description: arabicProject?.description || prev.description,
         amenities_ar: arabicProject?.amenities_ar || defaultAmenitiesAr,
         property_type_ar: arabicProject?.property_type_ar || defaultPropertyTypesAr,
-        payment_plan_ar: arabicProject?.payment_plan_ar || defaultPaymentPlansAr
+        payment_plan_ar: arabicProject?.payment_plan_ar || defaultPaymentPlansAr,
+        feature_image: arabicProject?.feature_image || null,
       }));
+
+      setImagePreviewEn(getImageUrl(project.feature_image));
+      setImagePreviewAr(getImageUrl(arabicProject?.feature_image));
     }
   }, [project, arabicProject]);
 
@@ -114,45 +138,111 @@ function ProjectUpdate() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await updateProjectList(project.documentId, {
-        building: form.building,
-        place: form.place,
-        description: form.description,
-        square_feet: Number(form.squarefeet),
-        amenities_en: form.amenities_en,
-        property_type_en: form.property_type_en,
-        payment_plan_en: form.payment_plan_en,
-      }, 'en');
+const handleImageChange = async (e, locale) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  setUploading(true);
+  const previewUrl = URL.createObjectURL(file);
+  
+  if (locale === 'en') {
+    setImagePreviewEn(previewUrl);
+  } else {
+    setImagePreviewAr(previewUrl);
+  }
 
-      if (arabicProject?.id) {
-        await updateProjectList(arabicProject.documentId, {
-          building: formAr.building,
-          place: formAr.place,
-          description: formAr.description,
-          square_feet: Number(formAr.squarefeet),
-          amenities_ar: formAr.amenities_ar,
-          property_type_ar: formAr.property_type_ar,
-          payment_plan_ar: formAr.payment_plan_ar,
-        }, 'ar');
-      } else if (project.title_ar) {
-        await updateProjectList(project.documentId, {
-          title_ar: formAr.title,
-        }, 'en');
+  try {
+    const formData = new FormData();
+    formData.append('files', file);
+    
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/upload`, 
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        }
       }
-
-      toast.success('Project updated successfully!');
-      setTimeout(() => navigate(-1), 1500);
-    } catch (error) {
-      console.error('Update error:', error);
-      toast.error('Failed to update project.');
-    } finally {
-      setLoading(false);
+    );
+    
+    if (res.data && res.data[0]) {
+      const uploadedImage = { id: res.data[0].id, ...res.data[0] };
+      
+      if (locale === 'en') {
+        setForm(prev => ({ ...prev, feature_image: uploadedImage }));
+      } else {
+        setFormAr(prev => ({ ...prev, feature_image: uploadedImage }));
+      }
+      
+      toast.success(tab === 'en' ? 'Image uploaded successfully!' : 'تم تحميل الصورة بنجاح!');
     }
-  };
+  } catch (err) {
+    console.error('Image upload error:', err);
+    toast.error(tab === 'en' ? 'Failed to upload image' : 'فشل تحميل الصورة');
+    
+    if (locale === 'en') {
+      setImagePreviewEn(getImageUrl(form.feature_image));
+    } else {
+      setImagePreviewAr(getImageUrl(formAr.feature_image));
+    }
+  } finally {
+    setUploading(false);
+    URL.revokeObjectURL(previewUrl); // Clean up memory
+  }
+};
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+
+  try {
+    if (!project?.documentId) {
+      throw new Error('No document ID available');
+    }
+
+    // Prepare update data
+    const updateData = {
+      place: form.place,
+      building: form.building,
+      square_feet: Number(form.squarefeet),
+      description: form.description,
+      amenities_en: form.amenities_en,
+      property_type_en: form.property_type_en,
+      payment_plan_en: form.payment_plan_en,
+      feature_image: form.feature_image?.id ? [form.feature_image.id] : null
+    };
+
+    // Execute update
+    const updatedProject = await updateProjectList(
+      project.documentId, // Using documentId instead of id
+      updateData,
+      'en'
+    );
+
+    toast.success('Project updated successfully!');
+    setTimeout(() => navigate(-1), 1500);
+  } catch (error) {
+    let errorMessage = 'Failed to update project';
+    
+    if (error.response) {
+      if (error.response.status === 404) {
+        errorMessage = `
+          API endpoint not found. Verify:
+          1. Content-type exists in Strapi (should be "list")
+          2. Document ID ${project?.documentId} exists
+          3. You have update permissions
+        `;
+      } else {
+        errorMessage = error.response.data?.error?.message || error.message;
+      }
+    }
+    
+    toast.error(errorMessage);
+    console.error('Update error details:', error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (!project) return <div className="mt-20 text-center text-gray-600">No project data provided.</div>;
 
@@ -165,7 +255,6 @@ function ProjectUpdate() {
     const fieldName = `${field}_${locale}`;
     const currentValues = locale === 'en' ? form[fieldName] : formAr[fieldName];
     
-    // Get the appropriate options based on field and locale
     let options = [];
     if (field.includes('amenities')) {
       options = locale === 'en' ? defaultAmenitiesEn : defaultAmenitiesAr;
@@ -258,7 +347,7 @@ function ProjectUpdate() {
         
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
-            {/* Title and Place in one row (2 columns) */}
+            {/* Title and Place */}
             <div className="sm:col-span-1">
               <label htmlFor={`title-${tab}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 {tab === 'en' ? 'Title' : 'العنوان'}
@@ -293,7 +382,7 @@ function ProjectUpdate() {
               />
             </div>
 
-            {/* Building and Square Feet in one row (2 columns) */}
+            {/* Building and Square Feet */}
             <div className="sm:col-span-1">
               <label htmlFor={`building-${tab}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 {tab === 'en' ? 'Building' : 'المبنى'}
@@ -326,7 +415,38 @@ function ProjectUpdate() {
               />
             </div>
 
-            {/* Description (full width) */}
+            {/* Image Upload */}
+            <div className="sm:col-span-2">
+              <label htmlFor={`image-${tab}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                {tab === 'en' ? 'Featured Image' : 'الصورة الرئيسية'}
+              </label>
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    id={`image-${tab}`}
+                    accept="image/*"
+                    onChange={(e) => handleImageChange(e, tab)}
+                    className="block w-full p-2.5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
+                    disabled={uploading}
+                  />
+                  {uploading && (
+                    <div className="mt-1 text-sm text-gray-500 dark:text-gray-300">
+                      {tab === 'en' ? 'Uploading...' : 'جارٍ التحميل...'}
+                    </div>
+                  )}
+                </div>
+                <div className="flex-shrink-0">
+                  <img
+                    src={tab === 'en' ? imagePreviewEn : imagePreviewAr}
+                    alt="Preview"
+                    className="w-16 h-16 object-cover rounded-lg border"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Description */}
             <div className="sm:col-span-2">
               <label htmlFor={`description-${tab}`} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 {tab === 'en' ? 'Description' : 'الوصف'}
@@ -343,6 +463,7 @@ function ProjectUpdate() {
               />
             </div>
 
+            {/* Dropdowns */}
             {tab === 'en' ? (
               <>
                 {renderDropdownCheckbox('amenities', 'Amenities', 'en')}
@@ -368,7 +489,7 @@ function ProjectUpdate() {
               : (tab === 'en' ? 'Update Project' : 'تحديث المشروع')}
           </button>
         </form>
-        <ToastContainer />
+        <ToastContainer position={tab === 'ar' ? 'top-left' : 'top-right'} />
       </div>
     </section>
   );

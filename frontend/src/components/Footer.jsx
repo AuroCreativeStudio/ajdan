@@ -5,18 +5,32 @@ import { subscribeToNewsletter } from "../services/newsletterService"; // Import
 function Footer() {
   const [email, setEmail] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await subscribeToNewsletter({ email }); // Call the API service
-      console.log("Subscribed successfully:", email);
-      alert("Thank you for subscribing!");
-      setEmail("");
-    } catch (error) {
-      console.error("Error subscribing to newsletter:", error.response?.data || error.message);
-      alert("Failed to subscribe. Please try again.");
-    }
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    // Get user's IP address
+    const ipRes = await fetch('https://api.ipify.org?format=json');
+    const ipData = await ipRes.json();
+
+    // Get current datetime in ISO format
+    const currentDatetime = new Date().toISOString();
+
+    // Send email + IP + datetime to the backend
+    await subscribeToNewsletter({
+      email,
+      ip: ipData.ip,
+      datetime: currentDatetime
+    });
+
+    console.log("Subscribed successfully:", email, ipData.ip, currentDatetime);
+    alert("Thank you for subscribing!");
+    setEmail("");
+  } catch (error) {
+    console.error("Error subscribing to newsletter:", error.response?.data || error.message);
+    alert("Failed to subscribe. Please try again.");
+  }
+};
+
 
   const navigationLinks = [
     "Ajdan's Story",
@@ -70,7 +84,7 @@ function Footer() {
                 src="https://cdn.builder.io/api/v1/image/assets/TEMP/bc76ab510b473c2fd62f1ab0acc9a3488adee8ba?placeholderIfAbsent=true&apiKey=15fc2f5d6dad43d5af0854bebe07a404"
                 alt="Ajdan Logo"
                 className="object-contain mb-4"
-                style={{ width: "100px", height: "" }}
+                style={{ width: "100px" }}
               />
               <ul className=" text-xl space-y-1">
                 {navigationLinks.map((link, index) => (

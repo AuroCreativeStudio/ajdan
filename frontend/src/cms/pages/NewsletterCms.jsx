@@ -35,24 +35,32 @@ function NewsletterCms() {
     fetchNewsletters();
   }, []);
 
-  const handleExport = () => {
-    if (!newsletters.length) return;
-    const header = ['Email', 'Subscribed At'];
-    const rows = newsletters.map((n) => [
-      n.email,
-      n.createdAt ? format(new Date(n.createdAt), 'yyyy-MM-dd') : '',
-    ]);
-    const csvContent = [header, ...rows]
-      .map((row) => row.map((val) => `"${val ?? ''}"`).join(','))
-      .join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'newsletter-subscribers.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+ const handleExport = () => {
+  if (!newsletters.length) return;
+
+  // Updated header to include IP
+  const header = ['Email', 'IP Address', 'Subscribed At'];
+
+  // Updated rows to include IP
+  const rows = newsletters.map((n) => [
+    n.email,
+    n.ip || 'N/A',
+    n.createdAt ? format(new Date(n.createdAt), 'yyyy-MM-dd HH:mm') : '',
+  ]);
+
+  const csvContent = [header, ...rows]
+    .map((row) => row.map((val) => `"${val ?? ''}"`).join(','))
+    .join('\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'newsletter-subscribers.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
    
   const nextPage = () => {
     if (currentPage < totalPages) {
@@ -70,16 +78,23 @@ function NewsletterCms() {
     setSearchParams({ page });
   };
 
-  const handleDelete = async (newsletterId) => {
-    try {
-      await deleteNewsletter(newsletterId);
-      toast.success("Subscription deleted successfully");
-      setNewsletters(prev => prev.filter(newsletter => newsletter.id !== newsletterId));
-    } catch (error) {
-      console.error("Delete failed:", error.response?.data || error.message);
-      toast.error("Failed to delete subscription");
+const handleDelete = async (documentId) => {
+  try {
+    const itemToDelete = newsletters.find(n => n.documentId === documentId);
+    if (!itemToDelete) {
+      toast.error('Item not found');
+      return;
     }
-  };
+
+    await deleteNewsletter(documentId);
+    toast.success("Subscription deleted successfully");
+    setNewsletters(prev => prev.filter(newsletter => newsletter.documentId !== documentId));
+  } catch (error) {
+    console.error("Delete failed:", error.response?.data || error.message);
+    toast.error(error.response?.data?.message || "Failed to delete subscription");
+  }
+};
+
 
   return (
     <div className="flex h-screen bg-white">
@@ -118,6 +133,7 @@ function NewsletterCms() {
                 <tr>
                   <th className="px-6 py-3">s.no</th>
                   <th className="px-6 py-3">Email</th>
+                  <th className="px-6 py-3">IP Address</th>
                   <th className="px-6 py-3">Subscribed At</th>
                   <th className="px-6 py-3">Actions</th>
                 </tr>
@@ -134,6 +150,7 @@ function NewsletterCms() {
                     <tr key={newsletter.id || idx} className="bg-white border-b font-body border-gray-200">
                       <td className="px-6 py-4">{(currentPage - 1) * pageSize + idx + 1}</td>
                       <td className="px-6 py-4">{newsletter.email}</td>
+                      <td className="px-6 py-4">{newsletter.ip}</td>
                       <td className="px-6 py-4">
                         {newsletter.createdAt
                           ? format(new Date(newsletter.createdAt), 'yyyy-MM-dd HH:mm')
@@ -157,8 +174,9 @@ function NewsletterCms() {
                             </button>
                           }
                           message={`Are you sure you want to delete the subscription "${newsletter.email}"?`}
-                          itemId={newsletter.id}
-                          onConfirm={() => handleDelete(newsletter.id)}
+                          itemId={newsletter.documentId}
+                         onConfirm={() => handleDelete(newsletter.documentId)}
+
                         />
                       </td>
                     </tr>
