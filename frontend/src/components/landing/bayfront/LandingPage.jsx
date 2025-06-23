@@ -167,53 +167,52 @@ import {
 
 
 
+
+
 const DraggableMapWithMarkers = ({ imageSrc, markers }) => {
   return (
-    <div
-      className="relative w-full h-screen overflow-hidden bg-gray-100"
-    >
-      {/* Fixed background image */}
-      <div
-        className="absolute top-0 left-0 bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: `url(${imageSrc})`,
-          width: '100%',
-          height: '100%',
-        }}
-      >
-        {markers.map(({ id, label, top, left, direction }) => (
-          <div
-            key={id}
-            className="absolute group"
-            style={{ top, left }}
-          >
-            <div className="relative flex flex-col items-center">
-              {direction === 'up' && (
-                <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-2 sm:mb-3">
-                  <div className="text-white text-xs sm:text-sm whitespace-nowrap bg-black/50 px-2 py-1 rounded">
-                    {label}
+    <div className="relative w-full overflow-hidden bg-gray-100">
+      {/* Aspect Ratio Wrapper */}
+      <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+        {/* Background Image */}
+        <div
+          className="absolute top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${imageSrc})` }}
+        >
+          {markers.map(({ id, label, top, left, direction }) => (
+            <div
+              key={id}
+              className="absolute group"
+              style={{ top, left, transform: 'translate(-50%, -50%)' }} // Centering the marker
+            >
+              <div className="relative flex flex-col items-center">
+                {direction === 'up' && (
+                  <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-2 sm:mb-3">
+                    <div className="text-white text-xs sm:text-sm whitespace-nowrap bg-black/50 px-2 py-1 rounded">
+                      {label}
+                    </div>
+                    <div className="w-px h-8 sm:h-12 bg-white" />
                   </div>
-                  <div className="w-px h-8 sm:h-12 bg-white" />
-                </div>
-              )}
+                )}
 
-              <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
-                <div className="absolute w-full h-full rounded-full bg-white opacity-20 animate-rippleOuter pointer-events-none" />
-                <div className="absolute w-10 h-10 rounded-full bg-white opacity-40 animate-rippleMiddle pointer-events-none" />
-                <div className="w-4 h-4 rounded-full bg-white border-2 border-white z-10" />
+                <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                  <div className="absolute w-full h-full rounded-full bg-white opacity-20 animate-rippleOuter pointer-events-none" />
+                  <div className="absolute w-10 h-10 rounded-full bg-white opacity-40 animate-rippleMiddle pointer-events-none" />
+                  <div className="w-4 h-4 rounded-full bg-white border-2 border-white z-10" />
+                </div>
+
+                {direction === 'down' && (
+                  <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mt-2 sm:mt-3">
+                    <div className="w-px h-8 sm:h-12 bg-white" />
+                    <div className="text-white text-xs sm:text-sm mt-1 whitespace-nowrap bg-black/50 px-2 py-1 rounded">
+                      {label}
+                    </div>
+                  </div>
+                )}
               </div>
-
-              {direction === 'down' && (
-                <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mt-2 sm:mt-3">
-                  <div className="w-px h-8 sm:h-12 bg-white" />
-                  <div className="text-white text-xs sm:text-sm mt-1 whitespace-nowrap bg-black/50 px-2 py-1 rounded">
-                    {label}
-                  </div>
-                </div>
-              )}
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
       {/* Optional overlay text */}
@@ -223,6 +222,7 @@ const DraggableMapWithMarkers = ({ imageSrc, markers }) => {
     </div>
   );
 };
+
 
 const AjdanBayfront = () => {
     const [data, setData] = useState(null);
@@ -289,36 +289,36 @@ const AjdanBayfront = () => {
       {
         id: 1,
         label: "Exclusive Beach Club",
-        top: "2%",
-        left: "13%",
+        top: "14%",
+        left: "19%",
         direction: "down"
       },
       {
         id: 2,
         label: "Fine Dining zone",
-        top: "32%",
-        left: "70%",
+        top: "39%",
+        left: "75%",
         direction: "up"
       },
       {
         id: 3,
         label: "Events & Pop-up zone",
-        top: "47%",
-        left: "71%",
+        top: "54%",
+        left: "75%",
         direction: "up"
       },
       {
         id: 4,
         label: "Kids zone",
-        top: "76%",
-        left: "57%",
+        top: "82%",
+        left: "60%",
         direction: "up"
       },
       {
         id: 5,
         label: "Casual zone",
-        top: "54%",
-        left: "46%",
+        top: "58%",
+        left: "50%",
         direction: "up"
       },
     ];
@@ -504,10 +504,6 @@ const investmentData = [
     ))}
   </div>
 </div>
-
-
-
-
 
             {/* Amenities Section */}
          <section className="relative bg-[#fdf8f4] py-8 md:py-12 px-4 md:px-6 lg:px-16" id="amenities">
