@@ -150,6 +150,16 @@
         }
       },
       "customField": "plugin::multi-select.multi-select"
+    },
+    "featured_image": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }

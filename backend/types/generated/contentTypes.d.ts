@@ -652,6 +652,9 @@ export interface ApiListList extends Struct.CollectionTypeSchema {
           localized: true;
         };
       }>;
+    featured_image: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios'
+    >;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::list.list'>;
     payment_plan_ar: Schema.Attribute.JSON &

@@ -4,10 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { fetchContactList } from '../../services/contactService';
 import { fetchProjectPopups } from '../../services/projectPopupService';
 import { getNewsLetter } from '../../services/newsletterService';
-import { Bar } from 'react-chartjs-2';
-import { Chart, BarElement, CategoryScale, LinearScale } from 'chart.js';
+import ApexCharts from 'react-apexcharts';
 
-Chart.register(BarElement, CategoryScale, LinearScale);
 
 function Dashboard({ token, user }) {
   const navigate = useNavigate();
@@ -23,7 +21,7 @@ function Dashboard({ token, user }) {
     const now = new Date();
     let cutoffDate;
 
-    switch(filter) {
+    switch (filter) {
       case 'today':
         cutoffDate = new Date(now.setHours(0, 0, 0, 0));
         break;
@@ -64,7 +62,7 @@ function Dashboard({ token, user }) {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        
+
         const contactData = await fetchContactList();
         const processedContacts = Array.isArray(contactData?.data) ? contactData.data : Array.isArray(contactData) ? contactData : [];
         setContactList(processedContacts);
@@ -74,9 +72,9 @@ function Dashboard({ token, user }) {
         setProjectList(processedProjects);
 
         const newsletterData = await getNewsLetter();
-        const processedNewsletters = Array.isArray(newsletterData?.data) ? newsletterData.data : Array.isArray(newsletterData) ? newsletterData :[];
+        const processedNewsletters = Array.isArray(newsletterData?.data) ? newsletterData.data : Array.isArray(newsletterData) ? newsletterData : [];
         setNewsletterList(processedNewsletters);
-        console.log("contact List",processedNewsletters);
+        console.log("contact List", processedNewsletters);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -88,40 +86,61 @@ function Dashboard({ token, user }) {
   }, []);
 
   // Chart data configuration
-  const chartData = {
-    labels: ['Contact Forms', 'Project Enquiries', 'Newsletters'],
-    datasets: [
-      {
-        label: 'Submissions',
-        data: [contactCount, projectCount, newsletterCount],
-        backgroundColor: ['#8AA3B4', '#AEA4B6', '#A58C76'],
-        borderColor: ['#6C8A9D', '#978D9F', '#8C7560'],
-        borderWidth: 1,
-      },
-    ],
-  };
 
-  const chartOptions = {
-    responsive: true,
-    plugins: { 
-      legend: { display: false },
-      tooltip: {
-        callbacks: {
-          label: function(context) {
-            return `${context.dataset.label}: ${context.raw}`;
-          }
+
+  const series = [
+    {
+      name: 'Submissions',
+      data: [contactCount, projectCount, newsletterCount],
+    }
+  ];
+
+  const options = {
+    chart: {
+      type: 'line',
+      fontFamily: 'Inter, sans-serif',
+      toolbar: { show: false },
+      dropShadow: { enabled: false },
+    },
+    dataLabels: { enabled: false },
+    stroke: {
+      width: 6,
+      curve: 'smooth',
+    },
+    xaxis: {
+      categories: ['Contacts', 'Projects', 'Newsletters'],
+      labels: {
+        style: {
+          fontFamily: 'Inter, sans-serif',
+          cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400',
+        },
+      },
+      axisBorder: { show: false },
+      axisTicks: { show: false },
+    },
+    yaxis: {
+      show: true,
+      min: 0,
+      tickAmount: 4,
+      labels: {
+        style: {
+          fontFamily: 'Inter, sans-serif',
+          cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400',
         }
       }
     },
-    scales: {
-      y: { 
-        beginAtZero: true, 
-        ticks: { 
-          stepSize: 1,
-          precision: 0
-        } 
-      },
+    grid: {
+      show: true,
+      strokeDashArray: 4,
+      padding: { left: 2, right: 2, top: -26 }
     },
+    tooltip: {
+      enabled: true,
+      y: {
+        formatter: (val) => `${val} submissions`,
+      }
+    },
+    colors: ['#1A56DB'],
   };
 
   if (isLoading) {
@@ -139,9 +158,9 @@ function Dashboard({ token, user }) {
     <div className="bg-gray-100 ml-64 p-8 font-sans min-h-screen">
       <div className="flex flex-col gap-8">
         {/* Greeting Card */}
-        <div className="flex flex-col md:flex-row justify-between items-center bg-indigo-500 text-white rounded-xl p-8">
+        <div className="flex flex-col md:flex-col justify-between items-center bg-indigo-500 text-white rounded-xl p-8">
           <div>
-            <h2 className="text-2xl font-semibold mb-2">Good Morning, {user?.username || "Admin"}!</h2>
+            <h2 className="text-2xl font-semibold mb-2">Welcome, {user?.username || "Admin"}!</h2>
             <p className="mb-4">Here's what's happening with your website today.</p>
             <div className="flex gap-4">
               <div className="bg-white/20 px-4 py-3 rounded-lg">
@@ -151,6 +170,10 @@ function Dashboard({ token, user }) {
               <div className="bg-white/20 px-4 py-3 rounded-lg">
                 <span className="block text-lg font-semibold">{projectList.length} Projects</span>
                 <small className="text-sm">Total enquiries</small>
+              </div>
+              <div className="bg-white/20 px-4 py-3 rounded-lg">
+                <span className="block text-lg font-semibold">{newsletterList.length}Newsletters</span>
+                <small className="text-sm">Total Signups</small>
               </div>
             </div>
           </div>
@@ -162,7 +185,7 @@ function Dashboard({ token, user }) {
           <div className="col-span-1 lg:col-span-2 bg-white rounded-xl p-6 shadow">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">Submission Statistics</h3>
-              <select 
+              <select
                 className="border border-gray-300 rounded px-3 py-1 text-sm bg-white"
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
@@ -172,9 +195,10 @@ function Dashboard({ token, user }) {
                 <option value="today">Today</option>
               </select>
             </div>
-            <div className="h-52">  
-              <Bar data={chartData} options={chartOptions} />
+            <div className="h-64">
+              <ApexCharts options={options} series={series} type="line" height={250} />
             </div>
+
           </div>
 
           {/* Side Cards */}
