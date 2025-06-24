@@ -1,22 +1,22 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { CmsLangContext } from '../../App'; // Import the context
 import { fetchContactList } from '../../services/contactService';
 import { fetchProjectPopups } from '../../services/projectPopupService';
 import { getNewsLetter } from '../../services/newsletterService';
 import ApexCharts from 'react-apexcharts';
 
-
 function Dashboard({ token, user }) {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
+  const { cmsLang } = useContext(CmsLangContext); // 👉 Get current language
   const [contactList, setContactList] = useState([]);
   const [projectList, setProjectList] = useState([]);
   const [newsletterList, setNewsletterList] = useState([]);
   const [filter, setFilter] = useState('30days'); // 'today', '7days', '30days'
   const [isLoading, setIsLoading] = useState(true);
 
-  // Filter data based on selected time period (for graph only)
   const getGraphData = () => {
     const now = new Date();
     let cutoffDate;
@@ -32,7 +32,7 @@ function Dashboard({ token, user }) {
         cutoffDate = new Date(now.setDate(now.getDate() - 30));
         break;
       default:
-        cutoffDate = new Date(0); // All time
+        cutoffDate = new Date(0);
     }
 
     const filterItems = (items) => {
@@ -84,9 +84,6 @@ function Dashboard({ token, user }) {
 
     fetchData();
   }, []);
-
-  // Chart data configuration
-
 
   const series = [
     {
@@ -145,7 +142,7 @@ function Dashboard({ token, user }) {
 
   if (isLoading) {
     return (
-      <div className="bg-gray-100 ml-64 p-8 font-sans min-h-screen flex items-center justify-center">
+      <div className="bg-gray-100 ms-64 p-8 font-sans min-h-screen flex items-center justify-center" dir={cmsLang === 'ar' ? 'rtl' : 'ltr'}>
         <div className="text-center">
           <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-blue-600"></div>
           <p className="mt-2 text-gray-600">Loading dashboard data...</p>
@@ -155,7 +152,7 @@ function Dashboard({ token, user }) {
   }
 
   return (
-    <div className="bg-gray-100 ml-64 p-8 font-sans min-h-screen">
+    <div className="bg-gray-100 ms-64 p-8 font-sans min-h-screen" dir={cmsLang === 'ar' ? 'rtl' : 'ltr'}>
       <div className="flex flex-col gap-8">
         {/* Greeting Card */}
         <div className="flex flex-col md:flex-col justify-between items-center bg-indigo-500 text-white rounded-xl p-8">
@@ -172,7 +169,7 @@ function Dashboard({ token, user }) {
                 <small className="text-sm">Total enquiries</small>
               </div>
               <div className="bg-white/20 px-4 py-3 rounded-lg">
-                <span className="block text-lg font-semibold">{newsletterList.length}Newsletters</span>
+                <span className="block text-lg font-semibold">{newsletterList.length} Newsletters</span>
                 <small className="text-sm">Total Signups</small>
               </div>
             </div>
