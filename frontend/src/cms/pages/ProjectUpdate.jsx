@@ -32,16 +32,27 @@ function ProjectUpdate() {
   const defaultPropertyTypesAr = ['سكني','تجاري','متعدد الاستخدامات'];
   const defaultPaymentPlansAr = ['التمويل', 'دفعة مبدئية'];
 
-  const getImageUrl = (img) => {
-    if (!img) return image;
-    if (img.url) {
-      return img.url.startsWith('http') ? img.url : `${process.env.REACT_APP_API_URL || 'http://localhost:1337'}${img.url}`;
-    }
-    if (typeof img === 'string') {
-      return img;
-    }
-    return image;
-  };
+const getImageUrl = (img) => {
+  if (!img) return image;
+
+  // If it's an array, pick the first image object
+  if (Array.isArray(img) && img.length > 0) {
+    img = img[0];
+  }
+
+  if (img.url) {
+    return img.url.startsWith('http')
+      ? img.url
+      : `${import.meta.env.VITE_API_URL
+ || 'http://localhost:1337'}${img.url}`;
+  }
+
+  if (typeof img === 'string') {
+    return img;
+  }
+
+  return image; // Default image fallback
+};
 
   const [form, setForm] = useState({
     title: project?.title || '',
