@@ -309,7 +309,7 @@ const handleSubmit = async (e) => {
   const currentFormData = language === 'en' ? formData : formDataAr;
 
   return (
-    <div className="bg-white mx-auto p-6 px-12 font-sans">
+    <div className="bg-white mx-auto ml-64 p-6 px-12 font-sans">
       {/* Header */}
       <label className="flex justify-between items-start font-headline mb-2">Title</label>
       <div className="flex justify-between items-center mb-6">
