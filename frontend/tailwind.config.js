@@ -14,6 +14,9 @@ module.exports = withMT({
         univers: ['"Univers Next Arabic Regular"', 'sans-serif'],
         chapaza: ['"Chapaza"', 'sans-serif'],
         commuter: ['"Commuter Sans"', 'sans-serif'],
+        aeoniknormal: ['AeonikTRIAL', 'sans-serif'],
+        apollo: ['APOLLO', 'sans-serif'],
+         azer: ['29lt-azer', 'sans-serif'],
       },
       animation: {
         marquee: 'marquee 40s linear infinite',

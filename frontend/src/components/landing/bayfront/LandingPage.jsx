@@ -1,731 +1,703 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import BayfrontHeader from './Header';
-import BayfrontFooter from './Footer';
-import { getListingByIdentifier } from '../../../services/getListingByIdentifier';
-import ContactForm from '../PopupContactForm';
-import herosectionimg from '../../../assets/landing images/bayfronthero.jpg';
-import bayfront1 from '../../../assets/landing images/bayfrontbg1.png';
-import bayfront2 from '../../../assets/landing images/bayfront2.jpg';
-import bayfront3 from '../../../assets/landing images/bayfrontAminity1.jpg';
-import bayfront4 from '../../../assets/landing images/beach.jpeg';
-import bayfront5 from '../../../assets/landing images/dining.jpg';
-import bayfront6 from '../../../assets/landing images/retail.webp';
-import bayfront7 from '../../../assets/landing images/water.jpg';
-import bayfront8 from '../../../assets/landing images/bayfrontimg.png';
-import bayfront9 from '../../../assets/landing images/bayfront3.jpg';
-import video from '../../../assets/landing images/Sandbox.mp4';
-import coursol2 from '../../../assets/landing images/bayfrontcoursal2.jpg';
-import coursol3 from '../../../assets/landing images/bayfrontcoursol3.jpg';
-import map from '../../../assets/landing images/map.png';
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { getListingByIdentifier } from "../../../services/getListingByIdentifier";
+import ContactForm from "../PopupContactForm";
+import logo from "./images/bayfront_top.png";
+import footerlogo from "./images/al_muhaidib.png";
+import darklogo from "./images/ajdan.png";
+import bg from "./images/bayfront-bg.webp";
+import mobileBg from "./images/bg_bayfront.png";
+import wa from "./images/whatsapp.png";
+import arrowleft from "./images/arrow-left.png";
+import arrowright from "./images/arrow-right.png";
+import ajdan from "./images/logoajdan.png";
+import slider1 from "./images/sec3.webp";
+import slider2 from "./images/sec1.webp";
+import slider3 from "./images/v01.webp";
+import slider4 from "./images/v06.webp";
 
-import {
-  FaVectorSquare,
-  FaStore,
-  FaTree,
-  FaHome,
-  FaBuilding,
-  FaCar,
-  FaUsers,
-} from 'react-icons/fa';
-
-// const DraggableMapWithMarkers = ({ imageSrc, markers }) => {
-//   const containerRef = useRef(null);
-//   const imageRef = useRef(null);
-//   const [dragging, setDragging] = useState(false);
-//   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-//   const [position, setPosition] = useState({ x: 0, y: 0 });
-
-//   // Initialize position to show top-left of image
-//   useEffect(() => {
-//     if (containerRef.current) {
-//       // Start with image aligned to top-left (position 0,0)
-//       setPosition({ x: 0, y: 0 });
-//     }
-//   }, []);
-
-//   const startDragging = (e) => {
-//     if (e.touches && e.touches.length > 1) return;
-    
-//     setDragging(true);
-//     const clientX = e.clientX || e.touches[0].clientX;
-//     const clientY = e.clientY || e.touches[0].clientY;
-    
-//     setStartPos({
-//       x: clientX - position.x,
-//       y: clientY - position.y,
-//     });
-    
-//     document.body.style.userSelect = 'none';
-//   };
-
-//   const stopDragging = () => {
-//     setDragging(false);
-//     document.body.style.userSelect = '';
-//   };
-
-//   const onDragging = (e) => {
-//     if (!dragging) return;
-    
-//     const clientX = e.clientX || (e.touches && e.touches[0].clientX);
-//     const clientY = e.clientY || (e.touches && e.touches[0].clientY);
-    
-//     if (!clientX || !clientY) return;
-    
-//     // Calculate new position
-//     let newX = clientX - startPos.x;
-//     let newY = clientY - startPos.y;
-    
-//     // Constrain movement to keep image within container
-//     const containerWidth = containerRef.current.offsetWidth;
-//     const containerHeight = containerRef.current.offsetHeight;
-//     const imgWidth = 1920; // Fixed image width
-//     const imgHeight = 1080; // Fixed image height
-    
-//     // Calculate maximum allowed position (right/bottom edges)
-//     const maxX = Math.min(0, containerWidth - imgWidth);
-//     const maxY = Math.min(0, containerHeight - imgHeight);
-    
-//     // Apply constraints
-//     newX = Math.max(maxX, Math.min(0, newX));
-//     newY = Math.max(maxY, Math.min(0, newY));
-    
-//     setPosition({ x: newX, y: newY });
-//   };
-
-//   return (
-//     <div 
-//       ref={containerRef}
-//       className="relative w-full h-[70vh] overflow-hidden touch-none bg-gray-100"
-//       onMouseLeave={stopDragging}
-//     >
-//       <div
-//         ref={imageRef}
-//         className="absolute bg-cover bg-center bg-no-repeat"
-//         style={{
-//           backgroundImage: `url(${imageSrc})`,
-//           width: '1920px',
-//           height: '1080px',
-//           cursor: dragging ? 'grabbing' : 'grab',
-//           transform: `translate(${position.x}px, ${position.y}px)`,
-//           transition: dragging ? 'none' : 'transform 0.2s ease',
-//         }}
-//         onMouseDown={startDragging}
-//         onMouseUp={stopDragging}
-//         onMouseMove={onDragging}
-//         onTouchStart={startDragging}
-//         onTouchEnd={stopDragging}
-//         onTouchMove={onDragging}
-//       >
-//         {markers.map(({ id, label, top, left, direction }) => (
-//           <div
-//             key={id}
-//             className="absolute group"
-//             style={{
-//               top: top,
-//               left: left,
-//             }}
-//           >
-//             <div className="relative flex flex-col items-center">
-//               {direction === "up" && (
-//                 <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-2 sm:mb-3">
-//                   <div className="text-white text-xs sm:text-sm whitespace-nowrap bg-black/50 px-2 py-1 rounded">
-//                     {label}
-//                   </div>
-//                   <div className="w-px h-8 sm:h-12 bg-white" />
-//                 </div>
-//               )}
-
-//               <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
-//                 <div className="absolute w-full h-full rounded-full bg-white opacity-20 animate-rippleOuter pointer-events-none" />
-//                 <div className="absolute w-10 h-10 rounded-full bg-white opacity-40 animate-rippleMiddle pointer-events-none" />
-//                 <div className="w-4 h-4 rounded-full bg-white border-2 border-white z-10" />
-//               </div>
-
-//               {direction === "down" && (
-//                 <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mt-2 sm:mt-3">
-//                   <div className="w-px h-8 sm:h-12 bg-white" />
-//                   <div className="text-white text-xs sm:text-sm mt-1 whitespace-nowrap bg-black/50 px-2 py-1 rounded">
-//                     {label}
-//                   </div>
-//                 </div>
-//               )}
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-
-//       <div className="absolute  bottom-4 left-4 sm:bottom-6 sm:left-6 md:bottom-10 md:left-10 text-white text-xl sm:text-2xl md:text-4xl font-chapaza z-10 pointer-events-none">
-//         Waves of Luxury
-//       </div>
-//     </div>
-//   );
-// };
-
-
-
-
-
-
-
-const DraggableMapWithMarkers = ({ imageSrc, markers }) => {
-  return (
-    <div className="relative w-full overflow-hidden bg-gray-100">
-      {/* Aspect Ratio Wrapper */}
-      <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
-        {/* Background Image */}
-        <div
-          className="absolute top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${imageSrc})` }}
-        >
-          {markers.map(({ id, label, top, left, direction }) => (
-            <div
-              key={id}
-              className="absolute group"
-              style={{ top, left, transform: 'translate(-50%, -50%)' }} // Centering the marker
-            >
-              <div className="relative flex flex-col items-center">
-                {direction === 'up' && (
-                  <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mb-2 sm:mb-3">
-                    <div className="text-white text-xs sm:text-sm whitespace-nowrap bg-black/50 px-2 py-1 rounded">
-                      {label}
-                    </div>
-                    <div className="w-px h-8 sm:h-12 bg-white" />
-                  </div>
-                )}
-
-                <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
-                  <div className="absolute w-full h-full rounded-full bg-white opacity-20 animate-rippleOuter pointer-events-none" />
-                  <div className="absolute w-10 h-10 rounded-full bg-white opacity-40 animate-rippleMiddle pointer-events-none" />
-                  <div className="w-4 h-4 rounded-full bg-white border-2 border-white z-10" />
-                </div>
-
-                {direction === 'down' && (
-                  <div className="flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 mt-2 sm:mt-3">
-                    <div className="w-px h-8 sm:h-12 bg-white" />
-                    <div className="text-white text-xs sm:text-sm mt-1 whitespace-nowrap bg-black/50 px-2 py-1 rounded">
-                      {label}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Optional overlay text */}
-      <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 md:bottom-10 md:left-10 text-white text-xl sm:text-2xl md:text-4xl font-chapaza z-10 pointer-events-none">
-        Waves of Luxury
-      </div>
-    </div>
-  );
-};
-
+import { Menu, X } from "lucide-react";
+import { FaInstagram, FaXTwitter, FaTiktok, FaLinkedin } from "react-icons/fa6";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import toast from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 const AjdanBayfront = () => {
-    const [data, setData] = useState(null);
-    const [showForm, setShowForm] = useState(false);
-    const [currentSlide, setCurrentSlide] = useState(0);
-    const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [data, setData] = useState(null);
+  const slides = [slider1, slider2, slider3, slider4];
+  const [current, setCurrent] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  // const [phone, setPhone] = useState("");
+  const [scrollY, setScrollY] = useState(0);
+  const [selected, setSelected] = useState("");
+  const [selected1, setSelected1] = useState("");
+  // const [phone, setPhone] = useState("");
 
-    const stats = [
-        { icon: <FaVectorSquare className="text-white text-xl" />, label: 'Total Land Area', value: '100,000+', unit: 'sqm' },
-        { icon: <FaStore className="text-white text-xl" />, label: 'Retail Space', value: '19000+', unit: 'sqm' },
-        { icon: <FaTree className="text-white text-xl" />, label: 'Outdoor Area', value: '94000+', unit: 'sqm' },
-        { icon: <FaHome className="text-white text-xl" />, label: 'Indoor Area', value: '11000+', unit: 'sqm' },
-        { icon: <FaBuilding className="text-white text-xl" />, label: 'Available Units', value: '24' },
-        { icon: <FaCar className="text-white text-xl" />, label: 'Parking Spaces', value: '495' },
-        { icon: <FaUsers className="text-white text-xl" />, label: 'Event Capacity', value: '2500' },
-    ];
-
-    
-
-    const amenities = [
-        {
-            title: 'Cafe',
-            subtitle: 'Brew Moments by the Sea',
-            image: bayfront3,
-        },
-        {
-            title: 'Sunrise at heart of Alkhobar',
-            subtitle: 'Wake to Khobars Glow',
-            image: bayfront4,
-        },
-        {
-            title: 'Private Dining',
-            subtitle: 'Exclusive Dining Bliss',
-            image: bayfront5,
-        },
-        {
-            title: 'Retail Area',
-            subtitle: 'Shop by the Waves',
-            image: bayfront6,
-        },
-        {
-            title: 'Water Activities',
-            subtitle: 'Aqua Thrills Await',
-            image: bayfront7,
-        },
-    ];
-
-    const carouselSlides = [
-        {
-            image: herosectionimg,
-            label: 'Private Dining',
-        },
-        {
-            image: coursol2,
-            label: 'Retail Space',
-        },
-        {
-            image: coursol3,
-            label: 'Dining Area',
-        },
-    ];
-
-    const markers = [
-      {
-        id: 1,
-        label: "Exclusive Beach Club",
-        top: "14%",
-        left: "19%",
-        direction: "down"
-      },
-      {
-        id: 2,
-        label: "Fine Dining zone",
-        top: "39%",
-        left: "75%",
-        direction: "up"
-      },
-      {
-        id: 3,
-        label: "Events & Pop-up zone",
-        top: "54%",
-        left: "75%",
-        direction: "up"
-      },
-      {
-        id: 4,
-        label: "Kids zone",
-        top: "82%",
-        left: "60%",
-        direction: "up"
-      },
-      {
-        id: 5,
-        label: "Casual zone",
-        top: "58%",
-        left: "50%",
-        direction: "up"
-      },
-    ];
-
-const investmentData = [
-  ["Fine Dining", "8 Units", "500 Sqm"],
-  ["Casual Dining", "12 Units", "300 Sqm"],
-  ["Fast Food", "20 Units", "200 Sqm"],
-  ["Buffet Style", "15 Units", "100 Sqm"],
-  ["Food Truck", "5 Units", "150 Sqm"],
-  ["Cafe", "10 Units", "250 Sqm"],
-];
-
-    useEffect(() => {
-        const loadData = async () => {
-            try {
-                const result = await getListingByIdentifier('bayfront', i18n.language);
-                setData(result);
-                console.log(result);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        loadData();
-    }, [i18n.language]);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % carouselSlides.length);
-        }, 5000);
-        return () => clearInterval(interval);
-    }, []);
-
-    const nextSlide = () => {
-        setCurrentSlide((prev) => (prev + 1) % carouselSlides.length);
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const result = await getListingByIdentifier("bayfront", i18n.language);
+        setData(result);
+        console.log(result);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
 
-    const prevSlide = () => {
-        setCurrentSlide((prev) => (prev - 1 + carouselSlides.length) % carouselSlides.length);
-    };
+    loadData();
+  }, [i18n.language]);
 
-    const isArabic = i18n.language === 'ar';
+/* The above code is a JavaScript function that checks if the current language in the i18n object is
+Arabic. If the language is Arabic, it retrieves a localized field value from the data object using
+the field name suffixed with "_ar" (for Arabic). If the language is not Arabic or the localized
+field value is not available, it falls back to retrieving the default field value from the data
+object. */
+  // const isArabic = i18n.language === "ar";
 
-    if (!data) return <p>{t('loading')}...</p>;
+  // const getLocalized = (field) => {
+  //   return isArabic && data && data[`${field}_ar`] ? data[`${field}_ar`] : data && data[field];
+  // };
 
-    const getLocalized = (field) => {
-        return (isArabic && data[`${field}_ar`]) ? data[`${field}_ar`] : data[field];
-    };
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768); // or 480 for smaller phones
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
-    return (
-        <>
-            <BayfrontHeader />            
-            
-            {/* Hero Section */}
-            <section
-              className="relative w-full h-screen bg-cover bg-center opacity-90"
-              style={{ backgroundImage: `url(${herosectionimg})` }}
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [slides.length]);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  if (!data) return <p>{t("loading")}...</p>;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    toast.success("Form submitted successfully!");
+  };
+
+  const textVariants = {
+    hiddenTop: { y: -80, opacity: 0 }, // from top
+    showTop: { y: 0, opacity: 1 },
+
+    hiddenBottom: { y: 50, opacity: 0 }, // from bottom
+    showBottom: { y: 0, opacity: 1 },
+  };
+  const icons = [
+    {
+      icon: FaInstagram,
+      alt: "Instagram",
+      link: "https://www.instagram.com/Ajdan_sa/",
+    },
+    { icon: FaXTwitter, alt: "X Twitter", link: "https://x.com/Ajdan" },
+    { icon: FaTiktok, alt: "TikTok", link: "https://www.tiktok.com/" },
+    {
+      icon: FaLinkedin,
+      alt: "LinkedIn",
+      link: "https://www.linkedin.com/company/ajdan/",
+    },
+  ];
+
+  return (
+    <>
+      <motion.div className="relative flex items-center justify-center w-full min-h-screen overflow-hidden hero">
+        {/* Desktop Background */}
+        <motion.img
+          src={bg} // desktop image
+          alt="Background"
+          initial={{ scale: 1.1, opacity: 1 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 22, ease: "easeOut" }}
+          className="absolute inset-0 hidden object-cover object-center w-full h-full sm:block"
+        />
+
+        {/* Mobile Background */}
+        <motion.img
+          src={mobileBg} // mobile image
+          alt="Background Mobile"
+          initial={{ scale: 1.1, opacity: 1 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 22, ease: "easeOut" }}
+          className="sm:hidden absolute inset-0 w-full h-[100vh] object-left object-center object-cover"
+        />
+
+        <div
+          className="absolute inset-0 hidden md:block"
+          style={{
+            background:
+              "linear-gradient(180.09deg, rgba(18,74,99,0.6) 10%, rgba(60,113,119,0) 80%)",
+          }}
+        />
+
+        <motion.header
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="absolute left-0 right-0 z-50 flex items-center justify-between px-4 top-3 sm:top-6 sm:left-4 sm:right-4"
+        >
+          {/* Left Logo */}
+          <img
+            src={logo}
+            alt="Bayfront Logo"
+            className="object-contain w-20 md:w-32"
+          />
+
+          {/* Right Side: Download + Ajdan Logo */}
+          <div className="flex items-center gap-0 ml-auto md:gap-0">
+            {/* Mobile: Fixed Download Button */}
+            <a
+              href="/Bayfront-Brochure.pdf"
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              className="z-50 flex items-center left-4 sm:hidden"
             >
-              <div className="absolute inset-0 bg-black bg-opacity-30 z-10"></div>
-
-              <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-20">
-                <button className="group relative inline-block">
-                  <span className="absolute inset-0 bg-transparent group-hover:bg-white transition-colors duration-300 z-0 rounded"></span>
-                  <span className="relative z-10 inline-block border-2 border-white group-hover:border-black text-white group-hover:text-black px-6 py-2 font-chapaza text-sm md:text-base transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
-                    Schedule a Tour
-                  </span>
-                </button>
-              </div>
-
-              <nav className="absolute bottom-0 w-full z-20 grid grid-cols-4 gap-4 bg-gradient-to-t from-black/80 to-transparent text-white font-chapaza text-xs md:text-base text-center px-2">
-                {[
-                  { href: "#about", label: t('about') },
-                  { href: "#statistics", label: t('statistics') },
-                  { href: "#amenities", label: t('amenities') },
-                  { href: "#investment", label: t('investment') },
-                ].map((item, index) => (
-                  <a
-                    key={index}
-                    href={item.href}
-                    className="group relative py-4 border-t-2 border-gray-600 overflow-hidden"
-                  >
-                    <span className="relative inline-block">
-                      {item.label}
-                      <span
-                        className="absolute left-[calc(100%+32px)] top-1/2 -translate-y-1/2 transition-all duration-700 ease-in-out group-hover:translate-x-[100%] group-hover:opacity-0"
-                      >
-                        →
-                      </span>
-                    </span>
-                  </a>
-                ))}
-              </nav>
-            </section>
-
-            {/* About Section */}
-    <section
-  className="min-h-[75vh] flex items-center justify-center px-4 md:px-6 py-16 md:py-32 bg-cover bg-center text-white"
-  style={{ backgroundImage: `url(${bayfront1})` }}
-  id="about"
->
-  <div className="max-w-6xl mx-auto w-full flex flex-col items-center text-center md:text-left">
-    {/* Heading */}
-    <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-chapaza mb-6 md:mb-10 leading-snug">
-      <div className="text-right md:text-right">Where elegant design</div>
-      <div className="text-center md:text-justify">meets a calm shore to create luxury</div>
-      <div className="text-left md:text-left">lifestyle by Khobar's sea.</div>
-    </h1>
-
-    {/* Content Row */}
-    <div className="flex flex-col lg:flex-row justify-between gap-6 sm:gap-8 w-full">
-      {/* Left Text */}
-      <div className="lg:w-1/3 text-center lg:text-left">
-        <p className="font-chapaza  text-white text-base sm:text-lg md:text-xl mb-2">
-          Coastal Lifestyle Perfected
-        </p>
-      </div>
-
-      {/* Right Text + Button */}
-      <div className="lg:w-2/3 w-full">
-        <div className="flex flex-col lg:flex-row justify-between items-start gap-6">
-          {/* Paragraph */}
-          <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white/90 leading-relaxed font-commuter text-center lg:text-left lg:w-3/4">
-            A famous seafront destination offering luxury residences,
-            vibrant retail, fine dining, and world-class leisure experiences.
-            Bayfront transforms Khobar's coastline into a lifestyle
-            landmark aligned with Saudi Vision 2030's forward-thinking vision.
-          </p>
-
-          {/* Brochure Button */}
-          <div className="lg:w-1/4 w-full flex justify-center lg:justify-end mt-4 lg:mt-0">
-            <a href="/brochure.pdf" className="group relative inline-block whitespace-nowrap">
-              <span className="absolute inset-0 bg-transparent group-hover:bg-white transition-colors duration-300 z-0 rounded"></span>
-              <span className="relative z-10 inline-block border border-white group-hover:border-black text-white group-hover:text-black px-5 py-2 text-xs sm:text-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
-                Download Brochure
-              </span>
+              <button
+                style={{
+                  lineHeight: "1",
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                  height: 28,
+                }}
+                className="
+        relative px-3 sm:px-4 text-[9px]  sm:text-[9px]
+        font-regular font-commuter
+        text-white shadow
+        border-[1.5px]  border-[#C1A580] rounded-sm
+        bg-transparent
+        hover:from-[#BFA057] hover:to-[#A4763E]
+      "
+              >
+                DOWNLOAD BROCHURE
+              </button>
             </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-
-
-            {/* Statistics Section */}
-           <div
-  className="relative h-auto md:h-screen bg-cover bg-center flex items-center font-chapaza px-4 md:pl-16 py-20 md:py-0 text-white"
-  style={{ backgroundImage: `url(${bayfront2})` }}
-  id="statistics"
->
-  <div className="absolute inset-0 bg-black/40 z-0" />
-  
-  <div className="relative z-10 flex flex-col gap-4 md:gap-6 max-w-xs w-full mx-auto md:mx-0">
-    {stats.map((item, index) => (
-     <motion.div
-  key={index}
-  initial={{ opacity: 0, y: 20 }} // smaller offset for a gentler slide
-  whileInView={{ opacity: 1, y: 0 }}
-  viewport={{ once: true, amount: 0.3 }}
-  transition={{
-    duration: 0.8,             // smoother and longer duration
-    ease: "easeOut",           // smoother easing
-    delay: index * 0.15        // staggered but not too slow
-  }}
-  className="flex items-start gap-3 md:gap-4"
->
-  <div>{item.icon}</div>
-  <div>
-    <p className="text-xs md:text-sm mb-1">
-      {t(`stats.${item.label.toLowerCase().replace(' ', '_')}`)}
-    </p>
-    <h2 className="text-base md:text-lg font-commuter">
-      {item.value}{" "}
-      {item.unit && (
-        <span className="text-xs md:text-sm font-commuter">{item.unit}</span>
-      )}
-    </h2>
-  </div>
-</motion.div>
-
-    ))}
-  </div>
-</div>
-
-            {/* Amenities Section */}
-         <section className="relative bg-[#fdf8f4] py-8 md:py-12 px-4 md:px-6 lg:px-16" id="amenities">
-    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8">
-        <h2 className="text-2xl md:text-3xl font-chapaza text-[#8B5E3C] mb-4 md:mb-0">
-            Amenities
-        </h2>
-        <div className="relative inline-block">
-            <button
-                onClick={() => setShowForm(true)}
-                className="group relative inline-block"
-            >
-                <span className="absolute inset-0 bg-white group-hover:bg-black transition-colors duration-300 rounded z-0"></span>
-                <span className="relative z-10 inline-block border-2 border-black group-hover:border-white text-black group-hover:text-white px-6 py-2 font-chapaza text-sm md:text-base transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
-                    Enquire Now
-                </span>
-            </button>
-        </div>
-    </div>
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 mb-8 md:mb-12">
-        {amenities.map((item, index) => (
-            <div key={index} className="text-left">
-                <div className="overflow-hidden rounded">
-                    <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-48 sm:h-56 md:h-64 lg:h-72 object-cover transform transition-transform duration-1000 ease-in-out hover:scale-110"
-                    />
-                </div>
-                <h3 className="font-commuter mt-2 text-sm md:text-base">
-                    {item.title}
-                </h3>
-                <p className="text-xs md:text-sm text-gray-600">
-                    {item.subtitle}
-                </p>
-            </div>
-        ))}
-    </div>
-</section>
-
-            {/* Waves of Luxury Section - Replaced with DraggableMapWithMarkers */}
-            <DraggableMapWithMarkers imageSrc={bayfront8} markers={markers} />
-
-            {/* Financing Section */}
-            <div className="bg-[#f7f0e9] min-h-[75vh]">
-              <div className="bg-white flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 sm:px-6 md:px-10 py-4 sm:py-6 border-b border-[#e8dcd0]">
-                <h1 className="text-xl sm:text-2xl md:text-3xl font-chapaza text-[#b3703b] mb-3 sm:mb-0">
-                  Financing and Installment Plans
-                </h1>
-                <button className="group relative inline-block text-xs sm:text-sm self-end sm:self-auto">
-                  <span className="absolute inset-0 bg-transparent group-hover:bg-black transition-colors duration-300 rounded z-0" />
-                  <span className="relative z-10 inline-block border border-black group-hover:border-white text-black group-hover:text-white px-3 py-1 sm:px-4 sm:py-1.5 md:px-5 md:py-2 transition-all duration-300 group-hover:-translate-y-1 group-hover:translate-x-1">
-                    Know More
-                  </span>
-                </button>
-              </div>
-
-          <div className="flex flex-col md:flex-row items-center justify-center px-2 sm:px-4 py-6 sm:py-10 gap-4 h-full min-h-[90vh]">
-  <div className="bg-white flex flex-col md:flex-row w-full max-w-7xl rounded shadow-md overflow-hidden">
-
-    {/* Left: Image */}
-    <div className="md:w-1/2 w-full h-[400px] md:h-auto overflow-hidden">
-      <img
-        src={bayfront9}
-        alt="Investment"
-        className="w-full h-full object-cover object-top scale-110"
-      />
-    </div>
-
-    {/* Right: Content */}
-    <div className="md:w-1/2 w-full p-4 sm:p-6 md:p-8 overflow-y-auto">
-      <h2 className="text-xl sm:text-2xl font-chapaza text-[#b3703b] pb-3 sm:pb-4 mb-4 sm:mb-6">
-        Investment Opportunity
-      </h2>
-
-      <div className="grid gap-4">
-        {investmentData.map(([type, units, sqm], idx) => (
-          <div
-            key={idx}
-            className="flex justify-between items-center text-sm sm:text-base md:text-lg"
-          >
-            <span className="font-commuter text-[#b3703b] w-1/3">{type}</span>
-            <span className="text-gray-700 w-1/3 text-center">{units}</span>
-            <span className="text-gray-700 w-1/3 text-right">{sqm}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  </div>
-</div>
-
+            {/* Mobile: Small Ajdan Logo */}
+            <div className="sm:hidden ml-2 h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580]">
+              <a
+                href="https://ajdan.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={ajdan}
+                  alt="Logo"
+                  className="object-contain w-auto h-4"
+                />
+              </a>
             </div>
 
-            {/* Video Section */}
-            <div className="relative mx-4 sm:mx-12 md:mx-24 my-10 bg-white font-commuter">
-              <h2 className="text-center text-[#b3703b] text-xl sm:text-2xl md:text-3xl px-4 font-chapaza mt-6 sm:mt-8 mb-4">
-                Take a glimpse around Bayfront
-              </h2>
-
-              <div className="w-full max-w-6xl mx-auto">
-                <video
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-auto object-cover rounded-md"
+            {/* Desktop/Tablet Download + Ajdan Logo */}
+            <div className="items-center hidden gap-2 sm:flex md:gap-6">
+              <a
+                href="/Bayfront-Brochure.pdf"
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <button
+                  style={{
+                    lineHeight: "1",
+                    paddingTop: 0,
+                    paddingBottom: 0,
+                    height: 28,
+                  }}
+                  className="
+          relative  px-3 sm:px-4 text-[12px] text-xs sm:text-[12px]
+          font-regular font-commuter
+          text-white shadow
+          border-[1.5px] border-[#C1A580] rounded-sm
+        
+          bg-transparent
+        
+        "
                 >
-                  <source src={video} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              </div>
+                  DOWNLOAD BROCHURE
+                </button>
+              </a>
 
-              <div className="fixed top-1/2 left-2 sm:left-4 transform -translate-y-1/2 -rotate-90 origin-left z-40">
-                <button 
-                   onClick={() => setShowForm(true)} 
-                className="bg-white border border-gray-300 text-[10px] sm:text-xs font-chapaza px-3 sm:px-4 py-1.5 sm:py-2 shadow-md hover:bg-gray-100 transition">
-                  ENQUIRE NOW
-                </button>
-              </div>
-
-              <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 flex flex-col gap-2 sm:gap-3 z-40">
-                <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#a55c29] flex items-center justify-center shadow-md hover:opacity-80">
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/512/724/724664.png"
-                    alt="Call"
-                    className="w-4 h-4 sm:w-5 sm:h-5"
-                  />
-                </button>
-                <button className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#25D366] flex items-center justify-center shadow-md hover:opacity-80">
-                  <img
-                    src="https://cdn-icons-png.flaticon.com/512/1384/1384023.png"
-                    alt="WhatsApp"
-                    className="w-4 h-4 sm:w-5 sm:h-5"
-                  />
-                </button>
-              </div>
+              <a
+                href="https://ajdan.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img src={ajdan} alt="Logo" className="h-7 sm:h-7" />
+              </a>
             </div>
+          </div>
+        </motion.header>
 
-            {/* Carousel Section */}
-        <div className="relative w-full h-screen overflow-hidden">
-  {carouselSlides.map((slide, index) => (
-    <div
-      key={index}
-      className={`absolute inset-0 transition-opacity duration-700 ${
-        index === currentSlide ? 'opacity-100 z-10 pointer-events-auto' : 'opacity-0 z-0 pointer-events-none'
-      }`}
-    >
-      <img
-        src={slide.image}
-        alt={`Slide ${index}`}
-        className="w-full h-full object-cover"
-      />
-      <div className="absolute bottom-6 sm:bottom-10 left-4 sm:left-10 text-white text-lg sm:text-2xl md:text-3xl font-chapaza break-words max-w-xs sm:max-w-md md:max-w-lg">
-        {slide.label}
-      </div>
-    </div>
-  ))}
+        <main
+          className="w-full sm:w-[100%] md:w-[100%] lg:w-[100%] max-w-6xl mx-auto px-4 min-h-screen
+                 flex flex-col justify-center md:grid md:grid-cols-2  items-center text-white relative margintop"
+        >
+          {/* Left Content */}
+          <div className="text-center md:pr-6 md:px-4 lg:px-12 md:text-left">
+            {/* Heading - from top */}
+            <motion.h1
+              initial="hiddenTop"
+              animate="showTop"
+              transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
+              variants={textVariants}
+              className="leading-none text-white font-chapaza font-regular" // leading-none removes extra line height
+            >
+              <span className="bayfront-heading uppercase block text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px] ">
+                Bayfront
+              </span>
 
-  {/* Navigation Buttons */}
-  <div className="absolute bottom-4 sm:bottom-6 right-4 sm:right-6 flex items-center gap-3 z-20">
-    <button
-      onClick={prevSlide}
-      className="bg-white p-2 sm:p-3 rounded-full shadow hover:bg-gray-100 transition"
-    >
-      <span className="text-base sm:text-xl">&#8592;</span>
-    </button>
-    <button
-      onClick={nextSlide}
-      className="bg-white p-2 sm:p-3 rounded-full shadow hover:bg-gray-100 transition"
-    >
-      <span className="text-base sm:text-xl">&#8594;</span>
-    </button>
-  </div>
-</div>
+              <span className="bayfront-subheading block pt-4 whitespace-nowrap text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm">
+                Where You Meet the Beach
+              </span>
+            </motion.h1>
 
-
-            <div className="flex flex-col md:flex-row items-center justify-center bg-[#f8f1eb] p-6 md:p-12">
-             <div className="relative w-full md:w-[600px]">
-  {/* Map Image */}
-  <img
-    src={map}
-    alt="Map showing Bayfront location"
-    className="rounded-md w-full h-auto"
-  />
-
-  {/* Blinking Highlight */}
-  <div className="absolute top-[49%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 z-10">
-    <div className="relative">
-      {/* Outer blinking circle */}
-      <div className="w-6 h-6 bg-red-600 rounded-full opacity-70 animate-blink"></div>
-
-      {/* Static center dot */}
-      <div className="w-3 h-3 bg-gray-300 rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20"></div>
-    </div>
-  </div>
-</div>
-
-
-              <div className="mt-8 md:mt-0 md:pl-16 max-w-md text-center md:text-left">
-                <h2 className="text-4xl text-[#a35726] font-chapaza leading-tight">
-                  Locate<br />Bayfront
-                </h2>
-                <p className="mt-6 text-[#00323d] text-base leading-relaxed">
-                  <span className="inline-block mr-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-  <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
-</svg>
-</span>
-                  Prince Turkey Street, Alkurnais, Al Khobar 34446,<br />
-                  Saudi Arabia
-                </p>
-              </div>
-            </div>
-            
-            <BayfrontFooter />
-            <ContactForm 
-                show={showForm} 
-                onClose={() => setShowForm(false)} 
-                listingTitle={getLocalized('title')}
-                isArabic={isArabic}
+            <motion.div
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+              className="hidden my-6 origin-left border-t md:block border-white/80"
             />
-        </>
-    );
+
+            {/* Subheading & Tagline - visible only on md+ screens (above form) */}
+            {/* <div className="hidden md:block">
+              <motion.h2
+                initial="hiddenBottom"
+                animate="showBottom"
+                transition={{ duration: 1.5, ease: "easeOut", delay: 1.0 }}
+                variants={textVariants}
+                className="max-w-lg 
+  ml-[-14px] mx-auto md:mx-0 text-[24px] sm:text-[32px] md:text-[20px] text-white font-chapaza"
+              >
+                Where Luxury Meets
+              </motion.h2>
+            </div> */}
+          </div>
+
+          {/* Right Form Card */}
+          <motion.div
+            initial={{ x: 150, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: 80, opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
+            className="w-full max-w-xl xs:w-[95%]  sm:p-8 md:p-4 lg:p-12 mx-6 sm:mx-8 md:mx-auto bg-no-repeat sm:mt-0"
+          >
+            <h2
+              className="
+    mb-4
+    text-[10px]        /* mobile default */
+    xs:text-[10px]     /* extra small screens */
+    sm:text-[12px]     /* small screens */
+    md:text-sm         /* medium (14px) and up */
+    font-commuter font-regular
+ 
+    text-start text-[#FFFFFF]
+    uppercase register
+  "
+            >
+              Register Your Interest
+            </h2>
+            <form
+              className="flex flex-col gap-2 font-commuter font-regular"
+              onSubmit={handleSubmit}
+            >
+              {/* Full Name */}
+              <input
+                type="text"
+                placeholder="FULL NAME"
+                className="w-full h-10 text-[10px] text-white
+      bg-[#124A63] rounded-sm border border-[#AFD4E0]
+      focus:border-[#ffffff] focus:outline-none
+      placeholder:text-[9px] placeholder-[#D7E0E2] uppercase
+      px-4"
+              />
+
+              {/* Email Address */}
+              <input
+                type="email"
+                placeholder="EMAIL ADDRESS"
+                className="w-full h-10 text-[10px] text-white
+      bg-[#124A63] rounded-sm border border-[#AFD4E0]
+      focus:border-[#ffffff] focus:outline-none
+      placeholder:text-[9px] placeholder-[#D7E0E2]
+      px-4"
+              />
+
+              {/* Phone */}
+              <div className="flex w-full gap-2 phone-stack">
+                <select
+                  value={selected1} // ✅ match the state
+                  onChange={(e) => setSelected1(e.target.value)} // ✅ update the right state
+                  className={`w-20 h-10 text-[11px] text-[#D7E0E2] font-chapaza 
+        rounded-sm bg-[#124A63] border border-[#AFD4E0] 
+        focus:border-[#ffffff] focus:outline-none appearance-none 
+        px-3 font-normal
+         ${selected1 === "" ? "text-[#D7E0E2]" : "text-white"}`}
+                >
+                  <option value="" disabled>
+                    +966
+                  </option>
+                  <option value="+966">+966</option>
+                  <option value="+971">+971</option>
+                </select>
+
+                <input
+                  type="tel"
+                  placeholder="MOBILE NUMBER"
+                  className="flex-1 h-10 text-[10px] text-white
+        bg-[#124A63] rounded-sm border border-[#AFD4E0]
+        focus:border-[#ffffff] focus:outline-none
+        px-4 placeholder:text-[9px] placeholder-[#D7E0E2]"
+                />
+              </div>
+
+              {/* Select Reason */}
+              <div className="relative w-full">
+                <select
+                  value={selected}
+                  onChange={(e) => setSelected(e.target.value)}
+                  className={`w-full h-10 text-[9px] sm:text-[9px]
+      bg-[#124A63] rounded-sm border border-[#AFD4E0]
+      focus:border-[#ffffff] focus:outline-none appearance-none
+      px-3 py-2 sm:px-4 sm:py-3 pl-4 pr-2 min-h-[35px] sm:min-h-auto
+      ${selected === "" ? "text-[#D7E0E2]" : "text-white"}`}
+                >
+                  <option
+                    value=""
+                    disabled
+                    className="text-[9px] text-[#D7E0E2]"
+                  >
+                    I WOULD LIKE MORE DETAILS TO
+                  </option>
+                  <option value="location1" className="text-[9px] text-white">
+                    BOOK A SPACE
+                  </option>
+                  <option value="location2" className="text-[9px] text-white">
+                    LEARN MORE ABOUT THE PROJECT
+                  </option>
+                  <option value="location3" className="text-[9px] text-white">
+                    MAKE OTHER APPOINTMENT WITH A SALES AGENT
+                  </option>
+                  <option value="location4" className="text-[9px] text-white">
+                    OTHER REASON
+                  </option>
+                </select>
+
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[#D7E0E2] pointer-events-none">
+                  ▼
+                </span>
+              </div>
+
+              {/* Message (taller) */}
+              <textarea
+                rows="4"
+                placeholder="WRITE A MESSAGE"
+                className="w-full text-[10px] text-white
+      bg-[#124A63] rounded-sm border border-[#AFD4E0]
+      focus:border-[#ffffff] focus:outline-none
+      px-4 py-3 resize-none placeholder:text-[10px] placeholder-[#D7E0E2]"
+              />
+
+              {/* Submit Button */}
+              <div
+                className="p-[1px] rounded-sm bg-gradient-to-r from-[#a4763e] to-[#bba776] 
+    hover:bg-gradient-to-l transition-all duration-700 ease-in-out 
+    bg-clip-padding box-border"
+              >
+                <button
+                  type="submit"
+                  className="w-full font-regular text-white 
+      rounded-sm bg-gradient-to-r from-[#A4763E] to-[#BFA057] 
+      hover:from-[#BFA057] hover:to-[#A4763E] text-[10px] md:text-[12px]
+      transition-all duration-700 ease-in-outitems-center justify-center"
+                >
+                  SUBMIT
+                </button>
+              </div>
+            </form>
+
+            {/* Buttons Row (under form) */}
+            <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
+              {/* Mobile / XS Button - FIXED: Always render motion.div but conditionally show content */}
+              <motion.div
+                initial={{ opacity: 1, y: 0 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={isMobile ? "block" : "hidden"}
+              >
+                {isMobile && (
+                  <a
+                    href="/Bayfront-Brochure.pdf"
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <button
+                      className="h-8 px-4 text-[10px] text-white 
+            bg-gradient-to-r from-[#A4763E] to-[#BFA057]
+            rounded-sm shadow overflow-hidden font-commuter
+            flex items-center justify-center whitespace-nowrap
+            hover:from-[#BFA057] hover:to-[#A4763E]"
+                    >
+                      DOWNLOAD BROCHURE
+                    </button>
+                  </a>
+                )}
+              </motion.div>
+
+              {/* WhatsApp Icon */}
+              <a
+                href="https://wa.me/XXXXXXXXXXX" // replace with your WhatsApp link
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hidden sm:hidden  transition hover:scale-110 ml-[1px]" // shift 1px right
+              >
+                <img
+                  src={wa}
+                  alt="WhatsApp"
+                  className="object-contain w-8 sm:w-12 sm:h-12 drop-shadow-lg"
+                />
+              </a>
+            </div>
+          </motion.div>
+          {/* Subheading & Tagline - visible only on sm/xs (below form) */}
+          <div className="block md:hidden text-start w-[94%] ml-0">
+            {/*  <motion.h3
+              initial="hiddenBottom"
+              animate="showBottom"
+              transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+              variants={textVariants}
+              className="text-[20px] sm:text-[18px] mt-4 md:text-[40px] lg:text-[52px] xl:text-[56px] text-white font-chapaza bayfront-subheading"
+            >
+              Where Luxury Meets
+            </motion.h3> */}
+
+            {/* <motion.h3
+              initial="hiddenBottom"
+              animate="showBottom"
+              transition={{ duration: 1, ease: "easeOut", delay: 0.6 }}
+              variants={textVariants}
+              className="mt-2 text-white text-[12px] sm:text-[13px] font-fontspring"
+            >
+              EXCLUSIVE LIFESTYLE BY THE SHORE.
+            </motion.h3> */}
+          </div>
+        </main>
+
+        {/* WhatsApp Floating Icon (bottom-right) */}
+        <a
+          href="https://wa.me/XXXXXXXXXXX" // replace with your WhatsApp link
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed right-0 z-50 block p-2 transition sm:block sm:p-6 bottom-2 sm:bottom-6 sm:right-6 hover:scale-110"
+        >
+          <img
+            src={wa}
+            alt="WhatsApp"
+            className="object-contain w-10 h-10 pt-3 mr-1 sm:w-12 sm:h-12 drop-shadow-lg"
+          />
+        </a>
+      </motion.div>
+      <div className="relative w-full overflow-hidden h-72 md:h-screen">
+        {/* Desktop & larger screens (md+) */}
+
+        {!isMobile && (
+          <>
+            {slides.map((slide, index) => (
+              <motion.div
+                key={`${index}-${slide}`}
+                className={`absolute inset-0 transition-all duration-200 ${
+                  index === current ? "z-10" : "z-0 pointer-events-none"
+                }`}
+                initial={{ opacity: 0, scale: 1 }}
+                animate={{
+                  opacity: index === current && scrollY > 50 ? 1 : 0, // same as mobile
+                  scale: index === current ? 1.05 : 1,
+                }}
+                exit={{ opacity: 0, scale: 1 }}
+                transition={{
+                  opacity: { duration: 3, ease: "easeOut", delay: 0.2 }, // slow fade
+                  scale: { duration: 6, ease: "linear" },
+                }}
+                drag={false} // no drag on desktop
+              >
+                <img
+                  src={slide}
+                  alt={`Slide ${index + 1}`}
+                  className="object-cover w-full h-full"
+                />
+              </motion.div>
+            ))}
+          </>
+        )}
+
+        {/* Mobile & Tablet (sm/xs) */}
+
+        {isMobile && (
+          <>
+            {slides.map((slide, index) => (
+              <motion.div
+                key={`${index}-${slide}`}
+                className={`absolute inset-0 transition-all duration-200 ${
+                  index === current ? "z-10" : "z-0 pointer-events-none"
+                }`}
+                initial={{ opacity: 0, scale: 1 }}
+                animate={{
+                  opacity: index === current && scrollY > 50 ? 1 : 0, // fade in on scroll
+                  scale: index === current ? 1.05 : 1,
+                }}
+                exit={{ opacity: 0, scale: 1 }}
+                transition={{
+                  opacity: { duration: 3, ease: "easeOut", delay: 0.2 }, // slow fade
+                  scale: { duration: 6, ease: "linear" },
+                }}
+                drag={index === current ? "x" : false} // drag only current slide
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={(e, { offset, velocity }) => {
+                  if (index !== current) return;
+                  if (offset.x > 100 || velocity.x > 500) {
+                    setCurrent((prev) =>
+                      prev === 0 ? slides.length - 1 : prev - 1
+                    );
+                  } else if (offset.x < -100 || velocity.x < -500) {
+                    setCurrent((prev) =>
+                      prev === slides.length - 1 ? 0 : prev + 1
+                    );
+                  }
+                }}
+              >
+                <img
+                  src={slide}
+                  alt={`Slide ${index + 1}`}
+                  className="object-cover w-full h-full"
+                />
+              </motion.div>
+            ))}
+          </>
+        )}
+
+        {/* Dots */}
+        <div className="absolute z-40 flex justify-center w-full gap-2 bottom-3 md:bottom-5">
+          {(isMobile ? slides.slice(0, 4) : slides).map((_, i) => {
+            const activeIndex = isMobile ? current % 4 : current;
+            return (
+              <button
+                key={i}
+                onClick={() => setCurrent(i)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  activeIndex === i ? "bg-white scale-125" : "bg-white/50"
+                }`}
+              />
+            );
+          })}
+        </div>
+
+        {/* Left Arrow */}
+        <button
+          onClick={() =>
+            setCurrent((prev) => (prev === 0 ? slides.length - 1 : prev - 1))
+          }
+          className="absolute z-50 flex items-center justify-center w-10 h-10 -translate-y-1/2 left-3 top-1/2 md:w-12 md:h-12"
+        >
+          <img src={arrowleft} alt="Previous" className="h-6 md:h-8" />
+        </button>
+
+        {/* Right Arrow */}
+        <button
+          onClick={() =>
+            setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1))
+          }
+          className="absolute z-50 flex items-center justify-center w-10 h-10 -translate-y-1/2 right-3 top-1/2 md:w-12 md:h-12"
+        >
+          <img src={arrowright} alt="Next" className="h-6 md:h-8" />
+        </button>
+      </div>
+
+      <footer className="w-full">
+        {/* Top Section */}
+        <div className="py-8 bg-[#E9E5DD]">
+          <div className="flex items-center justify-between w-full px-6 md:px-12">
+            {/* Social Icons - aligned left */}
+            <div className="flex justify-start gap-5 xs:gap-3">
+              {icons.map((iconData, index) => {
+                const IconComp = iconData.icon;
+                return (
+                  <motion.a
+                    key={iconData.alt}
+                    href={iconData.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    initial={{ opacity: 0, y: 0 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{
+                      delay: index * 0.3,
+                      duration: 1,
+                      ease: "easeOut",
+                    }}
+                    className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
+                  >
+                    <IconComp />
+                  </motion.a>
+                );
+              })}
+            </div>
+
+            {/* Logos - aligned right */}
+            <motion.div
+              className="flex items-center gap-6 sm:gap-5 xs:gap-3"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+            >
+              <img
+                src={footerlogo}
+                alt="Bayfront Logo"
+                className="object-contain w-auto h-8 mr-2 sm:h-10 md:h-12"
+              />
+              <a href="https://ajdan.com/" className="inline-block">
+                <img
+                  src={darklogo}
+                  alt="Dark Logo"
+                  className="object-contain w-auto h-8 sm:h-10 md:h-12"
+                />
+              </a>
+            </motion.div>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="bg-[#124A63] py-4">
+          <div className="max-w-[1340px] mx-auto px-6 flex items-center justify-center">
+            <p className="text-[9px] text-center text-white font-commuter md:text-[10px]">
+              © COPYRIGHT{" "}
+              <a
+                href="https://ajdan.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                AJDAN
+              </a>{" "}
+              <span className="font-chapaza">|</span> ALL RIGHTS RESERVED.
+            </p>
+          </div>
+        </div>
+      </footer>
+    </>
+  );
 };
 
 export default AjdanBayfront;

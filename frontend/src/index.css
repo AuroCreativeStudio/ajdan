@@ -21,6 +21,37 @@
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+    font-family: 'APOLLO';
+  src: url('/fonts/APOLLO.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+/* Regular */
+@font-face {
+  font-family: 'AzerFont';
+  src: url('/fonts/29lt-azer-regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Bold */
+@font-face {
+  font-family: 'AzerFont';
+  src: url('/fonts/29lt-azer-bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'AeonikTRIAL';
+  src: url('./assets/AeonikTRIAL-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 
 @tailwind base;
@@ -106,3 +137,279 @@ h1, h2, h3, h4, h5, h6 {
   @apply font-univers;
 }
 
+/* --------------------Landing Pages CSS Code media queries-------------------- */
+.artboard-wrapper {
+  width: 100%;
+  max-width: 1920px;
+  aspect-ratio: 1920 / 1331; /* keeps proportions, no fixed height */
+  position: relative;
+  margin-top:50px;
+}
+
+.artboard {
+  width: 1920px;
+  height: 1331px;
+  transform-origin: top left;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .artboard-wrapper {
+    aspect-ratio: auto;
+    margin-top: 20px;
+  }
+
+  .artboard {
+    position: relative;
+    width: 100%;
+    height: auto;
+    transform: none;
+  }
+
+  .mobile-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding:10px 10px;
+  }
+
+  .mobile-layout img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .mobile-text {
+    text-align: center;
+    padding: 15px;
+  }
+}
+    select option:hover{
+      background-color:yellow;
+    }
+
+@media (min-width: 680px) and (max-width: 764px) {
+  .phone-input-row {
+    flex-direction: column !important;
+    gap: 0.5rem; /* keep small spacing between stacked inputs */
+    width: 100% !important;
+  }
+
+  .phone-input-row input {
+    width: 100% !important;
+    border-radius: 0.5rem !important; /* make both fully rounded */
+  }
+}
+@media (max-width: 640px) {
+  .min-h-screen {
+    min-height: 95vh !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .bayfront-text {
+    padding-top: 4rem; 
+  }
+}
+.raseen-slider{
+  margin-top:-100px !important ;
+
+.font-azer {
+  font-family: "AzerFont", sans-serif;
+}}
+/* in your global CSS */
+@media (min-width: 768px) and (max-width: 1023px) {
+  main {
+    max-width: 90%;   /* or a fixed px value like 720px */
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+ /* --------------------Landing page App.css code shifed here-------------------- */
+ /* Reset headings */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+/* =========================
+   Base: Desktop Design (1920px)
+   ========================= */
+main form input,
+main form select,
+main form button {
+  font-size: 14px;
+  padding: 12px;
+}
+
+main .form-card {
+  max-width: 500px;
+  padding: 2rem;
+}
+
+main h1 { font-size: 22px; }
+main h2 { font-size: 20px; }
+
+/* =========================
+   Large Laptops/Desktops: 1600px–1919px
+   ========================= */
+@media (max-width: 1919px) and (min-width: 1600px) {
+  main form input,
+  main form select,
+  main form button {
+    font-size: 13px;
+    padding: 11px;
+  }
+  main .form-card {
+    max-width: 460px;
+    padding: 1.75rem;
+  }
+  main h2 { font-size: 18px; }
+}
+
+/* =========================
+   Standard Desktops: 1367px–1599px
+   ========================= */
+@media (max-width: 1599px) and (min-width: 1367px) {
+  main form input,
+  main form select,
+  main form button {
+    font-size: 12px;
+    padding: 10px;
+  }
+  main .form-card {
+    max-width: 420px;
+    padding: 1.5rem;
+  }
+  main h2 { font-size: 18px; }
+}
+
+/* =========================
+   Small Laptops: up to 1366px
+   ========================= */
+@media (max-width: 1366px) {
+  main form input,
+  main form select,
+  main form button {
+    font-size: 11px;
+    padding: 9px;
+  }
+  main .form-card {
+    max-width: 380px;
+    padding: 1.25rem;
+  }
+  main h2 { font-size: 18px; }
+}
+
+/* =========================
+   Tablets: 401px–768px
+   ========================= */
+@media (min-width: 401px) and (max-width: 768px) {
+  main form input,
+  main form select,
+  main form button {
+    font-size: 11px;
+    padding: 8px;
+  }
+  main .form-card {
+    max-width: 340px;
+    padding: 1rem;
+  }
+  main h2 { font-size: 16px; }
+}
+
+/* =========================
+   Tiny Mobile: 350px–400px
+   ========================= */
+@media (min-width: 350px) and (max-width: 400px) {
+  main form input,
+  main form select,
+  main form button {
+    font-size: 10px;
+    padding: 7px; /* smaller fields for tiny screens */
+  }
+  main .form-card {
+    max-width: 300px;
+    padding: 0.75rem;
+  }
+  main h2 { font-size: 14px; }
+}
+
+/* =========================
+   Mobile: up to 480px
+   ========================= */
+@media (max-width: 480px) {
+  main h1 { font-size: 14px; }
+  main h2 { font-size: 13px; }
+  main form input,
+  main form select,
+  main form button {
+    font-size: 11px;
+    padding: 7px; /* 1px taller than smallest padding for consistency */
+  }
+}
+
+/* =========================
+   Mobile → Sm, Md, Lg
+   ========================= */
+@media (min-width: 640px) { main h1 { font-size: 16px; } }
+@media (min-width: 768px) { main h1 { font-size: 18px; } }
+@media (min-width: 1024px) { main h1 { font-size: 20px; } }
+.custom-select,
+.custom-select option {
+  font-size: 9px !important;
+  color: #D7E0E2 !important;
+}
+.custom-select1,
+.custom-select option {
+  font-size: 9px !important;
+  color: #E6D9C4 !important;
+}
+
+.custom-select2,
+.custom-select option {
+  font-size: 10px !important;
+  color: #5D8595 !important;
+}
+/* Desktop media query */
+@media (min-width: 1024px) {
+  .custom-select option {
+    font-size: 9px !important; /* adjust size as needed */
+  }
+}
+@media (max-width: 380px) {
+  .bayfront-heading {
+    font-size: 18px !important;   /* adjust to your taste */
+  }
+  .bayfront-subheading {
+    font-size: 14px !important;   /* adjust to your taste */
+  }
+  .register{
+    font-size: 10px !important;
+  }
+}
+/* Below 380 screen  */
+@media (max-width: 380px) {
+  .margintop {
+    margin-top: 40px !important;
+  }
+}
+@media (max-width: 380px) {
+  .raseenmargintop {
+    margin-top: 40px !important;
+  }
+}
+.gradient-border {
+  border: 1.5px solid;
+  border-image-slice: 1;
+  border-image-source: linear-gradient(to right, #A4763E, #BFA057);
+  border-radius: 0.125rem !important; /* rounded-sm */
+  background-color: transparent;
+  transition: border-image-source 0.3s ease; /* smooth transition */
+}
+
+.gradient-border:hover {
+  border-image-source: linear-gradient(to right, #BFA057, #A4763E);
+}
