@@ -14,5 +14,17 @@
   "submit": "SUBMIT",
   "download_brochure": "DOWNLOAD BROCHURE",
   "bayfront_heading": "Bayfront",
-  "bayfront_subheading": "Where You Meet the Beach"
+  "bayfront_subheading": "Where You Meet the Beach",
+
+  "name_required": "Name is required",
+  "email_required": "Email is required",
+  "invalid_email": "Enter a valid email",
+  "phone_required": "Phone number is required",
+  "invalid_phone": "Enter a valid phone number",
+  "selection_required": "Please select a reason",
+
+  "form_success": "Thank you for submitting enquiry. We shall revert back to you shortly.", 
+  "ok": "OK"
+  
+  
 }

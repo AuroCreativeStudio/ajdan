@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getListingByIdentifier } from "../../../services/getListingByIdentifier";
 import logo from "./images/bayfront_top.png";
@@ -17,18 +18,23 @@ import slider4 from "./images/v06.webp";
 
 import { Menu, X } from "lucide-react";
 import { FaInstagram, FaXTwitter, FaTiktok, FaLinkedin } from "react-icons/fa6";
-// import PhoneInput from "react-phone-input-2"; // not used
-// import "react-phone-input-2/lib/style.css";
-import toast, { Toaster } from "react-hot-toast";
-import { motion } from "framer-motion";
-// put near other imports or right above the component
-const STRAPI_URL   = import.meta.env.VITE_STRAPI_URL   || "http://localhost:1337";
-const STRAPI_TOKEN = import.meta.env.VITE_STRAPI_TOKEN || ""; // optional API token
+
+import { AnimatePresence, motion } from "framer-motion";
+
+import saFlag from "./images/togglear.png"; // your Saudi flag (green circle)
+import enFlag from "./images/toggleen.png"; // your English flag (round image)
+
+const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://localhost:1337";
+const STRAPI_TOKEN = import.meta.env.VITE_STRAPI_TOKEN || "";
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_RE = /^\d{7,15}$/;
+
 const compact = (obj) =>
   Object.fromEntries(
-    Object.entries(obj).filter(([_, v]) => v !== undefined && v !== null && v !== "")
+    Object.entries(obj).filter(
+      ([_, v]) => v !== undefined && v !== null && v !== ""
+    )
   );
-
 
 const AjdanBayfront = () => {
   const { t, i18n } = useTranslation();
@@ -38,16 +44,28 @@ const AjdanBayfront = () => {
   const [current, setCurrent] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [scrollY, setScrollY] = useState(0);
-// Build options from i18n so labels auto-translate
-const MORE_DETAIL_OPTIONS = [
-  { code: "book_space",  value: "Book a space",                   label: t("book_space") },
-  { code: "learn_more",  value: "Learn more about the project",   label: t("learn_more") },
-  { code: "appointment", value: "Make an appointment with sales", label: t("appointment") },
-  { code: "other",       value: "Other reason",                   label: t("other_reason") },
-];
+  // SuccessPopup
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-// track only the code in UI (stable)
-const [moreDetailsCode, setMoreDetailsCode] = useState("");
+  // Build options from i18n so labels auto-translate
+  const MORE_DETAIL_OPTIONS = [
+    { code: "book_space", value: "Book a space", label: t("book_space") },
+    {
+      code: "learn_more",
+      value: "Learn more about the project",
+      label: t("learn_more"),
+    },
+    {
+      code: "appointment",
+      value: "Make an appointment with sales",
+      label: t("appointment"),
+    },
+    { code: "other", value: "Other reason", label: t("other_reason") },
+  ];
+
+  // track only the code in UI (stable)
+  const [moreDetailsCode, setMoreDetailsCode] = useState("");
 
   // Form state
   const [formData, setFormData] = useState({
@@ -55,96 +73,142 @@ const [moreDetailsCode, setMoreDetailsCode] = useState("");
     email: "",
     phone: "",
     message: "",
-    title: "", 
+    title: "",
   });
   const [dialCode, setDialCode] = useState("+966");
+  const [errors, setErrors] = useState({});
+
+  // Validate form function
+  const validateForm = (formData, moreDetailsCode) => {
+    const errors = {};
+
+    // Name validation
+    if (!formData.username?.trim()) {
+      errors.username = t("name_required");
+    }
+
+    // Email validation
+    if (!formData.email?.trim()) {
+      errors.email = t("email_required");
+    } else if (!EMAIL_RE.test(formData.email)) {
+      errors.email = t("invalid_email");
+    }
+
+    // Phone validation
+    if (!formData.phone?.trim()) {
+      errors.phone = t("phone_required");
+    } else if (!PHONE_RE.test(formData.phone.replace(/\D/g, ""))) {
+      errors.phone = t("invalid_phone");
+    }
+
+    // Dropdown validation - make sure the key matches what you're checking in the JSX
+    if (!moreDetailsCode) {
+      errors.moreDetailsCode = t("selection_required"); // This key must match what you check in JSX
+    }
+
+    return errors;
+  };
+
   // set title after fetch so it never flips undefined → string
-const resolveTitle = (d, lang) => {
-  if (!d) return "";
-  const ar = d.title_ar || d?.attributes?.title_ar;
-  const en = d.title || d?.attributes?.title;
-  return lang === "ar" ? (ar || en || "") : (en || ar || "");
-};
+  const resolveTitle = (d, lang) => {
+    if (!d) return "";
+    const ar = d.title_ar || d?.attributes?.title_ar;
+    const en = d.title || d?.attributes?.title;
+    return lang === "ar" ? ar || en || "" : en || ar || "";
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // map the selected code to readable text
-  const selected = MORE_DETAIL_OPTIONS.find((o) => o.code === moreDetailsCode);
-  const moreDetailsText = selected?.value || ""; // or selected?.label for localized text
-
-  const rawPayload = {
-    username: formData.username ?? "",
-    email: formData.email ?? "",
-    phone: `${(dialCode ?? "+966")}${(formData.phone ?? "").replace(/^0+/, "")}`,
-    message: formData.message ?? "",
-    title: formData.title ?? (data?.title || "Bayfront"),
-    more_details: moreDetailsText,
-  };
-  const payload = compact(rawPayload);
-
-  const headers = { "Content-Type": "application/json" };
-  if (STRAPI_TOKEN) headers.Authorization = `Bearer ${STRAPI_TOKEN}`;
-
-  // Wrap the whole submit in a promise so toast can track loading/success/error
-  const submitPromise = (async () => {
-    const res = await fetch(`${STRAPI_URL}/api/project-contact-forms`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ data: payload }),
-    });
-
-    const raw = await res.text();
-    let body;
-    try { body = JSON.parse(raw); } catch { body = raw; }
-
-    if (!res.ok) {
-      const msg =
-        body?.error?.message ||
-        body?.error?.details?.errors?.map((e) => e.message).join(", ") ||
-        (res.status === 401
-          ? "Unauthorized: add a Bearer token or enable Public → Create in Strapi."
-          : "Submission failed");
-      throw new Error(msg);
+    // Validate form
+    const formErrors = validateForm(formData, moreDetailsCode);
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+      return;
     }
 
-    return body;
-  })();
+    setErrors({});
+    setSubmitting(true);
 
-  try {
-    await toast.promise(submitPromise, {
-      loading: "Submitting…",
-      success: "Submitted successfully!",
-      error: (err) => err.message || "Something went wrong.",
-    });
+    // map the selected code to readable text
+    const selected = MORE_DETAIL_OPTIONS.find(
+      (o) => o.code === moreDetailsCode
+    );
+    const moreDetailsText = selected?.value || "";
 
-    // reset form after success
-    setFormData((prev) => ({
-      ...prev,
-      username: "",
-      email: "",
-      phone: "",
-      message: "",
-      title: formData.title || resolveTitle(data, i18n.language) || "",
-    }));
-    setMoreDetailsCode("");
-  } catch {
-    // error toast already shown by toast.promise
-  }
-};
+    const rawPayload = {
+      username: formData.username ?? "",
+      email: formData.email ?? "",
+      phone: `${dialCode ?? "+966"}${(formData.phone ?? "").replace(
+        /^0+/,
+        ""
+      )}`,
+      message: formData.message ?? "",
+      title: formData.title ?? (data?.title || "Bayfront"),
+      more_details: moreDetailsText,
+    };
+    const payload = compact(rawPayload);
 
+    const headers = { "Content-Type": "application/json" };
+    if (STRAPI_TOKEN) headers.Authorization = `Bearer ${STRAPI_TOKEN}`;
 
+    try {
+      const res = await fetch(`${STRAPI_URL}/api/project-contact-forms`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ data: payload }),
+      });
+
+      const raw = await res.text();
+      let body;
+      try {
+        body = JSON.parse(raw);
+      } catch {
+        body = raw;
+      }
+
+      if (!res.ok) {
+        const msg =
+          body?.error?.message ||
+          body?.error?.details?.errors?.map((e) => e.message).join(", ") ||
+          (res.status === 401
+            ? "Unauthorized: add a Bearer token or enable Public → Create in Strapi."
+            : "Submission failed");
+        throw new Error(msg);
+      }
+
+      // success → open popup
+      setShowSuccess(true);
+
+      // reset fields (keep resolved title)
+      setFormData((prev) => ({
+        ...prev,
+        username: "",
+        email: "",
+        phone: "",
+        message: "",
+        title: formData.title || resolveTitle(data, i18n.language) || "",
+      }));
+      setMoreDetailsCode("");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   useEffect(() => {
-  if (data) {
-    setFormData(prev => ({ ...prev, title: resolveTitle(data, i18n.language) }));
-  }
-}, [data, i18n.language]);
+    if (data) {
+      setFormData((prev) => ({
+        ...prev,
+        title: resolveTitle(data, i18n.language),
+      }));
+    }
+  }, [data, i18n.language]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -192,15 +256,22 @@ const handleSubmit = async (e) => {
   };
 
   const icons = [
-    { icon: FaInstagram, alt: "Instagram", link: "https://www.instagram.com/Ajdan_sa/" },
+    {
+      icon: FaInstagram,
+      alt: "Instagram",
+      link: "https://www.instagram.com/Ajdan_sa/",
+    },
     { icon: FaXTwitter, alt: "X Twitter", link: "https://x.com/Ajdan" },
     { icon: FaTiktok, alt: "TikTok", link: "https://www.tiktok.com/" },
-    { icon: FaLinkedin, alt: "LinkedIn", link: "https://www.linkedin.com/company/ajdan/" },
+    {
+      icon: FaLinkedin,
+      alt: "LinkedIn",
+      link: "https://www.linkedin.com/company/ajdan/",
+    },
   ];
 
   return (
     <>
-     <Toaster position="top-right" />
       <motion.div className="relative flex items-center justify-center w-full min-h-screen overflow-hidden hero">
         {/* Desktop Background */}
         <motion.img
@@ -237,47 +308,97 @@ const handleSubmit = async (e) => {
           className="absolute left-0 right-0 z-50 flex items-center justify-between px-4 top-3 sm:top-6 sm:left-4 sm:right-4"
         >
           {/* Left Logo */}
-          <img src={logo} alt="Bayfront Logo" className="object-contain w-20 md:w-32" />
+          <img
+            src={logo}
+            alt="Bayfront Logo"
+            className="object-contain w-20 md:w-32"
+          />
 
           {/* Right Side: Download + Ajdan Logo */}
-          <div className="flex items-center gap-0 ml-auto md:gap-0">
-            <a
-              href="/Bayfront-Brochure.pdf"
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              className="z-50 flex items-center left-4 sm:hidden"
-            >
-              <button
-                style={{ lineHeight: "1", paddingTop: 0, paddingBottom: 0, height: 28 }}
-                className="relative px-3 sm:px-4 text-[9px] sm:text-[9px] font-regular font-commuter text-white shadow border-[1.5px]  border-[#C1A580] rounded-sm bg-transparent"
-              >
-                {t("download_brochure")}
-              </button>
-            </a>
-
-            {/* Mobile: Small Ajdan Logo */}
-            <div className="sm:hidden ml-2 h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580]">
-              <a href="https://ajdan.com/" target="_blank" rel="noopener noreferrer">
-                <img src={ajdan} alt="Logo" className="object-contain w-auto h-4" />
-              </a>
-            </div>
-
-            {/* Desktop/Tablet */}
-            <div className="items-center hidden gap-2 sm:flex md:gap-6">
-              <a href="/Bayfront-Brochure.pdf" download target="_blank" rel="noopener noreferrer">
-                <button
-                  style={{ lineHeight: "1", paddingTop: 0, paddingBottom: 0, height: 28 }}
-                  className="relative px-3 sm:px-4 text-[12px] text-xs sm:text-[12px] font-regular font-commuter text-white shadow border-[1.5px] border-[#C1A580] rounded-sm bg-transparent"
+          {/* Download + Ajdan Logo */}
+          <div
+            className={`flex items-center gap-2 md:gap-6 ${
+              i18n.language === "ar" ? "justify-start" : "justify-end"
+            }`}
+          >
+            {i18n.language === "ar" ? (
+              <>
+                {/* Download Button */}
+                <a
+                  href="/Bayfront-Brochure.pdf"
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
                 >
-                  {t("download_brochure")}
-                </button>
-              </a>
+                  <button
+                    style={{
+                      lineHeight: "1",
+                      paddingTop: 0,
+                      paddingBottom: 0,
+                      height: 28,
+                    }}
+                    className="relative px-3 sm:px-4 text-[9px] sm:text-[12px]
+                     font-regular font-commuter text-white shadow
+                     border-[1.5px] border-[#C1A580] rounded-sm bg-transparent"
+                  >
+                    تنزيل الكتيب
+                  </button>
+                </a>
+                {/* Ajdan Logo first (Arabic) */}
+                <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580]">
+                  <a
+                    href="https://ajdan.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src={ajdan}
+                      alt="Logo"
+                      className="object-contain w-auto h-4 sm:h-6"
+                    />
+                  </a>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Download Button first (English) */}
+                <a
+                  href="/Bayfront-Brochure.pdf"
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <button
+                    style={{
+                      lineHeight: "1",
+                      paddingTop: 0,
+                      paddingBottom: 0,
+                      height: 28,
+                    }}
+                    className="relative px-3 sm:px-4 text-[9px] sm:text-[12px]
+                     font-regular font-commuter text-white shadow
+                     border-[1.5px] border-[#C1A580] rounded-sm bg-transparent"
+                  >
+                    {t("download_brochure")}
+                  </button>
+                </a>
 
-              <a href="https://ajdan.com/" target="_blank" rel="noopener noreferrer">
-                <img src={ajdan} alt="Logo" className="h-7 sm:h-7" />
-              </a>
-            </div>
+                {/* Ajdan Logo */}
+                <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580]">
+                  <a
+                    href="https://ajdan.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      src={ajdan}
+                      alt="Logo"
+                      className="object-contain w-auto h-4 sm:h-6"
+                    />
+                  </a>
+                </div>
+              </>
+            )}
           </div>
         </motion.header>
 
@@ -291,11 +412,11 @@ const handleSubmit = async (e) => {
               variants={textVariants}
               className="leading-none text-white font-chapaza font-regular"
             >
-              <span className="bayfront-heading uppercase block text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px] ">
+              <span className="bayfront-heading uppercase block md:text-start text-center text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px] ">
                 {t("bayfront_heading")}
               </span>
 
-              <span className="bayfront-subheading block pt-4 whitespace-nowrap text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm">
+              <span className="bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm">
                 {t("bayfront_subheading")}
               </span>
             </motion.h1>
@@ -304,111 +425,192 @@ const handleSubmit = async (e) => {
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-              className="hidden my-6 origin-left border-t md:block border-white/80"
+              className={`hidden my-6 border-t md:block border-white/80 ${
+                i18n.language === "ar" ? "origin-right" : "origin-left" // Right for Arabic, left for English
+              }`}
             />
           </div>
 
           {/* Right Form Card */}
           <motion.div
-            initial={{ x: 150, opacity: 0 }}
+            initial={{ x: i18n.language === "ar" ? -150 : 150, opacity: 0 }} // Left for Arabic, right for English
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 80, opacity: 0 }}
+            exit={{ x: i18n.language === "ar" ? -80 : 80, opacity: 0 }} // Left for Arabic, right for English
             transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
             className="w-full max-w-xl xs:w-[95%] sm:p-8 md:p-4 lg:p-12 mx-6 sm:mx-8 md:mx-auto bg-no-repeat sm:mt-0"
           >
-            <h2 className="mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm font-commuter font-regular text-start text-[#FFFFFF] uppercase register">
+            <h2
+              className={`mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm font-commuter font-regular text-[#FFFFFF] uppercase register ${
+                i18n.language === "ar" ? "text-start" : "text-start" // Right align for Arabic, left for English
+              }`}
+            >
               {t("register_interest")}
             </h2>
 
-            <form className="flex flex-col gap-2 font-commuter font-regular" onSubmit={handleSubmit}>
-              <input type="hidden" name="title" value={formData.title ?? ""} readOnly />
+            <form
+              className="flex flex-col gap-2 font-commuter font-regular"
+              onSubmit={handleSubmit}
+              noValidate
+            >
+              <input
+                type="hidden"
+                name="title"
+                value={formData.title ?? ""}
+                readOnly
+              />
 
               {/* Full Name */}
-              <input
-                type="text"
-                name="username"
-                value={formData.username ?? ""} 
-                onChange={handleChange}
-                placeholder={t("full_name")}
-                className="w-full h-10 text-[10px] text-white
-      bg-[#124A63] rounded-sm border border-[#AFD4E0]
-      focus:border-[#ffffff] focus:outline-none
-      placeholder:text-[9px] placeholder-[#D7E0E2] uppercase
-      px-4"
-                required
-              />
-
-              {/* Email Address */}
-              <input
-                type="email"
-                name="email"
-                value={formData.email ?? ""}
-                onChange={handleChange}
-                placeholder={t("email_address")}
-                className="w-full h-10 text-[10px] text-white
-      bg-[#124A63] rounded-sm border border-[#AFD4E0]
-      focus:border-[#ffffff] focus:outline-none
-      placeholder:text-[9px] placeholder-[#D7E0E2]
-      px-4"
-                required
-              />
-
-              {/* Phone */}
-              <div className="flex w-full gap-2 phone-stack">
-                <select
-                  value={dialCode ?? "+966"}
-                  onChange={(e) => setDialCode(e.target.value)}
-                 className={`w-20 h-10 text-[11px] text-[#D7E0E2] font-chapaza 
-        rounded-sm bg-[#124A63] border border-[#AFD4E0] 
-        focus:border-[#ffffff] focus:outline-none appearance-none 
-        px-3 font-normal ${
-                    !dialCode ? "text-[#D7E0E2]" : "text-white"
-                  }`}
-                >
-                  <option value="+966">+966</option>
-                  <option value="+971">+971</option>
-                </select>
-
+              <div>
                 <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone ?? ""}
+                  type="text"
+                  name="username"
+                  value={formData.username ?? ""}
                   onChange={handleChange}
-                  placeholder={t("mobile_number")}
-                  className="flex-1 h-10 text-[10px] text-white
-        bg-[#124A63] rounded-sm border border-[#AFD4E0]
-        focus:border-[#ffffff] focus:outline-none
-        px-4 placeholder:text-[9px] placeholder-[#D7E0E2]"
+                  placeholder={t("full_name")}
+                  className={`w-full h-10 text-[10px] text-white bg-[#124A63] rounded-sm border ${
+                    errors.username ? "border-red-500" : "border-[#AFD4E0]"
+                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#D7E0E2] uppercase px-4`}
+                  aria-invalid={!!errors.username}
+                  aria-describedby="err-username"
                   required
                 />
+                {errors.username && (
+                  <p
+                    id="err-username"
+                    className="mt-1 text-[10px] leading-tight text-red-400"
+                  >
+                    {errors.username}
+                  </p>
+                )}
+              </div>
+
+              {/* Email Address */}
+              <div>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email ?? ""}
+                  onChange={handleChange}
+                  placeholder={t("email_address")}
+                  className={`w-full h-10 text-[10px] text-white bg-[#124A63] rounded-sm border ${
+                    errors.email ? "border-red-500" : "border-[#AFD4E0]"
+                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#D7E0E2] px-4
+       font-chapaza [&::placeholder]:font-commuter`}
+                  aria-invalid={!!errors.email}
+                  aria-describedby="err-email"
+                  required
+                />
+                {errors.email && (
+                  <p
+                    id="err-email"
+                    className="mt-1 text-[10px] leading-tight text-red-400"
+                  >
+                    {errors.email}
+                  </p>
+                )}
+              </div>
+
+              {/* Phone */}
+              <div>
+                <div className="flex w-full gap-2 phone-stack">
+                  <select
+                    value={dialCode ?? "+966"}
+                    onChange={(e) => setDialCode(e.target.value)}
+                    className={`w-20 h-10 text-[11px] text-[#D7E0E2] font-chapaza rounded-sm bg-[#124A63] border ${
+                      errors.phone ? "border-red-500" : "border-[#AFD4E0]"
+                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 font-normal ${
+                      !dialCode ? "text-[#D7E0E2]" : "text-white"
+                    }`}
+                  >
+                    <option value="+966">+966</option>
+                    <option value="+971">+971</option>
+                  </select>
+
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone ?? ""}
+                    onChange={(e) => {
+                      const numericValue = e.target.value.replace(/\D/g, "");
+                      setFormData((prev) => ({ ...prev, phone: numericValue }));
+                      setErrors((prev) => ({ ...prev, phone: "" }));
+                    }}
+                    placeholder={t("mobile_number")}
+                    className={`flex-1 h-10 text-[10px] text-white bg-[#124A63] rounded-sm border ${
+                      errors.phone ? "border-red-500" : "border-[#AFD4E0]"
+                    } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#D7E0E2]
+         font-chapaza [&::placeholder]:font-commuter`}
+                    aria-invalid={!!errors.phone}
+                    aria-describedby="err-phone"
+                    required
+                  />
+                </div>
+                {errors.phone && (
+                  <p
+                    id="err-phone"
+                    className="mt-1 text-[10px] leading-tight text-red-400"
+                  >
+                    {errors.phone}
+                  </p>
+                )}
               </div>
 
               {/* Reason */}
-             <div className="relative w-full">
-  <select
-    name="more_details_code"
-    value={moreDetailsCode}
-    onChange={(e) => setMoreDetailsCode(e.target.value)}
-    className={`w-full h-10 text-[9px] sm:text-[9px] bg-[#124A63] rounded-sm border border-[#AFD4E0] focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3 pl-4 pr-2 min-h-[35px] sm:min-h-auto ${
-      moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"
-    }`}
-    required
-  >
-    <option value="" disabled className="text-[9px] text-[#D7E0E2]">
-      {t("more_details")}
-    </option>
-    {MORE_DETAIL_OPTIONS.map((opt) => (
-      <option key={opt.code} value={opt.code} className="text-[9px] text-white">
-        {opt.label}
-      </option>
-    ))}
-  </select>
+              <div>
+                <div className="relative w-full">
+                  <select
+                    name="more_details_code"
+                    value={moreDetailsCode}
+                    onChange={(e) => {
+                      setMoreDetailsCode(e.target.value);
+                      setErrors((prev) => ({ ...prev, moreDetailsCode: "" }));
+                    }}
+                    className={`w-full h-10 text-[9px] sm:text-[9px] bg-[#124A63] rounded-sm border ${
+                      errors.moreDetailsCode
+                        ? "border-red-500"
+                        : "border-[#AFD4E0]"
+                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3 pl-4 pr-2 min-h-[35px] sm:min-h-auto ${
+                      moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"
+                    }`}
+                    aria-invalid={!!errors.moreDetailsCode}
+                    aria-describedby="err-reason"
+                    required
+                  >
+                    <option
+                      value=""
+                      disabled
+                      className="text-[9px] text-[#D7E0E2]"
+                    >
+                      {t("more_details")}
+                    </option>
+                    {MORE_DETAIL_OPTIONS.map((opt) => (
+                      <option
+                        key={opt.code}
+                        value={opt.code}
+                        className="text-[9px] text-white"
+                      >
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span
+                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#D7E0E2] pointer-events-none ${
+                      i18n.language === "ar" ? "left-3" : "right-3" // Left for Arabic, right for English
+                    }`}
+                  >
+                    ▼
+                  </span>
+                </div>
 
-  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-[#D7E0E2] pointer-events-none">
-    ▼
-  </span>
-</div>
-
+                {errors.moreDetailsCode && (
+                  <p
+                    id="err-reason"
+                    className="mt-1 text-[10px] leading-tight text-red-400"
+                  >
+                    {errors.moreDetailsCode}
+                  </p>
+                )}
+              </div>
 
               {/* Message */}
               <textarea
@@ -424,26 +626,29 @@ const handleSubmit = async (e) => {
               <div className="p-[1px] rounded-sm bg-gradient-to-r from-[#a4763e] to-[#bba776] hover:bg-gradient-to-l transition-all duration-700 ease-in-out bg-clip-padding box-border">
                 <button
                   type="submit"
-                  className="w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#A4763E] to-[#BFA057] hover:from-[#BFA057] hover:to-[#A4763E] text-[10px] md:text-[12px] transition-all duration-700 ease-in-out items-center justify-center uppercase"
+                  disabled={submitting}
+                  className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#A4763E] to-[#BFA057] hover:from-[#BFA057] hover:to-[#A4763E] text-[10px] md:text-[12px] transition-all duration-700 ease-in-out items-center justify-center uppercase
+    ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
-                  {t("submit")}
+                  {submitting ? t("submitting") ?? "Submitting…" : t("submit")}
                 </button>
               </div>
             </form>
+            <SuccessPopup
+              open={showSuccess}
+              onClose={() => setShowSuccess(false)}
+              // Use i18n keys if you have them; otherwise these fallbacks match your mock
+              body={
+                t("form_success") ||
+                (i18n.language === "ar"
+                  ? "سنقوم بالرد عليك قريبًا."
+                  : "We shall revert back to you shortly.")
+              }
+              okLabel={t("ok") || (i18n.language === "ar" ? "حسناً" : "OK")}
+            />
 
             {/* Buttons Row (under form) */}
             <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
-              {/* Mobile / XS Button */}
-              {/* <motion.div initial={{ opacity: 1, y: 0 }} animate={{ opacity: 1, y: 0 }} className={isMobile ? "block" : "hidden"}>
-                {isMobile && (
-                  <a href="/Bayfront-Brochure.pdf" download target="_blank" rel="noopener noreferrer">
-                    <button className="h-8 px-4 text-[10px] text-white bg-gradient-to-r from-[#A4763E] to-[#BFA057] rounded-sm shadow overflow-hidden font-commuter flex items-center justify-center whitespace-nowrap hover:from-[#BFA057] hover:to-[#A4763E] uppercase">
-                      {t("download_brochure")}
-                    </button>
-                  </a>
-                )}
-              </motion.div> */}
-
               {/* WhatsApp Icon (hidden per your classes) */}
               <a
                 href="https://wa.me/XXXXXXXXXXX"
@@ -451,7 +656,11 @@ const handleSubmit = async (e) => {
                 rel="noopener noreferrer"
                 className="hidden sm:hidden transition hover:scale-110 ml-[1px]"
               >
-                <img src={wa} alt="WhatsApp" className="object-contain w-8 sm:w-12 sm:h-12 drop-shadow-lg" />
+                <img
+                  src={wa}
+                  alt="WhatsApp"
+                  className="object-contain w-8 sm:w-12 sm:h-12 drop-shadow-lg"
+                />
               </a>
             </div>
           </motion.div>
@@ -460,15 +669,48 @@ const handleSubmit = async (e) => {
           <div className="block md:hidden text-start w-[94%] ml-0" />
         </main>
 
-        {/* WhatsApp Floating Icon */}
-        <a
-          href="https://wa.me/XXXXXXXXXXX"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="fixed right-0 z-50 block p-2 transition sm:block sm:p-6 bottom-2 sm:bottom-6 sm:right-6 hover:scale-110"
+        {/* <div
+      onClick={toggleLang}
+      className="relative flex items-center justify-center h-24 overflow-hidden bg-white rounded-full shadow-lg cursor-pointer w-14"
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={lang}
+          initial={{ y: 40, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -40, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="absolute flex flex-col items-center space-y-1"
         >
-          <img src={wa} alt="WhatsApp" className="object-contain w-10 h-10 pt-3 mr-1 sm:w-12 sm:h-12 drop-shadow-lg" />
-        </a>
+          <span className="font-bold text-blue-900">{items[lang].label}</span>
+          <img
+            src={items[lang].flag}
+            alt={items[lang].label}
+            className="w-10 h-10 rounded-full"
+          />
+        </motion.div>
+      </AnimatePresence>
+    </div> */}
+        <div
+          className={`fixed z-50 flex flex-col items-center gap-3 ${
+            i18n.language === "ar" ? "left-0 sm:left-6" : "right-0 sm:right-6"
+          } bottom-2 sm:bottom-6`}
+        >
+          <LangToggle />
+
+          <a
+            href="https://wa.me/XXXXXXXXXXX"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block p-2 transition hover:scale-110"
+          >
+            <img
+              src={wa}
+              alt="WhatsApp"
+              className="object-contain w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
+            />
+          </a>
+        </div>
       </motion.div>
 
       {/* Slider */}
@@ -477,14 +719,26 @@ const handleSubmit = async (e) => {
           slides.map((slide, index) => (
             <motion.div
               key={`${index}-${slide}`}
-              className={`absolute inset-0 transition-all duration-200 ${index === current ? "z-10" : "z-0 pointer-events-none"}`}
+              className={`absolute inset-0 transition-all duration-200 ${
+                index === current ? "z-10" : "z-0 pointer-events-none"
+              }`}
               initial={{ opacity: 0, scale: 1 }}
-              animate={{ opacity: index === current && scrollY > 50 ? 1 : 0, scale: index === current ? 1.05 : 1 }}
+              animate={{
+                opacity: index === current && scrollY > 50 ? 1 : 0,
+                scale: index === current ? 1.05 : 1,
+              }}
               exit={{ opacity: 0, scale: 1 }}
-              transition={{ opacity: { duration: 3, ease: "easeOut", delay: 0.2 }, scale: { duration: 6, ease: "linear" } }}
+              transition={{
+                opacity: { duration: 3, ease: "easeOut", delay: 0.2 },
+                scale: { duration: 6, ease: "linear" },
+              }}
               drag={false}
             >
-              <img src={slide} alt={`Slide ${index + 1}`} className="object-cover w-full h-full" />
+              <img
+                src={slide}
+                alt={`Slide ${index + 1}`}
+                className="object-cover w-full h-full"
+              />
             </motion.div>
           ))}
 
@@ -492,24 +746,40 @@ const handleSubmit = async (e) => {
           slides.map((slide, index) => (
             <motion.div
               key={`${index}-${slide}`}
-              className={`absolute inset-0 transition-all duration-200 ${index === current ? "z-10" : "z-0 pointer-events-none"}`}
+              className={`absolute inset-0 transition-all duration-200 ${
+                index === current ? "z-10" : "z-0 pointer-events-none"
+              }`}
               initial={{ opacity: 0, scale: 1 }}
-              animate={{ opacity: index === current && scrollY > 50 ? 1 : 0, scale: index === current ? 1.05 : 1 }}
+              animate={{
+                opacity: index === current && scrollY > 50 ? 1 : 0,
+                scale: index === current ? 1.05 : 1,
+              }}
               exit={{ opacity: 0, scale: 1 }}
-              transition={{ opacity: { duration: 3, ease: "easeOut", delay: 0.2 }, scale: { duration: 6, ease: "linear" } }}
+              transition={{
+                opacity: { duration: 3, ease: "easeOut", delay: 0.2 },
+                scale: { duration: 6, ease: "linear" },
+              }}
               drag={index === current ? "x" : false}
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.2}
               onDragEnd={(e, { offset, velocity }) => {
                 if (index !== current) return;
                 if (offset.x > 100 || velocity.x > 500) {
-                  setCurrent((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+                  setCurrent((prev) =>
+                    prev === 0 ? slides.length - 1 : prev - 1
+                  );
                 } else if (offset.x < -100 || velocity.x < -500) {
-                  setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+                  setCurrent((prev) =>
+                    prev === slides.length - 1 ? 0 : prev + 1
+                  );
                 }
               }}
             >
-              <img src={slide} alt={`Slide ${index + 1}`} className="object-cover w-full h-full" />
+              <img
+                src={slide}
+                alt={`Slide ${index + 1}`}
+                className="object-cover w-full h-full"
+              />
             </motion.div>
           ))}
 
@@ -531,7 +801,9 @@ const handleSubmit = async (e) => {
 
         {/* Left Arrow */}
         <button
-          onClick={() => setCurrent((prev) => (prev === 0 ? slides.length - 1 : prev - 1))}
+          onClick={() =>
+            setCurrent((prev) => (prev === 0 ? slides.length - 1 : prev - 1))
+          }
           className="absolute z-50 flex items-center justify-center w-10 h-10 -translate-y-1/2 left-3 top-1/2 md:w-12 md:h-12"
         >
           <img src={arrowleft} alt="Previous" className="h-6 md:h-8" />
@@ -539,7 +811,9 @@ const handleSubmit = async (e) => {
 
         {/* Right Arrow */}
         <button
-          onClick={() => setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1))}
+          onClick={() =>
+            setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1))
+          }
           className="absolute z-50 flex items-center justify-center w-10 h-10 -translate-y-1/2 right-3 top-1/2 md:w-12 md:h-12"
         >
           <img src={arrowright} alt="Next" className="h-6 md:h-8" />
@@ -562,7 +836,11 @@ const handleSubmit = async (e) => {
                     initial={{ opacity: 0, y: 0 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.3 }}
-                    transition={{ delay: index * 0.3, duration: 1, ease: "easeOut" }}
+                    transition={{
+                      delay: index * 0.3,
+                      duration: 1,
+                      ease: "easeOut",
+                    }}
                     className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
                   >
                     <IconComp />
@@ -579,9 +857,17 @@ const handleSubmit = async (e) => {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 1.5, ease: "easeOut" }}
             >
-              <img src={footerlogo} alt="Bayfront Logo" className="object-contain w-auto h-8 mr-2 sm:h-10 md:h-12" />
+              <img
+                src={footerlogo}
+                alt="Bayfront Logo"
+                className="object-contain w-auto h-8 mr-2 sm:h-10 md:h-12"
+              />
               <a href="https://ajdan.com/" className="inline-block">
-                <img src={darklogo} alt="Dark Logo" className="object-contain w-auto h-8 sm:h-10 md:h-12" />
+                <img
+                  src={darklogo}
+                  alt="Dark Logo"
+                  className="object-contain w-auto h-8 sm:h-10 md:h-12"
+                />
               </a>
             </motion.div>
           </div>
@@ -591,7 +877,12 @@ const handleSubmit = async (e) => {
           <div className="max-w-[1340px] mx-auto px-6 flex items-center justify-center">
             <p className="text-[9px] text-center text-white font-commuter md:text-[10px]">
               © COPYRIGHT{" "}
-              <a href="https://ajdan.com/" target="_blank" rel="noopener noreferrer" className="hover:underline">
+              <a
+                href="https://ajdan.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
                 AJDAN
               </a>{" "}
               <span className="font-chapaza">|</span> ALL RIGHTS RESERVED.
@@ -600,6 +891,149 @@ const handleSubmit = async (e) => {
         </div>
       </footer>
     </>
+  );
+};
+
+// Success Popup Component (inside your main component file)
+const SuccessPopup = ({ open, onClose, title, body, okLabel = "OK" }) => {
+  const logoTile = ajdan; // Using the same ajdan image import
+
+  // close on Esc
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  const Backdrop = ({ onClose }) => (
+    <div
+      className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-[1px]"
+      onClick={onClose}
+      aria-hidden="true"
+    />
+  );
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <>
+          <Backdrop onClose={onClose} />
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            className="fixed z-[9999] inset-0 grid place-items-center px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 10, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.98, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 260, damping: 22 }}
+              className="w-full max-w-xs rounded-2xl shadow-2xl ring-1 ring-[#1aa0e0]/40 overflow-hidden"
+            >
+              <div className="bg-[#E9E5DD] p-6 text-center relative">
+                <div className="mx-auto mb-4 h-10 w-10 rounded-lg grid place-items-center bg-[#C1A580]">
+                  <img
+                    src={logoTile}
+                    alt=""
+                    className="object-contain w-5 h-5"
+                    draggable="false"
+                  />
+                </div>
+
+                <h3 className="sr-only">{title}</h3>
+                <p className="text-[13px] leading-5 font-commuter text-[#124A63]">
+                  {body}
+                </p>
+
+                <div className="mt-6">
+                  <button
+                    onClick={onClose}
+                    className="w-24 h-9 rounded-md text-white text-[12px] font-commuter
+                               bg-gradient-to-r from-[#A4763E] to-[#BFA057]
+                               hover:from-[#BFA057] hover:to-[#A4763E]
+                               transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  >
+                    {okLabel}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
+// LangToggle component (outside of AjdanBayfront)
+const LangToggle = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { i18n } = useTranslation();
+
+  // Get current language from URL or i18n
+  const match = location.pathname.match(/^\/(en|ar)(\/|$)/);
+  const [lang, setLang] = useState(match ? match[1] : i18n.language || "en");
+
+  // Sync with i18n language changes
+  useEffect(() => {
+    setLang(i18n.language);
+  }, [i18n.language]);
+
+  const toggleLang = () => {
+    const newLang = lang === "en" ? "ar" : "en";
+    const newDirection = newLang === "ar" ? "rtl" : "ltr";
+
+    // Update i18n
+    if (i18n && typeof i18n.changeLanguage === "function") {
+      i18n.changeLanguage(newLang);
+    }
+
+    // Update document direction
+    document.documentElement.dir = newDirection;
+    document.documentElement.lang = newLang;
+
+    // Update URL routing
+    const newPath = location.pathname.replace(/^\/(en|ar)/, `/${newLang}`);
+    navigate(newPath + location.search, { replace: true });
+
+    // Update local state
+    setLang(newLang);
+  };
+
+  const items = {
+    ar: { label: "AR", flag: saFlag },
+    en: { label: "EN", flag: enFlag },
+  };
+
+  return (
+    <div
+      onClick={toggleLang}
+      className="relative flex items-center justify-center w-10 h-16 overflow-hidden bg-white rounded-full shadow-lg cursor-pointer md:h-16 md:w-10"
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={lang}
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -20, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="absolute flex flex-col items-center"
+        >
+          <img
+            src={items[lang].flag}
+            alt={items[lang].label}
+            className="w-8 h-8 rounded-full"
+          />
+          <span className="text-[10px] font-bold text-blue-900 mt-1">
+            {items[lang].label}
+          </span>
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 };
 

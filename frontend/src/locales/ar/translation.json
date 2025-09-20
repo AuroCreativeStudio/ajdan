@@ -14,5 +14,16 @@
   "submit": "إرسال",
   "download_brochure": "تحميل الكتيب",
   "bayfront_heading": "بايفرونت",
-  "bayfront_subheading": "حيث تلتقي بالشاطئ"
+  "bayfront_subheading": "حيث تلتقي بالشاطئ",
+
+  "name_required": "الاسم مطلوب",
+  "email_required": "البريد الإلكتروني مطلوب",
+  "invalid_email": "يرجى إدخال بريد إلكتروني صالح",
+  "phone_required": "رقم الجوال مطلوب",
+  "invalid_phone": "يرجى إدخال رقم جوال صالح",
+  "selection_required": "يرجى اختيار سبب",
+  
+  "form_success": "شكرًا لتقديم استفسارك. سنقوم بالرد عليك قريبًا.",
+  "ok": "موافق"
+
 }

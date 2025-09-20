@@ -223,9 +223,9 @@ h1, h2, h3, h4, h5, h6 {
 /* in your global CSS */
 @media (min-width: 768px) and (max-width: 1023px) {
   main {
-    max-width: 90%;   /* or a fixed px value like 720px */
+    /* max-width: 90%;   
     margin-left: auto;
-    margin-right: auto;
+    margin-right: auto; */
   }
 }
  /* --------------------Landing page App.css code shifed here-------------------- */
@@ -392,9 +392,9 @@ main h2 { font-size: 20px; }
 }
 /* Below 380 screen  */
 @media (max-width: 380px) {
-  .margintop {
+  /* .margintop {
     margin-top: 40px !important;
-  }
+  } */
 }
 @media (max-width: 380px) {
   .raseenmargintop {
@@ -413,3 +413,40 @@ main h2 { font-size: 20px; }
 .gradient-border:hover {
   border-image-source: linear-gradient(to right, #BFA057, #A4763E);
 }
+
+
+/* Language toggle button */
+/* Add this to your global CSS */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .text-start {
+  text-align: right;
+}
+
+[dir="rtl"] .text-end {
+  text-align: left;
+}
+
+[dir="rtl"] .ml-auto {
+  margin-right: auto;
+  margin-left: 0;
+}
+
+[dir="rtl"] .mr-auto {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+[dir="rtl"] .ml-2 {
+  margin-right: 0.5rem;
+  margin-left: 0;
+}
+
+[dir="rtl"] .mr-2 {
+  margin-left: 0.5rem;
+  margin-right: 0;
+}
+
+/* Add more RTL overrides as needed */
