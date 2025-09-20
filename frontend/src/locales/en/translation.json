@@ -1,4 +1,18 @@
 {
-    "hello": "Ajdan Company seeks to bring about a qualitative transformation and create a cultural impact in the market, through projects."
-  }
-  
+  "hello": "Hello",
+  "loading": "Loading",
+  "register_interest": "Register Your Interest",
+  "full_name": "FULL NAME",
+  "email_address": "EMAIL ADDRESS",
+  "mobile_number": "MOBILE NUMBER",
+  "more_details": "I WOULD LIKE MORE DETAILS TO",
+  "book_space": "BOOK A SPACE",
+  "learn_more": "LEARN MORE ABOUT THE PROJECT",
+  "appointment": "MAKE OTHER APPOINTMENT WITH A SALES AGENT",
+  "other_reason": "OTHER REASON",
+  "write_message": "WRITE A MESSAGE",
+  "submit": "SUBMIT",
+  "download_brochure": "DOWNLOAD BROCHURE",
+  "bayfront_heading": "Bayfront",
+  "bayfront_subheading": "Where You Meet the Beach"
+}

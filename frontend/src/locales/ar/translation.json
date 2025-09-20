@@ -1,3 +1,18 @@
 {
-     "hello":"تسعى شركة اجدان لإحداث تحول نوعي وخلق تأثير ثقافي بالسوق، عبر مشاريع."
-  }
+  "hello": "تسعى شركة ...",
+ "loading": "جار التحميل",
+  "register_interest": "سجّل اهتمامك",
+  "full_name": "الاسم الكامل",
+  "email_address": "البريد الإلكتروني",
+  "mobile_number": "رقم الجوال",
+  "more_details": "أود الحصول على مزيد من التفاصيل",
+  "book_space": "حجز مساحة",
+  "learn_more": "معرفة المزيد عن المشروع",
+  "appointment": "تحديد موعد آخر مع مندوب المبيعات",
+  "other_reason": "سبب آخر",
+  "write_message": "اكتب رسالة",
+  "submit": "إرسال",
+  "download_brochure": "تحميل الكتيب",
+  "bayfront_heading": "بايفرونت",
+  "bayfront_subheading": "حيث تلتقي بالشاطئ"
+}
