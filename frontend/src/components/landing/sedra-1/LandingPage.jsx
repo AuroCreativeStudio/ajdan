@@ -1,61 +1,389 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import { getListingByIdentifier } from '../../../services/getListingByIdentifier';
 import ContactForm from '../PopupContactForm';
 import logo from "./images/raseennew.png";
-import mobile from "./images/raseenmobile.webp";
+import mobileBg from "./images/raseenmobile.webp";
 import darklogo from "./images/ajdan.png";
 import bg from "./images/raseen.webp";
 import wa from "./images/whatsapp.png";
 import ajdan from "./images/logoajdan.png";
 import { Menu, X } from "lucide-react";
-import slider1 from "./images/raseen11.webp";
-import slider2 from "./images/raseen2.webp";
-import slider3 from "./images/raseen3.webp";
-import slider4 from "./images/raseen4.webp";
 import toast from "react-hot-toast";
 import arrowleft from "./images/arrow-left.png";
 import arrowright from "./images/arrow-right.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaInstagram, FaXTwitter, FaTiktok, FaLinkedin } from "react-icons/fa6";
+import saFlag from "./images/togglear.png";
+import enFlag from "./images/toggleen.png";  
+import { getSocialLinks } from "../../../services/socialiconService";
 
+const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://localhost:1337";
+const STRAPI_TOKEN = import.meta.env.VITE_STRAPI_TOKEN || "";
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_RE = /^\d{7,15}$/;
 
-const Sedra1Page = () => {
-  const [data, setData] = useState(null);
-   const { t, i18n } = useTranslation();
-    const slides = [slider1, slider2, slider3, slider4];
-  const [current, setCurrent] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
-  const [phone, setPhone] = useState("");
-  const [selected, setSelected] = useState("");
-  const [selected1, setSelected1] = useState("");
+const compact = (obj) =>
+  Object.fromEntries(
+    Object.entries(obj).filter(
+      ([_, v]) => v !== undefined && v !== null && v !== ""
+    )
+  );
 
- 
-   useEffect(() => {
-  const loadData = async () => {
-    try {
-      const result = await getListingByIdentifier('darah-almadinah', i18n.language);
-      setData(result);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      toast.error("Failed to load data. Please try again later.");
+// LangToggle component (moved outside of AjdanBayfront)
+const LangToggle = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { i18n } = useTranslation();
+
+  // Get current language from URL or i18n
+  const match = location.pathname.match(/^\/(en|ar)(\/|$)/);
+  const [lang, setLang] = useState(match ? match[1] : i18n.language || "en");
+
+  // Sync with i18n language changes
+  useEffect(() => {
+    setLang(i18n.language);
+  }, [i18n.language]);
+
+  const toggleLang = () => {
+    const newLang = lang === "en" ? "ar" : "en";
+    const newDirection = newLang === "ar" ? "rtl" : "ltr";
+
+    // Update i18n
+    if (i18n && typeof i18n.changeLanguage === "function") {
+      i18n.changeLanguage(newLang);
     }
+
+    // Update document direction
+    document.documentElement.dir = newDirection;
+    document.documentElement.lang = newLang;
+
+    // Update URL routing
+    const newPath = location.pathname.replace(/^\/(en|ar)/, `/${newLang}`);
+    navigate(newPath + location.search, { replace: true });
+
+    // Update local state
+    setLang(newLang);
   };
 
-  loadData();
-}, [i18n.language]);
- 
-  //  const isArabic = i18n.language === 'ar';
- 
-  //  if (!data) return <p>{t('loading')}...</p>;
- 
-  //  // Helper function to get localized field
-  //  const getLocalized = (field) => {
-  //    return (isArabic && data[`${field}_ar`]) ? data[`${field}_ar`] : data[field];
-  //  };
+  const items = {
+    ar: { label: "AR", flag: saFlag },
+    en: { label: "EN", flag: enFlag },
+  };
 
-   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth <= 768); // or 480 for smaller phones
+  return (
+    <div
+      onClick={toggleLang}
+      className="relative flex items-center justify-center w-10 h-16 overflow-hidden bg-white rounded-full shadow-lg cursor-pointer md:h-16 md:w-10"
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={lang}
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -20, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="absolute flex flex-col items-center"
+        >
+          <img
+            src={items[lang].flag}
+            alt={items[lang].label}
+            className="w-8 h-8 rounded-full"
+          />
+          <span className="text-[10px] font-bold text-blue-900 mt-1">
+            {items[lang].label}
+          </span>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// Success Popup Component (moved outside of AjdanBayfront)
+const SuccessPopup = ({ open, onClose, title, body, okLabel = "OK" }) => {
+  const logoTile = ajdan; // Using the same ajdan image import
+
+  // close on Esc
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  const Backdrop = ({ onClose }) => (
+    <div
+      className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-[1px]"
+      onClick={onClose}
+      aria-hidden="true"
+    />
+  );
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <>
+          <Backdrop onClose={onClose} />
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            className="fixed z-[9999] inset-0 grid place-items-center px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 10, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.98, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 260, damping: 22 }}
+              className="w-full max-w-xs rounded-2xl shadow-2xl ring-1 ring-[#1aa0e0]/40 overflow-hidden"
+            >
+              <div className="bg-[#E9E5DD] p-6 text-center relative">
+                <div className="mx-auto mb-4 h-10 w-10 rounded-lg grid place-items-center bg-[#C1A580]">
+                  <img
+                    src={logoTile}
+                    alt=""
+                    className="object-contain w-5 h-5"
+                    draggable="false"
+                  />
+                </div>
+
+                <h3 className="sr-only">{title}</h3>
+                <p className="text-[13px] leading-5 font-commuter text-[#124A63]">
+                  {body}
+                </p>
+
+                <div className="mt-6">
+                  <button
+                    onClick={onClose}
+                    className="w-24 h-9 rounded-md text-white text-[12px] font-commuter
+                               bg-gradient-to-r from-[#A4763E] to-[#BFA057]
+                               hover:from-[#BFA057] hover:to-[#A4763E]
+                               transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  >
+                    {okLabel}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
+
+const Sedra1Page = () => {
+  const { t, i18n } = useTranslation();
+
+  const [data, setData] = useState(null);
+  // const slides = [slider1, slider2, slider3, slider4];
+  const slides = (data?.gallery_images || []).map(
+    (img) => `${STRAPI_URL}${img}`
+  );
+  const [current, setCurrent] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const [socialLinks, setSocialLinks] = useState({});
+  // SuccessPopup
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Build options from i18n so labels auto-translate
+  const MORE_DETAIL_OPTIONS = [
+    { code: "book_space", value: "Book a space", label: t("book_space") },
+    {
+      code: "learn_more",
+      value: "Learn more about the project",
+      label: t("learn_more"),
+    },
+    {
+      code: "appointment",
+      value: "Make an appointment with sales",
+      label: t("appointment"),
+    },
+    { code: "other", value: "Other reason", label: t("other_reason") },
+  ];
+
+  // track only the code in UI (stable)
+  const [moreDetailsCode, setMoreDetailsCode] = useState("");
+
+  // Form state
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    phone: "",
+    message: "",
+    title: "",
+  });
+  const [dialCode, setDialCode] = useState("+966");
+  const [errors, setErrors] = useState({});
+
+  // Validate form function
+  const validateForm = (formData, moreDetailsCode) => {
+    const errors = {};
+
+    // Name validation
+    if (!formData.username?.trim()) {
+      errors.username = t("name_required");
+    }
+
+    // Email validation
+    if (!formData.email?.trim()) {
+      errors.email = t("email_required");
+    } else if (!EMAIL_RE.test(formData.email)) {
+      errors.email = t("invalid_email");
+    }
+
+    // Phone validation
+    if (!formData.phone?.trim()) {
+      errors.phone = t("phone_required");
+    } else if (!PHONE_RE.test(formData.phone.replace(/\D/g, ""))) {
+      errors.phone = t("invalid_phone");
+    }
+
+    // Dropdown validation - make sure the key matches what you're checking in the JSX
+    if (!moreDetailsCode) {
+      errors.moreDetailsCode = t("selection_required"); // This key must match what you check in JSX
+    }
+
+    return errors;
+  };
+
+  // set title after fetch so it never flips undefined → string
+  const resolveTitle = (d, lang) => {
+    if (!d) return "";
+    return lang === "ar"
+      ? d.title_ar || d?.attributes?.title_ar || ""
+      : d.title || d?.attributes?.title || "";
+  };
+
+  const resolveDescription = (d, lang) => {
+    if (!d) return "";
+    return lang === "ar"
+      ? d.description_ar || d?.attributes?.description_ar || ""
+      : d.description || d?.attributes?.description || "";
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Validate form
+    const formErrors = validateForm(formData, moreDetailsCode);
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+      return;
+    }
+
+    setErrors({});
+    setSubmitting(true);
+
+    // map the selected code to readable text
+    const selected = MORE_DETAIL_OPTIONS.find(
+      (o) => o.code === moreDetailsCode
+    );
+    const moreDetailsText = selected?.value || "";
+
+    const rawPayload = {
+      username: formData.username ?? "",
+      email: formData.email ?? "",
+      phone: `${dialCode ?? "+966"}${(formData.phone ?? "").replace(
+        /^0+/,
+        ""
+      )}`,
+      message: formData.message ?? "",
+      title: formData.title ?? (data?.title || "Raseen"),
+      more_details: moreDetailsText,
+    };
+    const payload = compact(rawPayload);
+
+    const headers = { "Content-Type": "application/json" };
+    if (STRAPI_TOKEN) headers.Authorization = `Bearer ${STRAPI_TOKEN}`;
+
+    try {
+      const res = await fetch(`${STRAPI_URL}/api/project-contact-forms`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ data: payload }),
+      });
+
+      const raw = await res.text();
+      let body;
+      try {
+        body = JSON.parse(raw);
+      } catch {
+        body = raw;
+      }
+
+      if (!res.ok) {
+        const msg =
+          body?.error?.message ||
+          body?.error?.details?.errors?.map((e) => e.message).join(", ") ||
+          (res.status === 401
+            ? "Unauthorized: add a Bearer token or enable Public → Create in Strapi."
+            : "Submission failed");
+        throw new Error(msg);
+      }
+
+      // success → open popup
+      setShowSuccess(true);
+
+      // reset fields (keep resolved title)
+      setFormData((prev) => ({
+        ...prev,
+        username: "",
+        email: "",
+        phone: "",
+        message: "",
+        title: formData.title || resolveTitle(data, i18n.language) || "",
+      }));
+      setMoreDetailsCode("");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  useEffect(() => {
+    getSocialLinks(i18n.language).then(setSocialLinks);
+  }, [i18n.language]);
+
+  useEffect(() => {
+    if (data) {
+      setFormData((prev) => ({
+        ...prev,
+        title: resolveTitle(data, i18n.language),
+      }));
+    }
+  }, [data, i18n.language]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const result = await getListingByIdentifier("sedra-1", i18n.language);
+        setData(result);
+        console.log(result);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    loadData();
+  }, [i18n.language]);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
@@ -67,201 +395,148 @@ const Sedra1Page = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, [slides.length]);
+
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    toast.success("Form submitted successfully!");
-  };
+  useEffect(() => {
+    getSocialLinks()
+      .then((data) => {
+        setSocialLinks(data); // should already be { instagram, twitter, tiktok, linkedin }
+        console.log(data);
+      })
+      .catch((err) => console.error("Error fetching social links:", err));
+  }, []);
+
+  if (!data) return <p>{t("loading")}...</p>;
 
   const textVariants = {
-    hiddenTop: { y: -80, opacity: 0 }, // from top
+    hiddenTop: { y: -80, opacity: 0 },
     showTop: { y: 0, opacity: 1 },
-
-    hiddenBottom: { y: 50, opacity: 0 }, // from bottom
+    hiddenBottom: { y: 50, opacity: 0 },
     showBottom: { y: 0, opacity: 1 },
   };
-  const icons = [
-    {
-      icon: FaInstagram,
-      alt: "Instagram",
-      link: "https://www.instagram.com/Ajdan_sa/",
-    },
-    { icon: FaXTwitter, alt: "X Twitter", link: "https://x.com/Ajdan" },
-    { icon: FaTiktok, alt: "TikTok", link: "https://www.tiktok.com/" },
-    {
-      icon: FaLinkedin,
-      alt: "LinkedIn",
-      link: "https://www.linkedin.com/company/ajdan/",
-    },
-  ];
 
-    return (
-        <>
-            <motion.div className="relative flex items-center justify-center w-full min-h-screen overflow-hidden hero">
-        {/* Background Image with Zoom */}
+  return (
+    <>
+      <motion.div className="relative flex items-center justify-center w-full min-h-screen overflow-hidden hero">
         {/* Desktop Background */}
         <motion.img
-          src={bg} // desktop image
+          src={bg}
           alt="Background"
           initial={{ scale: 1.1, opacity: 1 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 22, ease: "easeOut" }}
           className="absolute inset-0 hidden object-cover object-center w-full h-full sm:block"
+          style={{
+            transform: i18n.language === "ar" ? "scaleX(-1)" : "scaleX(1)",
+          }}
         />
 
         {/* Mobile Background */}
         <motion.img
-          src={mobile} // mobile image
+          src={mobileBg}
           alt="Background Mobile"
           initial={{ scale: 1.1, opacity: 1 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 22, ease: "easeOut" }}
-          className="absolute inset-0 object-cover object-center object-left w-full h-full sm:hidden"
+          className="sm:hidden absolute inset-0 w-full h-[100vh] object-left object-center object-cover"
         />
 
-        {/* Mobile background */}
-        <div
-          className="absolute inset-0 md:hidden"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(46,42,36,0.5) 0%, rgba(137,130,116,0.3) 100%, rgba(228,217,196,0.4) 30%)",
-          }}
-        />
-
-        {/* Desktop background */}
         <div
           className="absolute inset-0 hidden md:block"
           style={{
             background:
-              "linear-gradient(180deg, rgba(47,43,37,0.8) 0%, rgba(138,130,117,0.4) 57%, rgba(230,217,196,0) 84%)",
+              "linear-gradient(180.09deg, rgba(18,74,99,0.6) 10%, rgba(60,113,119,0) 80%)",
           }}
         />
 
-        {/* Top Bar */}
         <motion.header
-          initial={{ y: -50, opacity: 0 }} // Start slightly above and invisible
-          animate={{ y: 0, opacity: 1 }} // Move to original position and fully visible
-          transition={{ duration: 1, ease: "easeOut" }} // Smooth fade-in
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 1, ease: "easeOut" }}
           className="absolute left-0 right-0 z-50 flex items-center justify-between px-4 top-3 sm:top-6 sm:left-4 sm:right-4"
         >
           {/* Left Logo */}
           <img
             src={logo}
             alt="Bayfront Logo"
-            className="object-contain w-32 md:w-44"
+            className="object-contain w-20 md:w-32"
           />
 
-         <div className="flex items-center gap-0 ml-auto md:gap-0">
-          {/* Mobile: Fixed Download Button */}
-            <a
-              href="/Raseen-Sedra.pdf"
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              className="z-50 flex items-center left-4 sm:hidden"
-            >
-              <button
-              style={{
-                  lineHeight: "1",
-                  paddingTop: 0,
-                  paddingBottom: 0,
-                  height: 28,
-                }}
-                className="relative px-3 sm:px-4 text-[9px] sm:text-[9px]
-            font-regular font-aeoniknormal
-           text-white rounded-sm shadow border-[1.5px]
-           border-[#707a64] bg-transparent hover:from-[#515846] 
-           hover:to-[#707a64]"
+          {/* Right Side: Download + Ajdan Logo */}
+          {/* Download + Ajdan Logo */}
+          <div
+            className={`flex items-center gap-2 md:gap-6 ${
+              i18n.language === "ar" ? "justify-start" : "justify-end"
+            }`}
+          >
+            {/* Brochure download buttons */}
+            {data?.pdf_upload?.length > 0 &&
+              data.pdf_upload.map((fileUrl, idx) => (
+                <a
+                  key={idx}
+                  href={`${STRAPI_URL}${fileUrl}`}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <button
+                    style={{
+                      lineHeight: "1",
+                      paddingTop: 0,
+                      paddingBottom: 0,
+                      height: 28,
+                    }}
+                    className="relative px-3 sm:px-4 text-[9px] sm:text-[12px]
+                     font-regular font-commuter text-white shadow
+                     border-[1.5px] border-[#C1A580] rounded-sm bg-transparent"
+                  >
+                    {i18n.language === "ar"
+                      ? `تنزيل الكتيب${
+                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
+                        }`
+                      : `Download Brochure${
+                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
+                        }`}
+                  </button>
+                </a>
+              ))}
+
+            {/* Ajdan Logo */}
+            <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580] md:bg-none">
+              <a
+                href="https://ajdan.com/"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                DOWNLOAD BROCHURE
-              </button>
-            </a>
-
-            {/* Mobile: Small Ajdan Logo */}
-                       <div className="sm:hidden ml-2 h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580]">
-                         <a
-                           href="https://ajdan.com/"
-                           target="_blank"
-                           rel="noopener noreferrer"
-                         >
-                           <img
-                             src={ajdan}
-                             alt="Logo"
-                             className="object-contain w-auto h-4"
-                           />
-                         </a>
-                       </div>
-
-          {/* Mobile Ajdan logo (replaces burger menu) */}
-       <div className="items-center hidden gap-2 sm:flex md:gap-6">
-                     <a
-                       href="/Raseen-Sedra.pdf"
-                       download
-                       target="_blank"
-                       rel="noopener noreferrer"
-                     >
-                       <button
-                         style={{
-                           lineHeight: "1",
-                           paddingTop: 0,
-                           paddingBottom: 0,
-                           height: 28,
-                         }}
-                         className="
-                 relative  px-3 sm:px-4 text-[12px] text-xs sm:text-[12px]
-                 font-regular font-aeoniknormal
-                 text-white shadow
-                 border-[1.5px] border-[#707a64] rounded-sm
-               
-                 bg-transparent
-               
-               "
-                       >
-                         DOWNLOAD BROCHURE
-                       </button>
-                     </a>
-       
-                     <a
-                       href="https://ajdan.com/"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                     >
-                       <img src={ajdan} alt="Logo" className="h-7 sm:h-7" />
-                     </a>
-                   </div>
-                 </div>
+                <img
+                  src={ajdan}
+                  alt="Logo"
+                  className="object-contain w-auto h-4 sm:h-6"
+                />
+              </a>
+            </div>
+          </div>
         </motion.header>
-        <main
-          className="w-full sm:w-[100%] md:w-[100%] lg:w-[100%] max-w-6xl mx-auto px-4 min-h-[500px] 
-                    flex flex-col justify-center md:grid md:grid-cols-2 items-center text-white relative z-10 gap-8 md:gap-12 lg:gap-16 raseenmargintop"
-        >
+
+        <main className="w-full sm:w-[100%] md:w-[100%] lg:w-[100%] max-w-6xl mx-auto px-4 min-h-screen flex flex-col justify-center md:grid md:grid-cols-2 items-center text-white relative margintop">
           {/* Left Content */}
           <div className="text-center md:pr-6 md:px-4 lg:px-12 md:text-left">
-            {/* Heading - from top */}
             <motion.h1
               initial="hiddenTop"
               animate="showTop"
-              transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }} // starts after 0.5s
+              transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
               variants={textVariants}
-              className="text-white font-apollo font-regular"
+              className="leading-none text-white font-chapaza font-regular"
             >
-              {/* First line: bigger on mobile, line-height changes per breakpoint */}
-              <span className="bayfront-heading uppercase block text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px]"
-              style={{
-  textBoxTrim: 'trim-both', 
-}}>
-                raseen
+              <span className="bayfront-heading uppercase block md:text-start text-center text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px]">
+                {data?.project_headline}
               </span>
 
-              {/* Second line: slightly smaller with responsive line-height */}
-             <span className="bayfront-subheading block whitespace-nowrap text-[24px] pt-2 md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 md:mt-0"
-                      style={{
-  textBoxTrim: 'trim-both', 
-}}>
-                Where Living Finds Horizon
+              <span className="bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm">
+                {data?.project_description}
               </span>
             </motion.h1>
 
@@ -269,183 +544,236 @@ const Sedra1Page = () => {
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-              className="hidden my-6 origin-left border-t md:block border-white/80"
+              className={`hidden my-6 border-t md:block border-white/80 ${
+                i18n.language === "ar" ? "origin-right" : "origin-left" // Right for Arabic, left for English
+              }`}
             />
-
-            {/* Subheading & Tagline - visible only on md+ screens (above form) */}
-            {/* <div className="hidden md:block">
-              <motion.h2
-                initial="hiddenBottom"
-                animate="showBottom"
-                transition={{ duration: 1.5, ease: "easeOut", delay: 1.0 }}
-                variants={textVariants}
-                className="max-w-lg 
-     ml-[-14px] mx-auto md:mx-0 text-[24px] sm:text-[32px] md:text-[20px] text-white font-apollo "
-              >
-                Where Life Flows
-              </motion.h2>
-            </div> */}
           </div>
 
           {/* Right Form Card */}
           <motion.div
-            initial={{ x: 150, opacity: 0 }}
+            initial={{ x: i18n.language === "ar" ? -150 : 150, opacity: 0 }} // Left for Arabic, right for English
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 80, opacity: 0 }}
+            exit={{ x: i18n.language === "ar" ? -80 : 80, opacity: 0 }} // Left for Arabic, right for English
             transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
-            className="w-full max-w-xl xs:w-[95%]  sm:p-8 md:p-4 lg:p-12 mx-6 sm:mx-8 md:mx-auto bg-no-repeat sm:mt-0"
+            className="w-full max-w-xl xs:w-[95%] sm:p-8 md:p-4 lg:p-12 mx-6 sm:mx-8 md:mx-auto bg-no-repeat sm:mt-0"
           >
             <h2
-              className="
-       mb-4
-       text-[10px]        /* mobile default */
-       xs:text-[10px]     /* extra small screens */
-       sm:text-[12px]     /* small screens */
-       md:text-sm         /* medium (14px) and up */
-       font-aeoniknormal font-regular
-    
-       text-start text-[#FFFFFF]
-       uppercase register
-     "
+              className={`mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm font-commuter font-regular text-[#FFFFFF] uppercase register ${
+                i18n.language === "ar" ? "text-start" : "text-start" // Right align for Arabic, left for English
+              }`}
             >
-              Register Your Interest
+              {t("register_interest")}
             </h2>
+
             <form
-              className="flex flex-col gap-2 font-aeoniknormal font-regular "
+              className="flex flex-col gap-2 font-commuter font-regular"
               onSubmit={handleSubmit}
+              noValidate
             >
-              {/* Full Name */}
               <input
-                type="text"
-                placeholder="FULL NAME"
-                className="w-full h-10 text-[10px] text-white
-       bg-[#2e2924] rounded-sm border border-[#ded6cb]
-       focus:border-[#ffffff] focus:outline-none
-       placeholder:text-[9px] placeholder-[#ded6cb] uppercase
-       pl-4 pr-2 py-3"
+                type="hidden"
+                name="title"
+                value={formData.title ?? ""}
+                readOnly
               />
+
+              {/* Full Name */}
+              <div>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username ?? ""}
+                  onChange={handleChange}
+                  placeholder={t("full_name")}
+                  className={`w-full h-10 text-[10px] text-white bg-[#124A63] rounded-sm border ${
+                    errors.username ? "border-red-500" : "border-[#AFD4E0]"
+                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#D7E0E2] uppercase px-4`}
+                  aria-invalid={!!errors.username}
+                  aria-describedby="err-username"
+                  required
+                />
+                {errors.username && (
+                  <p
+                    id="err-username"
+                    className="mt-1 text-[10px] leading-tight text-red-400"
+                  >
+                    {errors.username}
+                  </p>
+                )}
+              </div>
 
               {/* Email Address */}
-              <input
-                type="email"
-                placeholder="EMAIL ADDRESS"
-                className="w-full h-10 text-[10px] sm:text-[10px] text-white
-       bg-[#2e2924] rounded-sm border border-[#ded6cb]
-       focus:border-[#ffffff] focus:outline-none
-       placeholder:text-[9px] sm:placeholder:text-[10px] placeholder-[#ded6cb]
-       pl-4 pr-2 py-3"
-              />
+              <div>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email ?? ""}
+                  onChange={handleChange}
+                  placeholder={t("email_address")}
+                  className={`w-full h-10 text-[10px] text-white bg-[#124A63] rounded-sm border ${
+                    errors.email ? "border-red-500" : "border-[#AFD4E0]"
+                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#D7E0E2] px-4
+       font-chapaza [&::placeholder]:font-commuter`}
+                  aria-invalid={!!errors.email}
+                  aria-describedby="err-email"
+                  required
+                />
+                {errors.email && (
+                  <p
+                    id="err-email"
+                    className="mt-1 text-[10px] leading-tight text-red-400"
+                  >
+                    {errors.email}
+                  </p>
+                )}
+              </div>
 
               {/* Phone */}
-              <div className="flex w-full gap-2 phone-stack">
-                <select
-                value={selected1}
-                onChange={(e) => setSelected1(e.target.value)}
-                  className={`w-16 h-10 sm:w-20 text-[10px] sm:text-[10px] md:text-[10px]
-       text-[#ded6cb] rounded-sm bg-[#2e2924]
-       border border-[#ded6cb] focus:border-[#ffffff]
-       focus:outline-none appearance-none font-aeoniknormal
-       pl-4 py-2 sm:pl-3 sm:py-3 font-normal
-       min-h-[35px] sm:min-h-auto ${selected1 === "" ? "text-[#ded6cb]" : "text-white"}`}
+              <div>
+                <div className="flex w-full gap-2 phone-stack">
+                  <select
+                    value={dialCode ?? "+966"}
+                    onChange={(e) => setDialCode(e.target.value)}
+                    className={`w-20 h-10 text-[11px] text-[#D7E0E2] font-chapaza rounded-sm bg-[#124A63] border ${
+                      errors.phone ? "border-red-500" : "border-[#AFD4E0]"
+                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 font-normal ${
+                      !dialCode ? "text-[#D7E0E2]" : "text-white"
+                    }`}
+                  >
+                    <option value="+966">+966</option>
+                    <option value="+971">+971</option>
+                  </select>
+
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone ?? ""}
+                    onChange={(e) => {
+                      const numericValue = e.target.value.replace(/\D/g, "");
+                      setFormData((prev) => ({ ...prev, phone: numericValue }));
+                      setErrors((prev) => ({ ...prev, phone: "" }));
+                    }}
+                    placeholder={t("mobile_number")}
+                    className={`flex-1 h-10 text-[10px] text-white bg-[#124A63] rounded-sm border ${
+                      errors.phone ? "border-red-500" : "border-[#AFD4E0]"
+                    } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#D7E0E2]
+         font-chapaza [&::placeholder]:font-commuter`}
+                    aria-invalid={!!errors.phone}
+                    aria-describedby="err-phone"
+                    required
+                  />
+                </div>
+                {errors.phone && (
+                  <p
+                    id="err-phone"
+                    className="mt-1 text-[10px] leading-tight text-red-400"
+                  >
+                    {errors.phone}
+                  </p>
+                )}
+              </div>
+
+              {/* Reason */}
+              <div>
+                <div className="relative w-full">
+                  <select
+                    name="more_details_code"
+                    value={moreDetailsCode}
+                    onChange={(e) => {
+                      setMoreDetailsCode(e.target.value);
+                      setErrors((prev) => ({ ...prev, moreDetailsCode: "" }));
+                    }}
+                    className={`w-full h-10 text-[9px] sm:text-[9px] bg-[#124A63] rounded-sm border ${
+                      errors.moreDetailsCode
+                        ? "border-red-500"
+                        : "border-[#AFD4E0]"
+                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3 pl-4 pr-2 min-h-[35px] sm:min-h-auto ${
+                      moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"
+                    }`}
+                    aria-invalid={!!errors.moreDetailsCode}
+                    aria-describedby="err-reason"
+                    required
+                  >
+                    <option
+                      value=""
+                      disabled
+                      className="text-[9px] text-[#D7E0E2]"
+                    >
+                      {t("more_details")}
+                    </option>
+                    {MORE_DETAIL_OPTIONS.map((opt) => (
+                      <option
+                        key={opt.code}
+                        value={opt.code}
+                        className="text-[9px] text-white"
+                      >
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                  <span
+                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#D7E0E2] pointer-events-none ${
+                      i18n.language === "ar" ? "left-3" : "right-3" // Left for Arabic, right for English
+                    }`}
+                  >
+                    ▼
+                  </span>
+                </div>
+
+                {errors.moreDetailsCode && (
+                  <p
+                    id="err-reason"
+                    className="mt-1 text-[10px] leading-tight text-red-400"
+                  >
+                    {errors.moreDetailsCode}
+                  </p>
+                )}
+              </div>
+
+              {/* Message */}
+              <textarea
+                name="message"
+                value={formData.message ?? ""}
+                onChange={handleChange}
+                rows="4"
+                placeholder={t("write_message")}
+                className="w-full text-[10px] text-white bg-[#124A63] rounded-sm border border-[#AFD4E0] focus:border-[#ffffff] focus:outline-none px-4 py-3 resize-none placeholder:text-[10px] placeholder-[#D7E0E2]"
+              />
+
+              {/* Submit */}
+              <div className="p-[1px] rounded-sm bg-gradient-to-r from-[#a4763e] to-[#bba776] hover:bg-gradient-to-l transition-all duration-700 ease-in-out bg-clip-padding box-border">
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#A4763E] to-[#BFA057] hover:from-[#BFA057] hover:to-[#A4763E] text-[10px] md:text-[12px] transition-all duration-700 ease-in-out items-center justify-center uppercase
+    ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
-                   <option value="" disabled>
-    +966
-  </option>
-                  <option value="+966">+966</option>
-                  <option value="+971">+971</option>
-                </select>
-
-                <input
-                  type="tel"
-                  placeholder="MOBILE NUMBER"
-                  className="flex-1 h-10 text-[10px] sm:text-[10px] text-white
-         bg-[#2e2924] rounded-sm border border-[#ded6cb]
-         focus:border-[#ffffff] focus:outline-none
-         px-3 py-2 sm:px-4 sm:py-3 pl-4 pr-2 
-         placeholder:text-[9px] sm:placeholder:text-[10px] placeholder-[#ded6cb]
-         min-h-[35px] sm:min-h-auto"
-                />
+                  {submitting ? t("submitting") ?? "Submitting…" : t("submit")}
+                </button>
               </div>
-
-              {/* Select Reason */}
-              <div className="relative w-full">
-                <select
-  value={selected}
-  onChange={(e) => setSelected(e.target.value)}
-  className={`w-full h-10 text-[10px] sm:text-[10px]
-    bg-[#2e2924] rounded-sm border border-[#ded6cb]
-    focus:border-[#ffffff] focus:outline-none appearance-none
-    px-3 py-2 sm:px-4 sm:py-3 pl-4 pr-2 min-h-[35px] sm:min-h-auto
-    ${selected === "" ? "text-[#ded6cb]" : "text-white"}`}
->
-  <option value="" disabled className="text-[10px] text-[#ded6cb]">
-    I WOULD LIKE MORE DETAILS TO
-  </option>
-  <option value="location1" className="text-[10px] text-white">
-    RESERVE A VILLA
-  </option>
-  <option value="location2" className="text-[10px] text-white">
-    LEARN MORE ABOUT THE PROJECT
-  </option>
-  <option value="location3" className="text-[10px] text-white">
-    MAKE OTHER APPOINTMENT WITH A SALES AGENT
-  </option>
-  <option value="location4" className="text-[10px] text-white">
-    OTHER REASON
-  </option>
-</select>
-
-                <span className="absolute text-[12px]  -translate-y-1/2 pointer-events-none sm:text-[10px] text-[#ded6cb] right-3 top-1/2">
-                  ▼
-                </span>
-              </div>
-
-              {/* Submit Button */}
-
-              <button
-                type="submit"
-                className="w-full py-3 sm:py-2 font-regular text-white 
-                rounded-sm bg-gradient-to-r from-[#515846] to-[#707a64] 
-    hover:from-[#707a64] hover:to-[#515846] sm:text-[12px]
-    transition-all duration-700 ease-in-out text-[12px] font-aeoniknormal items-center justify-center"
-              >
-                SUBMIT
-              </button>
             </form>
-            {/* Buttons Row (under form) */}
-           <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
-               {/* Mobile / XS Button - FIXED: Always render motion.div but conditionally show content */}
-                            {/* <motion.div
-                              initial={{ opacity: 1, y: 0 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              className={isMobile ? "block" : "hidden"}
-                            >
-                              {isMobile && (
-                                <a
-                                  href="/Bayfront-Brochure.pdf"
-                                  download
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  <button
-                                    className="h-8 px-4 text-[10px] text-white 
-                          bg-gradient-to-r from-[#515846] to-[#707a64]
-                          rounded-sm shadow overflow-hidden font-aeoniknormal
-                          flex items-center justify-center whitespace-nowrap
-                          hover:from-[#707a64] hover:to-[#515846]"
-                                  >
-                                    DOWNLOAD BROCHURE
-                                  </button>
-                                </a>
-                              )}
-                            </motion.div> */}
+            <SuccessPopup
+              open={showSuccess}
+              onClose={() => setShowSuccess(false)}
+              // Use i18n keys if you have them; otherwise these fallbacks match your mock
+              body={
+                t("form_success") ||
+                (i18n.language === "ar"
+                  ? "سنقوم بالرد عليك قريبًا."
+                  : "We shall revert back to you shortly.")
+              }
+              okLabel={t("ok") || (i18n.language === "ar" ? "حسناً" : "OK")}
+            />
 
-              {/* WhatsApp Icon */}
+            {/* Buttons Row (under form) */}
+            <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
+              {/* WhatsApp Icon (hidden per your classes) */}
               <a
-                href="https://wa.me/XXXXXXXXXXX" // replace with your WhatsApp link
+                href="https://wa.me/XXXXXXXXXXX"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden sm:hidden transition hover:scale-110 ml-[1px]" // shift 1px right
+                className="hidden sm:hidden transition hover:scale-110 ml-[1px]"
               >
                 <img
                   src={wa}
@@ -455,109 +783,102 @@ const Sedra1Page = () => {
               </a>
             </div>
           </motion.div>
-          {/* Subheading & Tagline - visible only on sm/xs (below form) */}
-          <div className="block md:hidden text-start w-[94%] ml-0">
-            {/* <motion.h3
-              initial="hiddenBottom"
-              animate="showBottom"
-              transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-              variants={textVariants}
-              className="text-[20px] w-94 sm:text-[18px] md:text-[40px] lg:text-[52px] xl:text-[56px] text-white font-apollo  mb-4 bayfront-subheading"
-            >
-              Where Life Flows
-            </motion.h3> */}
 
-            {/* <motion.h3
-                 initial="hiddenBottom"
-                 animate="showBottom"
-                 transition={{ duration: 1, ease: "easeOut", delay: 0.6 }}
-                 variants={textVariants}
-                 className="mt-2 text-white text-[12px] sm:text-[13px] font-fontspring"
-               >
-                 EXCLUSIVE LIFESTYLE BY THE SHORE.
-               </motion.h3> */}
-          </div>
+          {/* Mobile-only subheading spacer */}
+          <div className="block md:hidden text-start w-[94%] ml-0" />
         </main>
 
-        {/* WhatsApp Floating Icon (bottom-right) */}
-        <a
-          href="https://wa.me/XXXXXXXXXXX" // replace with your WhatsApp link
-          target="_blank"
-          rel="noopener noreferrer"
-         className="fixed right-0 z-50 block p-2 transition sm:block sm:p-6 bottom-2 sm:bottom-6 sm:right-6 hover:scale-110"
+        <div
+          className={`fixed z-50 flex flex-col items-center gap-3 ${
+            i18n.language === "ar" ? "left-0 sm:left-6" : "right-0 sm:right-6"
+          } bottom-2 sm:bottom-6`}
         >
-          <img
-            src={wa}
-            alt="WhatsApp"
-           className="object-contain w-10 h-10 pt-3 mr-1 sm:w-12 sm:h-12 drop-shadow-lg"
-          />
-        </a>
+          <LangToggle />
+
+          <a
+            href="https://wa.me/XXXXXXXXXXX"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block p-2 transition hover:scale-110"
+          >
+            <img
+              src={wa}
+              alt="WhatsApp"
+              className="object-contain w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
+            />
+          </a>
+        </div>
       </motion.div>
+
+      {/* Slider */}
       <div className="relative w-full overflow-hidden h-72 md:h-screen">
-        {/* Desktop & larger screens (md+) */}
+        {!isMobile &&
+          slides.map((slide, index) => (
+            <motion.div
+              key={`${index}-${slide}`}
+              className={`absolute inset-0 transition-all duration-200 ${
+                index === current ? "z-10" : "z-0 pointer-events-none"
+              }`}
+              initial={{ opacity: 0, scale: 1 }}
+              animate={{
+                opacity: index === current && scrollY > 50 ? 1 : 0,
+                scale: index === current ? 1.05 : 1,
+              }}
+              exit={{ opacity: 0, scale: 1 }}
+              transition={{
+                opacity: { duration: 3, ease: "easeOut", delay: 0.2 },
+                scale: { duration: 6, ease: "linear" },
+              }}
+              drag={false}
+            >
+              <img
+                src={slide}
+                alt={`Slide ${index + 1}`}
+                className="object-cover w-full h-full"
+              />
+            </motion.div>
+          ))}
 
-        {!isMobile && (
-          <>
-            {slides.map((slide, index) => (
-              <motion.div
-                key={`${index}-${slide}`}
-                className={`absolute inset-0 transition-all duration-200 ${
-                  index === current ? "z-10" : "z-0 pointer-events-none"
-                }`}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }} // 👈 fade in when in view
-                viewport={{ once: true, amount: 0.2 }} // triggers when 20% is visible
-                transition={{ duration: 2, ease: "easeOut", delay: 0.3 }} // 👈 2 seconds fade in
-              >
-                <img
-                  src={slide}
-                  alt={`Slide ${index + 1}`}
-                  loading="lazy"
-                  className="object-cover w-full h-full"
-                />
-              </motion.div>
-            ))}
-          </>
-        )}
-
-        {/* Mobile & Tablet (sm/xs) */}
-        {isMobile && (
-          <>
-            {slides.map((slide, index) => (
-              <motion.div
-                key={`${index}-${slide}`}
-                className={`absolute inset-0 transition-all duration-200 ${
-                  index === current ? "z-10" : "z-0 pointer-events-none"
-                }`}
-                initial={{ opacity: 0, scale: 1 }}
-                whileInView={{ opacity: 1, scale: 1.05 }} // fade in + slight scale
-                viewport={{ once: true, amount: 0.2 }} // trigger when 20% visible
-                transition={{ duration: 2, ease: "easeOut", delay: 0.3 }}
-                drag={index === current ? "x" : false} // keep drag for current slide
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.2}
-                onDragEnd={(e, { offset, velocity }) => {
-                  if (index !== current) return;
-                  if (offset.x > 100 || velocity.x > 500) {
-                    setCurrent((prev) =>
-                      prev === 0 ? slides.length - 1 : prev - 1
-                    );
-                  } else if (offset.x < -100 || velocity.x < -500) {
-                    setCurrent((prev) =>
-                      prev === slides.length - 1 ? 0 : prev + 1
-                    );
-                  }
-                }}
-              >
-                <img
-                  src={slide}
-                  alt={`Slide ${index + 1}`}
-                  className="object-cover w-full h-full"
-                />
-              </motion.div>
-            ))}
-          </>
-        )}
+        {isMobile &&
+          slides.map((slide, index) => (
+            <motion.div
+              key={`${index}-${slide}`}
+              className={`absolute inset-0 transition-all duration-200 ${
+                index === current ? "z-10" : "z-0 pointer-events-none"
+              }`}
+              initial={{ opacity: 0, scale: 1 }}
+              animate={{
+                opacity: index === current && scrollY > 50 ? 1 : 0,
+                scale: index === current ? 1.05 : 1,
+              }}
+              exit={{ opacity: 0, scale: 1 }}
+              transition={{
+                opacity: { duration: 3, ease: "easeOut", delay: 0.2 },
+                scale: { duration: 6, ease: "linear" },
+              }}
+              drag={index === current ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(e, { offset, velocity }) => {
+                if (index !== current) return;
+                if (offset.x > 100 || velocity.x > 500) {
+                  setCurrent((prev) =>
+                    prev === 0 ? slides.length - 1 : prev - 1
+                  );
+                } else if (offset.x < -100 || velocity.x < -500) {
+                  setCurrent((prev) =>
+                    prev === slides.length - 1 ? 0 : prev + 1
+                  );
+                }
+              }}
+            >
+              <img
+                src={slide}
+                alt={`Slide ${index + 1}`}
+                className="object-cover w-full h-full"
+              />
+            </motion.div>
+          ))}
 
         {/* Dots */}
         <div className="absolute z-40 flex justify-center w-full gap-2 bottom-3 md:bottom-5">
@@ -597,36 +918,72 @@ const Sedra1Page = () => {
       </div>
 
       <footer className="w-full">
-        {/* Top Section */}
-        <div className="py-8 bg-[#ded6cb]">
+        <div className="py-8 bg-[#E9E5DD]">
           <div className="flex items-center justify-between w-full px-6 md:px-12">
-            {/* Social Icons - aligned left */}
+            {/* Social Icons */}
             <div className="flex justify-start gap-5 xs:gap-3">
-              {icons.map((iconData, index) => {
-                const IconComp = iconData.icon;
-                return (
-                  <motion.a
-                    key={iconData.alt}
-                    href={iconData.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    initial={{ opacity: 0, y: 0 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.3 }}
-                    transition={{
-                      delay: index * 0.3,
-                      duration: 1,
-                      ease: "easeOut",
-                    }}
-                    className="flex items-center justify-center w-6 h-6 bg-[#2e2924] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
-                  >
-                    <IconComp />
-                  </motion.a>
-                );
-              })}
+              {socialLinks.instagram && (
+                <motion.a
+                  href={socialLinks.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
+                >
+                  <FaInstagram />
+                </motion.a>
+              )}
+
+              {socialLinks.twitter && (
+                <motion.a
+                  href={socialLinks.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
+                >
+                  <FaXTwitter />
+                </motion.a>
+              )}
+
+              {socialLinks.tiktok && (
+                <motion.a
+                  href={socialLinks.tiktok}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
+                >
+                  <FaTiktok />
+                </motion.a>
+              )}
+
+              {socialLinks.linkedin && (
+                <motion.a
+                  href={socialLinks.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
+                >
+                  <FaLinkedin />
+                </motion.a>
+              )}
             </div>
 
-            {/* Logos - aligned right */}
+            {/* Logos */}
             <motion.div
               className="flex items-center gap-6 sm:gap-5 xs:gap-3"
               initial={{ opacity: 0, y: 20 }}
@@ -645,26 +1002,42 @@ const Sedra1Page = () => {
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="bg-[#2e2924] py-4">
+        <div className="bg-[#124A63] py-4">
           <div className="max-w-[1340px] mx-auto px-6 flex items-center justify-center">
-            <p className="text-[9px] text-center text-white font-aeoniknormal md:text-[10px]">
-              © COPYRIGHT{" "}
-              <a
-                href="https://ajdan.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline"
-              >
-                AJDAN
-              </a>{" "}
-              | ALL RIGHTS RESERVED.
-            </p>
+            {i18n.language === "ar" ? (
+              <p className="text-[9px] text-center text-white font-commuter md:text-[10px]">
+                © حقوق النشر{" "}
+                <a
+                  href="https://ajdan.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  أجدان
+                </a>{" "}
+                <span className="font-chapaza">|</span> جميع الحقوق محفوظة.
+              </p>
+            ) : (
+              <p className="text-[9px] text-center text-white font-commuter md:text-[10px]">
+                © COPYRIGHT{" "}
+                <a
+                  href="https://ajdan.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  AJDAN
+                </a>{" "}
+                <span className="font-chapaza">|</span> ALL RIGHTS RESERVED.
+              </p>
+            )}
           </div>
         </div>
       </footer>
-        </>
-    );
+    </>
+  );
 };
 
 export default Sedra1Page;
+
+

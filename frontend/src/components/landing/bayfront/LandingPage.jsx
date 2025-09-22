@@ -11,18 +11,12 @@ import wa from "./images/whatsapp.png";
 import arrowleft from "./images/arrow-left.png";
 import arrowright from "./images/arrow-right.png";
 import ajdan from "./images/logoajdan.png";
-import slider1 from "./images/sec3.webp";
-import slider2 from "./images/sec1.webp";
-import slider3 from "./images/v01.webp";
-import slider4 from "./images/v06.webp";
-
+import { getSocialLinks } from "../../../services/socialiconService";
 import { Menu, X } from "lucide-react";
 import { FaInstagram, FaXTwitter, FaTiktok, FaLinkedin } from "react-icons/fa6";
-
 import { AnimatePresence, motion } from "framer-motion";
-
-import saFlag from "./images/togglear.png"; // your Saudi flag (green circle)
-import enFlag from "./images/toggleen.png"; // your English flag (round image)
+import saFlag from "./images/togglear.png";
+import enFlag from "./images/toggleen.png";  
 
 const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://localhost:1337";
 const STRAPI_TOKEN = import.meta.env.VITE_STRAPI_TOKEN || "";
@@ -36,14 +30,162 @@ const compact = (obj) =>
     )
   );
 
+// LangToggle component (moved outside of AjdanBayfront)
+const LangToggle = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { i18n } = useTranslation();
+
+  // Get current language from URL or i18n
+  const match = location.pathname.match(/^\/(en|ar)(\/|$)/);
+  const [lang, setLang] = useState(match ? match[1] : i18n.language || "en");
+
+  // Sync with i18n language changes
+  useEffect(() => {
+    setLang(i18n.language);
+  }, [i18n.language]);
+
+  const toggleLang = () => {
+    const newLang = lang === "en" ? "ar" : "en";
+    const newDirection = newLang === "ar" ? "rtl" : "ltr";
+
+    // Update i18n
+    if (i18n && typeof i18n.changeLanguage === "function") {
+      i18n.changeLanguage(newLang);
+    }
+
+    // Update document direction
+    document.documentElement.dir = newDirection;
+    document.documentElement.lang = newLang;
+
+    // Update URL routing
+    const newPath = location.pathname.replace(/^\/(en|ar)/, `/${newLang}`);
+    navigate(newPath + location.search, { replace: true });
+
+    // Update local state
+    setLang(newLang);
+  };
+
+  const items = {
+    ar: { label: "AR", flag: saFlag },
+    en: { label: "EN", flag: enFlag },
+  };
+
+  return (
+    <div
+      onClick={toggleLang}
+      className="relative flex items-center justify-center w-10 h-16 overflow-hidden bg-white rounded-full shadow-lg cursor-pointer md:h-16 md:w-10"
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={lang}
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -20, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="absolute flex flex-col items-center"
+        >
+          <img
+            src={items[lang].flag}
+            alt={items[lang].label}
+            className="w-8 h-8 rounded-full"
+          />
+          <span className="text-[10px] font-bold text-blue-900 mt-1">
+            {items[lang].label}
+          </span>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// Success Popup Component (moved outside of AjdanBayfront)
+const SuccessPopup = ({ open, onClose, title, body, okLabel = "OK" }) => {
+  const logoTile = ajdan; // Using the same ajdan image import
+
+  // close on Esc
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  const Backdrop = ({ onClose }) => (
+    <div
+      className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-[1px]"
+      onClick={onClose}
+      aria-hidden="true"
+    />
+  );
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <>
+          <Backdrop onClose={onClose} />
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            className="fixed z-[9999] inset-0 grid place-items-center px-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 10, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.98, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 260, damping: 22 }}
+              className="w-full max-w-xs rounded-2xl shadow-2xl ring-1 ring-[#1aa0e0]/40 overflow-hidden"
+            >
+              <div className="bg-[#E9E5DD] p-6 text-center relative">
+                <div className="mx-auto mb-4 h-10 w-10 rounded-lg grid place-items-center bg-[#C1A580]">
+                  <img
+                    src={logoTile}
+                    alt=""
+                    className="object-contain w-5 h-5"
+                    draggable="false"
+                  />
+                </div>
+
+                <h3 className="sr-only">{title}</h3>
+                <p className="text-[13px] leading-5 font-commuter text-[#124A63]">
+                  {body}
+                </p>
+
+                <div className="mt-6">
+                  <button
+                    onClick={onClose}
+                    className="w-24 h-9 rounded-md text-white text-[12px] font-commuter
+                               bg-gradient-to-r from-[#A4763E] to-[#BFA057]
+                               hover:from-[#BFA057] hover:to-[#A4763E]
+                               transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-white/50"
+                  >
+                    {okLabel}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
+
 const AjdanBayfront = () => {
   const { t, i18n } = useTranslation();
 
   const [data, setData] = useState(null);
-  const slides = [slider1, slider2, slider3, slider4];
+  // const slides = [slider1, slider2, slider3, slider4];
+  const slides = (data?.gallery_images || []).map(
+    (img) => `${STRAPI_URL}${img}`
+  );
   const [current, setCurrent] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const [socialLinks, setSocialLinks] = useState({});
   // SuccessPopup
   const [showSuccess, setShowSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -112,9 +254,16 @@ const AjdanBayfront = () => {
   // set title after fetch so it never flips undefined → string
   const resolveTitle = (d, lang) => {
     if (!d) return "";
-    const ar = d.title_ar || d?.attributes?.title_ar;
-    const en = d.title || d?.attributes?.title;
-    return lang === "ar" ? ar || en || "" : en || ar || "";
+    return lang === "ar"
+      ? d.title_ar || d?.attributes?.title_ar || ""
+      : d.title || d?.attributes?.title || "";
+  };
+
+  const resolveDescription = (d, lang) => {
+    if (!d) return "";
+    return lang === "ar"
+      ? d.description_ar || d?.attributes?.description_ar || ""
+      : d.description || d?.attributes?.description || "";
   };
 
   const handleChange = (e) => {
@@ -200,6 +349,9 @@ const AjdanBayfront = () => {
       setSubmitting(false);
     }
   };
+  useEffect(() => {
+    getSocialLinks(i18n.language).then(setSocialLinks);
+  }, [i18n.language]);
 
   useEffect(() => {
     if (data) {
@@ -215,6 +367,7 @@ const AjdanBayfront = () => {
       try {
         const result = await getListingByIdentifier("bayfront", i18n.language);
         setData(result);
+        console.log(result);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -246,6 +399,15 @@ const AjdanBayfront = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
+  useEffect(() => {
+    getSocialLinks()
+      .then((data) => {
+        setSocialLinks(data); // should already be { instagram, twitter, tiktok, linkedin }
+        console.log(data);
+      })
+      .catch((err) => console.error("Error fetching social links:", err));
+  }, []);
+
   if (!data) return <p>{t("loading")}...</p>;
 
   const textVariants = {
@@ -254,21 +416,6 @@ const AjdanBayfront = () => {
     hiddenBottom: { y: 50, opacity: 0 },
     showBottom: { y: 0, opacity: 1 },
   };
-
-  const icons = [
-    {
-      icon: FaInstagram,
-      alt: "Instagram",
-      link: "https://www.instagram.com/Ajdan_sa/",
-    },
-    { icon: FaXTwitter, alt: "X Twitter", link: "https://x.com/Ajdan" },
-    { icon: FaTiktok, alt: "TikTok", link: "https://www.tiktok.com/" },
-    {
-      icon: FaLinkedin,
-      alt: "LinkedIn",
-      link: "https://www.linkedin.com/company/ajdan/",
-    },
-  ];
 
   return (
     <>
@@ -281,6 +428,9 @@ const AjdanBayfront = () => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 22, ease: "easeOut" }}
           className="absolute inset-0 hidden object-cover object-center w-full h-full sm:block"
+          style={{
+            transform: i18n.language === "ar" ? "scaleX(-1)" : "scaleX(1)",
+          }}
         />
 
         {/* Mobile Background */}
@@ -321,11 +471,12 @@ const AjdanBayfront = () => {
               i18n.language === "ar" ? "justify-start" : "justify-end"
             }`}
           >
-            {i18n.language === "ar" ? (
-              <>
-                {/* Download Button */}
+            {/* Brochure download buttons */}
+            {data?.pdf_upload?.length > 0 &&
+              data.pdf_upload.map((fileUrl, idx) => (
                 <a
-                  href="/Bayfront-Brochure.pdf"
+                  key={idx}
+                  href={`${STRAPI_URL}${fileUrl}`}
                   download
                   target="_blank"
                   rel="noopener noreferrer"
@@ -341,64 +492,31 @@ const AjdanBayfront = () => {
                      font-regular font-commuter text-white shadow
                      border-[1.5px] border-[#C1A580] rounded-sm bg-transparent"
                   >
-                    تنزيل الكتيب
+                    {i18n.language === "ar"
+                      ? `تنزيل الكتيب${
+                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
+                        }`
+                      : `Download Brochure${
+                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
+                        }`}
                   </button>
                 </a>
-                {/* Ajdan Logo first (Arabic) */}
-                <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580]">
-                  <a
-                    href="https://ajdan.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      src={ajdan}
-                      alt="Logo"
-                      className="object-contain w-auto h-4 sm:h-6"
-                    />
-                  </a>
-                </div>
-              </>
-            ) : (
-              <>
-                {/* Download Button first (English) */}
-                <a
-                  href="/Bayfront-Brochure.pdf"
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <button
-                    style={{
-                      lineHeight: "1",
-                      paddingTop: 0,
-                      paddingBottom: 0,
-                      height: 28,
-                    }}
-                    className="relative px-3 sm:px-4 text-[9px] sm:text-[12px]
-                     font-regular font-commuter text-white shadow
-                     border-[1.5px] border-[#C1A580] rounded-sm bg-transparent"
-                  >
-                    {t("download_brochure")}
-                  </button>
-                </a>
+              ))}
 
-                {/* Ajdan Logo */}
-                <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580]">
-                  <a
-                    href="https://ajdan.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      src={ajdan}
-                      alt="Logo"
-                      className="object-contain w-auto h-4 sm:h-6"
-                    />
-                  </a>
-                </div>
-              </>
-            )}
+            {/* Ajdan Logo */}
+            <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580] md:bg-none">
+              <a
+                href="https://ajdan.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src={ajdan}
+                  alt="Logo"
+                  className="object-contain w-auto h-4 sm:h-6"
+                />
+              </a>
+            </div>
           </div>
         </motion.header>
 
@@ -412,12 +530,12 @@ const AjdanBayfront = () => {
               variants={textVariants}
               className="leading-none text-white font-chapaza font-regular"
             >
-              <span className="bayfront-heading uppercase block md:text-start text-center text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px] ">
-                {t("bayfront_heading")}
+              <span className="bayfront-heading uppercase block md:text-start text-center text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px]">
+                {data?.project_headline}
               </span>
 
               <span className="bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm">
-                {t("bayfront_subheading")}
+                {data?.project_description}
               </span>
             </motion.h1>
 
@@ -669,28 +787,6 @@ const AjdanBayfront = () => {
           <div className="block md:hidden text-start w-[94%] ml-0" />
         </main>
 
-        {/* <div
-      onClick={toggleLang}
-      className="relative flex items-center justify-center h-24 overflow-hidden bg-white rounded-full shadow-lg cursor-pointer w-14"
-    >
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={lang}
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -40, opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="absolute flex flex-col items-center space-y-1"
-        >
-          <span className="font-bold text-blue-900">{items[lang].label}</span>
-          <img
-            src={items[lang].flag}
-            alt={items[lang].label}
-            className="w-10 h-10 rounded-full"
-          />
-        </motion.div>
-      </AnimatePresence>
-    </div> */}
         <div
           className={`fixed z-50 flex flex-col items-center gap-3 ${
             i18n.language === "ar" ? "left-0 sm:left-6" : "right-0 sm:right-6"
@@ -825,28 +921,65 @@ const AjdanBayfront = () => {
           <div className="flex items-center justify-between w-full px-6 md:px-12">
             {/* Social Icons */}
             <div className="flex justify-start gap-5 xs:gap-3">
-              {icons.map((iconData, index) => {
-                const IconComp = iconData.icon;
-                return (
-                  <motion.a
-                    key={iconData.alt}
-                    href={iconData.link}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    initial={{ opacity: 0, y: 0 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, amount: 0.3 }}
-                    transition={{
-                      delay: index * 0.3,
-                      duration: 1,
-                      ease: "easeOut",
-                    }}
-                    className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
-                  >
-                    <IconComp />
-                  </motion.a>
-                );
-              })}
+              {socialLinks.instagram && (
+                <motion.a
+                  href={socialLinks.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
+                >
+                  <FaInstagram />
+                </motion.a>
+              )}
+
+              {socialLinks.twitter && (
+                <motion.a
+                  href={socialLinks.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
+                >
+                  <FaXTwitter />
+                </motion.a>
+              )}
+
+              {socialLinks.tiktok && (
+                <motion.a
+                  href={socialLinks.tiktok}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
+                >
+                  <FaTiktok />
+                </motion.a>
+              )}
+
+              {socialLinks.linkedin && (
+                <motion.a
+                  href={socialLinks.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 1, ease: "easeOut" }}
+                  className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
+                >
+                  <FaLinkedin />
+                </motion.a>
+              )}
             </div>
 
             {/* Logos */}
@@ -875,165 +1008,37 @@ const AjdanBayfront = () => {
 
         <div className="bg-[#124A63] py-4">
           <div className="max-w-[1340px] mx-auto px-6 flex items-center justify-center">
-            <p className="text-[9px] text-center text-white font-commuter md:text-[10px]">
-              © COPYRIGHT{" "}
-              <a
-                href="https://ajdan.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline"
-              >
-                AJDAN
-              </a>{" "}
-              <span className="font-chapaza">|</span> ALL RIGHTS RESERVED.
-            </p>
+            {i18n.language === "ar" ? (
+              <p className="text-[9px] text-center text-white font-commuter md:text-[10px]">
+                © حقوق النشر{" "}
+                <a
+                  href="https://ajdan.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  أجدان
+                </a>{" "}
+                <span className="font-chapaza">|</span> جميع الحقوق محفوظة.
+              </p>
+            ) : (
+              <p className="text-[9px] text-center text-white font-commuter md:text-[10px]">
+                © COPYRIGHT{" "}
+                <a
+                  href="https://ajdan.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  AJDAN
+                </a>{" "}
+                <span className="font-chapaza">|</span> ALL RIGHTS RESERVED.
+              </p>
+            )}
           </div>
         </div>
       </footer>
     </>
-  );
-};
-
-// Success Popup Component (inside your main component file)
-const SuccessPopup = ({ open, onClose, title, body, okLabel = "OK" }) => {
-  const logoTile = ajdan; // Using the same ajdan image import
-
-  // close on Esc
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
-
-  const Backdrop = ({ onClose }) => (
-    <div
-      className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-[1px]"
-      onClick={onClose}
-      aria-hidden="true"
-    />
-  );
-
-  return (
-    <AnimatePresence>
-      {open && (
-        <>
-          <Backdrop onClose={onClose} />
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            className="fixed z-[9999] inset-0 grid place-items-center px-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 10, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.98, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 260, damping: 22 }}
-              className="w-full max-w-xs rounded-2xl shadow-2xl ring-1 ring-[#1aa0e0]/40 overflow-hidden"
-            >
-              <div className="bg-[#E9E5DD] p-6 text-center relative">
-                <div className="mx-auto mb-4 h-10 w-10 rounded-lg grid place-items-center bg-[#C1A580]">
-                  <img
-                    src={logoTile}
-                    alt=""
-                    className="object-contain w-5 h-5"
-                    draggable="false"
-                  />
-                </div>
-
-                <h3 className="sr-only">{title}</h3>
-                <p className="text-[13px] leading-5 font-commuter text-[#124A63]">
-                  {body}
-                </p>
-
-                <div className="mt-6">
-                  <button
-                    onClick={onClose}
-                    className="w-24 h-9 rounded-md text-white text-[12px] font-commuter
-                               bg-gradient-to-r from-[#A4763E] to-[#BFA057]
-                               hover:from-[#BFA057] hover:to-[#A4763E]
-                               transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-white/50"
-                  >
-                    {okLabel}
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
-  );
-};
-// LangToggle component (outside of AjdanBayfront)
-const LangToggle = () => {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const { i18n } = useTranslation();
-
-  // Get current language from URL or i18n
-  const match = location.pathname.match(/^\/(en|ar)(\/|$)/);
-  const [lang, setLang] = useState(match ? match[1] : i18n.language || "en");
-
-  // Sync with i18n language changes
-  useEffect(() => {
-    setLang(i18n.language);
-  }, [i18n.language]);
-
-  const toggleLang = () => {
-    const newLang = lang === "en" ? "ar" : "en";
-    const newDirection = newLang === "ar" ? "rtl" : "ltr";
-
-    // Update i18n
-    if (i18n && typeof i18n.changeLanguage === "function") {
-      i18n.changeLanguage(newLang);
-    }
-
-    // Update document direction
-    document.documentElement.dir = newDirection;
-    document.documentElement.lang = newLang;
-
-    // Update URL routing
-    const newPath = location.pathname.replace(/^\/(en|ar)/, `/${newLang}`);
-    navigate(newPath + location.search, { replace: true });
-
-    // Update local state
-    setLang(newLang);
-  };
-
-  const items = {
-    ar: { label: "AR", flag: saFlag },
-    en: { label: "EN", flag: enFlag },
-  };
-
-  return (
-    <div
-      onClick={toggleLang}
-      className="relative flex items-center justify-center w-10 h-16 overflow-hidden bg-white rounded-full shadow-lg cursor-pointer md:h-16 md:w-10"
-    >
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={lang}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -20, opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="absolute flex flex-col items-center"
-        >
-          <img
-            src={items[lang].flag}
-            alt={items[lang].label}
-            className="w-8 h-8 rounded-full"
-          />
-          <span className="text-[10px] font-bold text-blue-900 mt-1">
-            {items[lang].label}
-          </span>
-        </motion.div>
-      </AnimatePresence>
-    </div>
   );
 };
 

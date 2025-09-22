@@ -27,8 +27,24 @@ return (response.data.data || []).map(item => {
         property_type_ar: localizedItem.property_type_ar || item.property_type_ar || [],
         payment_plan_en: item.payment_plan_en || [],
         payment_plan_ar: localizedItem.payment_plan_ar || item.payment_plan_ar || [],
-        
-      };
+        project_headline: locale === 'ar' ? localizedItem.project_headline || item.project_headline :item.project_headline,    
+        project_description: locale === "ar"? localizedItem.project_description || item.project_description : item.project_description,
+        feature_image: item.feature_image?.url || null,
+        gallery_images: (item.gallery_images || []).map(img =>img.url),   
+       pdf_upload:
+  locale === "ar"
+    ? (localizedItem.pdf_upload && localizedItem.pdf_upload.length > 0
+        ? localizedItem.pdf_upload.map(file => file.url)
+        : (item.pdf_upload && item.pdf_upload.length > 0
+            ? item.pdf_upload.map(file => file.url)
+            : []))
+    : (item.pdf_upload && item.pdf_upload.length > 0
+        ? item.pdf_upload.map(file => file.url)
+        : []),
+
+       status_blog: !!item.status_blog
+  
+         };
     });
 
   } catch (error) {
