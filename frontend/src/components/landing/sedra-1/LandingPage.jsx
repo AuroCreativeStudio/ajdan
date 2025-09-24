@@ -140,7 +140,7 @@ const SuccessPopup = ({ open, onClose, title, body, okLabel = "OK" }) => {
               transition={{ type: "spring", stiffness: 260, damping: 22 }}
               className="w-full max-w-xs rounded-2xl shadow-2xl ring-1 ring-[#1aa0e0]/40 overflow-hidden"
             >
-              <div className="bg-[#E9E5DD] p-6 text-center relative">
+              <div className="bg-[#DED6CB] p-6 text-center relative">
                 <div className="mx-auto mb-4 h-10 w-10 rounded-lg grid place-items-center bg-[#C1A580]">
                   <img
                     src={logoTile}
@@ -151,16 +151,16 @@ const SuccessPopup = ({ open, onClose, title, body, okLabel = "OK" }) => {
                 </div>
 
                 <h3 className="sr-only">{title}</h3>
-                <p className="text-[13px] leading-5 font-commuter text-[#124A63]">
+                <p className="text-[13px] leading-5 font-aeoniknormal text-[#2E2924]">
                   {body}
                 </p>
 
                 <div className="mt-6">
                   <button
                     onClick={onClose}
-                    className="w-24 h-9 rounded-md text-white text-[12px] font-commuter
-                               bg-gradient-to-r from-[#A4763E] to-[#BFA057]
-                               hover:from-[#BFA057] hover:to-[#A4763E]
+                    className="w-24 h-9 rounded-md text-white text-[12px] font-aeoniknormal
+                               bg-gradient-to-r from-[#515846] to-[#707A64]
+                               hover:from-[#707A64] hover:to-[#515846]
                                transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-white/50"
                   >
                     {okLabel}
@@ -422,35 +422,46 @@ const Sedra1Page = () => {
     <>
       <motion.div className="relative flex items-center justify-center w-full min-h-screen overflow-hidden hero">
         {/* Desktop Background */}
-        <motion.img
-          src={bg}
-          alt="Background"
-          initial={{ scale: 1.1, opacity: 1 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 22, ease: "easeOut" }}
-          className="absolute inset-0 hidden object-cover object-center w-full h-full sm:block"
-          style={{
-            transform: i18n.language === "ar" ? "scaleX(-1)" : "scaleX(1)",
-          }}
-        />
+     {/* Desktop Background Image */}
+<motion.img
+  src={bg}
+  alt="Background"
+  initial={{ scale: 1.1, opacity: 1 }}
+  animate={{ scale: 1, opacity: 1 }}
+  transition={{ duration: 22, ease: "easeOut" }}
+  className="absolute inset-0 hidden sm:block w-full h-full object-cover object-center"
+  style={{
+    transform: i18n.language === "ar" ? "scaleX(-1)" : "scaleX(1)",
+  }}
+/>
 
-        {/* Mobile Background */}
-        <motion.img
-          src={mobileBg}
-          alt="Background Mobile"
-          initial={{ scale: 1.1, opacity: 1 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 22, ease: "easeOut" }}
-          className="sm:hidden absolute inset-0 w-full h-[100vh] object-left object-center object-cover"
-        />
+{/* Mobile Background Image */}
+<motion.img
+  src={mobileBg}
+  alt="Background Mobile"
+  initial={{ scale: 1.1, opacity: 1 }}
+  animate={{ scale: 1, opacity: 1 }}
+  transition={{ duration: 22, ease: "easeOut" }}
+  className="absolute inset-0 sm:hidden w-full h-[100vh] object-cover object-left"
+ />
 
-        <div
-          className="absolute inset-0 hidden md:block"
-          style={{
-            background:
-              "linear-gradient(180.09deg, rgba(18,74,99,0.6) 10%, rgba(60,113,119,0) 80%)",
-          }}
-        />
+{/* Mobile Gradient Overlay */}
+<div
+  className="absolute inset-0 sm:hidden"
+  style={{
+    background:
+      "linear-gradient(180deg, rgba(46,42,36,0.5) 0%, rgba(137,130,116,0.3) 100%, rgba(228,217,196,0.4) 30%)",
+  }}
+/>
+
+{/* Desktop Gradient Overlay */}
+<div
+  className="absolute inset-0 hidden sm:block"
+  style={{
+    background:
+      "linear-gradient(180deg, rgba(47,43,37,0.8) 0%, rgba(138,130,117,0.4) 57%, rgba(230,217,196,0) 84%)",
+  }}
+/>
 
         <motion.header
           initial={{ y: -50, opacity: 0 }}
@@ -462,10 +473,9 @@ const Sedra1Page = () => {
           <img
             src={logo}
             alt="Bayfront Logo"
-            className="object-contain w-20 md:w-32"
+            className="object-contain  w-32 md:w-44"
           />
 
-          {/* Right Side: Download + Ajdan Logo */}
           {/* Download + Ajdan Logo */}
           <div
             className={`flex items-center gap-2 md:gap-6 ${
@@ -482,25 +492,27 @@ const Sedra1Page = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <button
-                    style={{
-                      lineHeight: "1",
-                      paddingTop: 0,
-                      paddingBottom: 0,
-                      height: 28,
-                    }}
-                    className="relative px-3 sm:px-4 text-[9px] sm:text-[12px]
-                     font-regular font-commuter text-white shadow
-                     border-[1.5px] border-[#C1A580] rounded-sm bg-transparent"
-                  >
-                    {i18n.language === "ar"
-                      ? `تنزيل الكتيب${
-                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
-                        }`
-                      : `Download Brochure${
-                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
-                        }`}
-                  </button>
+                             <button
+  style={{
+    lineHeight: "1",
+    paddingTop: 0,
+    paddingBottom: 0,
+    height: 28,
+  }}
+  className={`relative px-3 sm:px-4
+    font-regular font-aeoniknormal text-white shadow
+    border-[1.5px] border-[#707A64] rounded-sm bg-transparent
+    ${
+      i18n.language === "ar"
+        ? "text-[11px] sm:text-[14px]"     // Arabic sizes
+        : "text-[9px]  sm:text-[12px]"    // English sizes
+    }
+  `}
+>
+  {i18n.language === "ar"
+    ? `تنزيل الكتيب${data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""}`
+    : `Download Brochure${data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""}`}
+</button>
                 </a>
               ))}
 
@@ -529,15 +541,26 @@ const Sedra1Page = () => {
               animate="showTop"
               transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
               variants={textVariants}
-              className="leading-none text-white font-chapaza font-regular"
+              className="leading-none text-white font-apollo font-regular"
             >
-              <span className="bayfront-heading uppercase block md:text-start text-center text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px]">
-                {data?.project_headline}
-              </span>
+                       <span
+  className={`bayfront-heading uppercase block md:text-start text-center
+    text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px]
+    ${i18n.language === "ar" ? "text-[34px] md:text-[28px] lg:text-[36px] xl:text-[40px]" : ""}
+  `}
+>
+  {data?.project_headline}
+</span>
 
-              <span className="bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm">
-                {data?.project_description}
-              </span>
+<span
+  className={`bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap
+    text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm
+    ${i18n.language === "ar" ? "text-[28px] md:text-[24px] lg:text-[32px] xl:text-[34px]" : ""}
+  `}
+>
+  {data?.project_description}
+</span>
+
             </motion.h1>
 
             <motion.div
@@ -559,15 +582,14 @@ const Sedra1Page = () => {
             className="w-full max-w-xl xs:w-[95%] sm:p-8 md:p-4 lg:p-12 mx-6 sm:mx-8 md:mx-auto bg-no-repeat sm:mt-0"
           >
             <h2
-              className={`mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm font-commuter font-regular text-[#FFFFFF] uppercase register ${
+              className={`mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm font-aeoniknormal font-regular text-[#FFFFFF] uppercase register ${
                 i18n.language === "ar" ? "text-start" : "text-start" // Right align for Arabic, left for English
               }`}
             >
               {t("register_interest")}
             </h2>
-
-            <form
-              className="flex flex-col gap-2 font-commuter font-regular"
+<form
+              className="flex flex-col gap-2 font-aeoniknormal font-regular"
               onSubmit={handleSubmit}
               noValidate
             >
@@ -586,9 +608,10 @@ const Sedra1Page = () => {
                   value={formData.username ?? ""}
                   onChange={handleChange}
                   placeholder={t("full_name")}
-                  className={`w-full h-10 text-[10px] text-white bg-[#124A63] rounded-sm border ${
-                    errors.username ? "border-red-500" : "border-[#AFD4E0]"
-                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#D7E0E2] uppercase px-4`}
+                  className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
+                    errors.username ? "border-red-500" : "border-[#DED6CB]"
+                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#DED6CB] uppercase px-4
+                   ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
                   aria-invalid={!!errors.username}
                   aria-describedby="err-username"
                   required
@@ -611,10 +634,11 @@ const Sedra1Page = () => {
                   value={formData.email ?? ""}
                   onChange={handleChange}
                   placeholder={t("email_address")}
-                  className={`w-full h-10 text-[10px] text-white bg-[#124A63] rounded-sm border ${
-                    errors.email ? "border-red-500" : "border-[#AFD4E0]"
-                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#D7E0E2] px-4
-       font-chapaza [&::placeholder]:font-commuter`}
+                  className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
+                    errors.email ? "border-red-500" : "border-[#DED6CB]"
+                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#DED6CB] px-4
+        [&::placeholder]:font-aeoniknormal
+         ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
                   aria-invalid={!!errors.email}
                   aria-describedby="err-email"
                   required
@@ -635,10 +659,10 @@ const Sedra1Page = () => {
                   <select
                     value={dialCode ?? "+966"}
                     onChange={(e) => setDialCode(e.target.value)}
-                    className={`w-20 h-10 text-[11px] text-[#D7E0E2] font-chapaza rounded-sm bg-[#124A63] border ${
-                      errors.phone ? "border-red-500" : "border-[#AFD4E0]"
+                    className={`w-20 h-11 text-[13px] text-[#DED6CB] font-aeoniknormal custom-select1 rounded-sm bg-[#2E2924] border ${
+                      errors.phone ? "border-red-500" : "border-[#DED6CB]"
                     } focus:border-[#ffffff] focus:outline-none appearance-none px-3 font-normal ${
-                      !dialCode ? "text-[#D7E0E2]" : "text-white"
+                      !dialCode ? "text-[#DED6CB]" : "text-white"
                     }`}
                   >
                     <option value="+966">+966</option>
@@ -655,10 +679,11 @@ const Sedra1Page = () => {
                       setErrors((prev) => ({ ...prev, phone: "" }));
                     }}
                     placeholder={t("mobile_number")}
-                    className={`flex-1 h-10 text-[10px] text-white bg-[#124A63] rounded-sm border ${
-                      errors.phone ? "border-red-500" : "border-[#AFD4E0]"
-                    } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#D7E0E2]
-         font-chapaza [&::placeholder]:font-commuter`}
+                    className={`flex-1 h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
+                      errors.phone ? "border-red-500" : "border-[#DED6CB]"
+                    } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#E6D9C4]
+          [&::placeholder]:font-aeoniknormal
+           ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
                     aria-invalid={!!errors.phone}
                     aria-describedby="err-phone"
                     required
@@ -677,43 +702,45 @@ const Sedra1Page = () => {
               {/* Reason */}
               <div>
                 <div className="relative w-full">
-                  <select
-                    name="more_details_code"
-                    value={moreDetailsCode}
-                    onChange={(e) => {
-                      setMoreDetailsCode(e.target.value);
-                      setErrors((prev) => ({ ...prev, moreDetailsCode: "" }));
-                    }}
-                    className={`w-full h-10 text-[9px] sm:text-[9px] bg-[#124A63] rounded-sm border ${
-                      errors.moreDetailsCode
-                        ? "border-red-500"
-                        : "border-[#AFD4E0]"
-                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3 pl-4 pr-2 min-h-[35px] sm:min-h-auto ${
-                      moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"
-                    }`}
-                    aria-invalid={!!errors.moreDetailsCode}
-                    aria-describedby="err-reason"
-                    required
-                  >
-                    <option
-                      value=""
-                      disabled
-                      className="text-[9px] text-[#D7E0E2]"
-                    >
-                      {t("more_details")}
-                    </option>
-                    {MORE_DETAIL_OPTIONS.map((opt) => (
-                      <option
-                        key={opt.code}
-                        value={opt.code}
-                        className="text-[9px] text-white"
-                      >
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
+                 <select
+  name="more_details_code"
+  value={moreDetailsCode}
+  onChange={(e) => {
+    setMoreDetailsCode(e.target.value);
+    setErrors((prev) => ({ ...prev, moreDetailsCode: "" }));
+  }}
+  className={`
+    w-full h-11 bg-[#2E2924] rounded-sm border custom-select1
+    ${errors.moreDetailsCode ? "border-red-500" : "border-[#DED6CB]"}
+    focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3
+    pl-4 pr-2 min-h-[35px] sm:min-h-auto
+    ${moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"}
+    ${i18n.language === "ar" ? "text-[14px]" : "text-[9px] md:text-[9px]"}
+  `}
+  aria-invalid={!!errors.moreDetailsCode}
+  aria-describedby="err-reason"
+  required
+>
+  <option
+    value=""
+    disabled
+    className={i18n.language === "ar" ? "text-[14px]" : "text-[9px] text-[#E6D9C4]"}
+  >
+    {t("more_details")}
+  </option>
+  {MORE_DETAIL_OPTIONS.map((opt) => (
+    <option
+      key={opt.code}
+      value={opt.code}
+      className={i18n.language === "ar" ? "text-[14px]" : "text-[9px] text-white"}
+    >
+      {opt.label}
+    </option>
+  ))}
+</select>
+
                   <span
-                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#D7E0E2] pointer-events-none ${
+                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#E6D9C4] pointer-events-none ${
                       i18n.language === "ar" ? "left-3" : "right-3" // Left for Arabic, right for English
                     }`}
                   >
@@ -732,21 +759,22 @@ const Sedra1Page = () => {
               </div>
 
               {/* Message */}
-              <textarea
+              {/* <textarea
                 name="message"
                 value={formData.message ?? ""}
                 onChange={handleChange}
                 rows="4"
                 placeholder={t("write_message")}
                 className="w-full text-[10px] text-white bg-[#124A63] rounded-sm border border-[#AFD4E0] focus:border-[#ffffff] focus:outline-none px-4 py-3 resize-none placeholder:text-[10px] placeholder-[#D7E0E2]"
-              />
+              /> */}
 
               {/* Submit */}
-              <div className="p-[1px] rounded-sm bg-gradient-to-r from-[#a4763e] to-[#bba776] hover:bg-gradient-to-l transition-all duration-700 ease-in-out bg-clip-padding box-border">
+              <div className="p-[1px] rounded-sm bg-gradient-to-r from-[#515846] to-[#707A64] hover:bg-gradient-to-l transition-all duration-700 ease-in-out bg-clip-padding box-border">
                 <button
                   type="submit"
                   disabled={submitting}
-                  className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#A4763E] to-[#BFA057] hover:from-[#BFA057] hover:to-[#A4763E] text-[10px] md:text-[12px] transition-all duration-700 ease-in-out items-center justify-center uppercase
+                  className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#515846] to-[#707A64] hover:from-[#707A64] hover:to-[#515846] text-[10px] md:text-[12px] transition-all duration-700 ease-in-out items-center justify-center uppercase
+    ${i18n.language === "ar" ? "text-[12px] md:text-[14px]" : ""}
     ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
                   {submitting ? t("submitting") ?? "Submitting…" : t("submit")}
@@ -918,7 +946,7 @@ const Sedra1Page = () => {
       </div>
 
       <footer className="w-full">
-        <div className="py-8 bg-[#E9E5DD]">
+        <div className="py-8 bg-[#DED6CB]">
           <div className="flex items-center justify-between w-full px-6 md:px-12">
             {/* Social Icons */}
             <div className="flex justify-start gap-5 xs:gap-3">
@@ -931,7 +959,7 @@ const Sedra1Page = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#2F2B25] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
                 >
                   <FaInstagram />
                 </motion.a>
@@ -946,7 +974,7 @@ const Sedra1Page = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#2F2B25] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
                 >
                   <FaXTwitter />
                 </motion.a>
@@ -961,7 +989,7 @@ const Sedra1Page = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#2F2B25] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
                 >
                   <FaTiktok />
                 </motion.a>
@@ -976,7 +1004,7 @@ const Sedra1Page = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#C1A580] text-white text-base rounded-sm hover:bg-[#A4763E] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#2F2B25] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
                 >
                   <FaLinkedin />
                 </motion.a>
@@ -1002,10 +1030,10 @@ const Sedra1Page = () => {
           </div>
         </div>
 
-        <div className="bg-[#124A63] py-4">
+        <div className="bg-[#2E2924] py-4">
           <div className="max-w-[1340px] mx-auto px-6 flex items-center justify-center">
             {i18n.language === "ar" ? (
-              <p className="text-[9px] text-center text-white font-commuter md:text-[10px]">
+              <p className="text-[9px] text-center text-white font-aeoniknormal md:text-[10px]">
                 © حقوق النشر{" "}
                 <a
                   href="https://ajdan.com/"
@@ -1015,10 +1043,10 @@ const Sedra1Page = () => {
                 >
                   أجدان
                 </a>{" "}
-                <span className="font-chapaza">|</span> جميع الحقوق محفوظة.
+                <span className="font-apollo">|</span> جميع الحقوق محفوظة.
               </p>
             ) : (
-              <p className="text-[9px] text-center text-white font-commuter md:text-[10px]">
+              <p className="text-[9px] text-center text-white font-aeoniknormal md:text-[10px]">
                 © COPYRIGHT{" "}
                 <a
                   href="https://ajdan.com/"
@@ -1028,7 +1056,7 @@ const Sedra1Page = () => {
                 >
                   AJDAN
                 </a>{" "}
-                <span className="font-chapaza">|</span> ALL RIGHTS RESERVED.
+                <span className="font-apollo">|</span> ALL RIGHTS RESERVED.
               </p>
             )}
           </div>

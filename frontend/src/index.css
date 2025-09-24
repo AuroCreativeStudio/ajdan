@@ -370,7 +370,7 @@ main h2 { font-size: 20px; }
 
 .custom-select2,
 .custom-select option {
-  font-size: 10px !important;
+
   color: #5D8595 !important;
 }
 /* Desktop media query */

@@ -16,7 +16,7 @@ import { Menu, X } from "lucide-react";
 import { FaInstagram, FaXTwitter, FaTiktok, FaLinkedin } from "react-icons/fa6";
 import { AnimatePresence, motion } from "framer-motion";
 import saFlag from "./images/togglear.png";
-import enFlag from "./images/toggleen.png";  
+import enFlag from "./images/toggleen.png";
 
 const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://localhost:1337";
 const STRAPI_TOKEN = import.meta.env.VITE_STRAPI_TOKEN || "";
@@ -488,9 +488,14 @@ const AjdanBayfront = () => {
                       paddingBottom: 0,
                       height: 28,
                     }}
-                    className="relative px-3 sm:px-4 text-[9px] sm:text-[12px]
-                     font-regular font-commuter text-white shadow
-                     border-[1.5px] border-[#C1A580] rounded-sm bg-transparent"
+                    className={`relative px-3 sm:px-4
+    text-[9px] sm:text-[12px]   /* default for English */
+    font-regular font-commuter text-white shadow
+    border-[1.5px] border-[#C1A580] rounded-sm bg-transparent
+    ${
+      i18n.language === "ar" ? "text-[11px] sm:text-[15px]" : ""
+    }  /* bump up for Arabic */
+  `}
                   >
                     {i18n.language === "ar"
                       ? `تنزيل الكتيب${
@@ -530,11 +535,29 @@ const AjdanBayfront = () => {
               variants={textVariants}
               className="leading-none text-white font-chapaza font-regular"
             >
-              <span className="bayfront-heading uppercase block md:text-start text-center text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px]">
+              <span
+                className={`bayfront-heading uppercase block md:text-start text-center
+    text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px]
+    ${
+      i18n.language === "ar"
+        ? "text-[34px] md:text-[28px] lg:text-[36px] xl:text-[40px]"
+        : ""
+    }
+  `}
+              >
                 {data?.project_headline}
               </span>
 
-              <span className="bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm">
+              <span
+                className={`bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap
+    text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm
+    ${
+      i18n.language === "ar"
+        ? "text-[28px] md:text-[24px] lg:text-[32px] xl:text-[34px]"
+        : ""
+    }
+  `}
+              >
                 {data?.project_description}
               </span>
             </motion.h1>
@@ -558,9 +581,10 @@ const AjdanBayfront = () => {
             className="w-full max-w-xl xs:w-[95%] sm:p-8 md:p-4 lg:p-12 mx-6 sm:mx-8 md:mx-auto bg-no-repeat sm:mt-0"
           >
             <h2
-              className={`mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm font-commuter font-regular text-[#FFFFFF] uppercase register ${
-                i18n.language === "ar" ? "text-start" : "text-start" // Right align for Arabic, left for English
-              }`}
+              className={`mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm
+    font-commuter font-regular text-[#FFFFFF] uppercase register text-start
+    ${i18n.language === "ar" ? "text-[12px] sm:text-[15px] md:text-base" : ""}
+  `}
             >
               {t("register_interest")}
             </h2>
@@ -585,13 +609,18 @@ const AjdanBayfront = () => {
                   value={formData.username ?? ""}
                   onChange={handleChange}
                   placeholder={t("full_name")}
-                  className={`w-full h-10 text-[10px] text-white bg-[#124A63] rounded-sm border ${
-                    errors.username ? "border-red-500" : "border-[#AFD4E0]"
-                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#D7E0E2] uppercase px-4`}
+                  className={`w-full h-11 text-[10px] text-white bg-[#124A63] rounded-sm border
+    ${errors.username ? "border-red-500" : "border-[#AFD4E0]"}
+    focus:border-[#ffffff] focus:outline-none
+    placeholder:text-[9px] placeholder-[#D7E0E2]
+    uppercase px-4
+    ${i18n.language === "ar" ? "text-[12px] placeholder:text-[14px]" : ""}
+  `}
                   aria-invalid={!!errors.username}
                   aria-describedby="err-username"
                   required
                 />
+
                 {errors.username && (
                   <p
                     id="err-username"
@@ -610,10 +639,11 @@ const AjdanBayfront = () => {
                   value={formData.email ?? ""}
                   onChange={handleChange}
                   placeholder={t("email_address")}
-                  className={`w-full h-10 text-[10px] text-white bg-[#124A63] rounded-sm border ${
+                  className={`w-full h-11 text-[10px] text-white bg-[#124A63] rounded-sm border ${
                     errors.email ? "border-red-500" : "border-[#AFD4E0]"
                   } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#D7E0E2] px-4
-       font-chapaza [&::placeholder]:font-commuter`}
+       font-chapaza [&::placeholder]:font-commuter
+        ${i18n.language === "ar" ? "text-[12px] placeholder:text-[14px]" : ""}`}
                   aria-invalid={!!errors.email}
                   aria-describedby="err-email"
                   required
@@ -634,11 +664,11 @@ const AjdanBayfront = () => {
                   <select
                     value={dialCode ?? "+966"}
                     onChange={(e) => setDialCode(e.target.value)}
-                    className={`w-20 h-10 text-[11px] text-[#D7E0E2] font-chapaza rounded-sm bg-[#124A63] border ${
+                    className={`w-20 h-11 text-[11px] text-[#D7E0E2] font-chapaza rounded-sm bg-[#124A63] border ${
                       errors.phone ? "border-red-500" : "border-[#AFD4E0]"
                     } focus:border-[#ffffff] focus:outline-none appearance-none px-3 font-normal ${
                       !dialCode ? "text-[#D7E0E2]" : "text-white"
-                    }`}
+                    } `}
                   >
                     <option value="+966">+966</option>
                     <option value="+971">+971</option>
@@ -654,10 +684,13 @@ const AjdanBayfront = () => {
                       setErrors((prev) => ({ ...prev, phone: "" }));
                     }}
                     placeholder={t("mobile_number")}
-                    className={`flex-1 h-10 text-[10px] text-white bg-[#124A63] rounded-sm border ${
+                    className={`flex-1 h-11 text-[10px] text-white bg-[#124A63] rounded-sm border ${
                       errors.phone ? "border-red-500" : "border-[#AFD4E0]"
                     } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#D7E0E2]
-         font-chapaza [&::placeholder]:font-commuter`}
+         font-chapaza [&::placeholder]:font-commuter
+         ${
+           i18n.language === "ar" ? "text-[12px] placeholder:text-[14px]" : ""
+         }`}
                     aria-invalid={!!errors.phone}
                     aria-describedby="err-phone"
                     required
@@ -683,13 +716,13 @@ const AjdanBayfront = () => {
                       setMoreDetailsCode(e.target.value);
                       setErrors((prev) => ({ ...prev, moreDetailsCode: "" }));
                     }}
-                    className={`w-full h-10 text-[9px] sm:text-[9px] bg-[#124A63] rounded-sm border ${
-                      errors.moreDetailsCode
-                        ? "border-red-500"
-                        : "border-[#AFD4E0]"
-                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3 pl-4 pr-2 min-h-[35px] sm:min-h-auto ${
-                      moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"
-                    }`}
+                    className={`w-full h-11 bg-[#124A63] rounded-sm border
+    ${errors.moreDetailsCode ? "border-red-500" : "border-[#AFD4E0]"}
+    focus:border-[#ffffff] focus:outline-none appearance-none
+    px-3 py-2 sm:px-4 sm:py-3 pl-4 pr-2 min-h-[35px]
+    ${moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"}
+    ${i18n.language === "ar" ? "text-[14px]" : "text-[9px]"}
+  `}
                     aria-invalid={!!errors.moreDetailsCode}
                     aria-describedby="err-reason"
                     required
@@ -697,20 +730,26 @@ const AjdanBayfront = () => {
                     <option
                       value=""
                       disabled
-                      className="text-[9px] text-[#D7E0E2]"
+                      className={`${
+                        i18n.language === "ar" ? "text-[14px]" : "text-[9px]"
+                      } text-[#D7E0E2]`}
                     >
                       {t("more_details")}
                     </option>
+
                     {MORE_DETAIL_OPTIONS.map((opt) => (
                       <option
                         key={opt.code}
                         value={opt.code}
-                        className="text-[9px] text-white"
+                        className={`${
+                          i18n.language === "ar" ? "text-[14px]" : "text-[9px]"
+                        } text-white`}
                       >
                         {opt.label}
                       </option>
                     ))}
                   </select>
+
                   <span
                     className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#D7E0E2] pointer-events-none ${
                       i18n.language === "ar" ? "left-3" : "right-3" // Left for Arabic, right for English
@@ -737,7 +776,11 @@ const AjdanBayfront = () => {
                 onChange={handleChange}
                 rows="4"
                 placeholder={t("write_message")}
-                className="w-full text-[10px] text-white bg-[#124A63] rounded-sm border border-[#AFD4E0] focus:border-[#ffffff] focus:outline-none px-4 py-3 resize-none placeholder:text-[10px] placeholder-[#D7E0E2]"
+                className={`w-full text-[10px] text-white bg-[#124A63] rounded-sm border border-[#AFD4E0]
+    focus:border-[#ffffff] focus:outline-none px-4 py-3 resize-none
+    placeholder:text-[10px] placeholder-[#D7E0E2]
+    ${i18n.language === "ar" ? "text-[12px] placeholder:text-[14px]" : ""}
+  `}
               />
 
               {/* Submit */}
@@ -745,7 +788,11 @@ const AjdanBayfront = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#A4763E] to-[#BFA057] hover:from-[#BFA057] hover:to-[#A4763E] text-[10px] md:text-[12px] transition-all duration-700 ease-in-out items-center justify-center uppercase
+                  className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#A4763E] to-[#BFA057] 
+                    hover:from-[#BFA057] hover:to-[#A4763E] text-[10px] md:text-[12px] transition-all
+                     duration-700 ease-in-out items-center justify-center uppercase
+ 
+    ${i18n.language === "ar" ? "text-[12px] md:text-[14px]" : ""}
     ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
                   {submitting ? t("submitting") ?? "Submitting…" : t("submit")}
