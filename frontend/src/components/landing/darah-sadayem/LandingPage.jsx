@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getListingByIdentifier } from "../../../services/getListingByIdentifier";
 
-import logo from "./images/makkah.png";
+import logo from "./images/sadhayam.png";
 import mobileBg from "./images/raseenmobile1.webp";
 import darklogo from "./images/ajdan.png";
 import bg from "./images/raseen.webp";
