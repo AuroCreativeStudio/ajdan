@@ -38,7 +38,7 @@ import RoleList from './cms/pages/RoleList';
 import RoleForm from './cms/pages/RoleForm';
 import RoleProtectedRoute from './cms/components/RoleProtectedRoute';
 
-import Ajdan2Page from './components/landing/ajdan-II/LandingPage';
+import Alramis from './components/landing/Alramis/LandingPage';
 import AjdanIsland from './components/landing/ajdan-island/LandingPage';
 import AjdanBayfront from './components/landing/bayfront/LandingPage';
 import Buhirat from './components/landing/buhirat/LandingPage';
@@ -46,7 +46,7 @@ import GrandSquare from './components/landing/grand-square/LandingPage';
 import KhobarPeirs from './components/landing/khobar-peirs/LandingPage';
 import Khuzam from './components/landing/khuzam/LandingPage';
 import Sedra1Page from './components/landing/sedra-1/LandingPage';
-import Sedra2Page from './components/landing/sedra-2/LandingPage';
+import Nabadh from './components/landing/Nabadh-Al-Kobar/LandingPage';
 import SbfPage from './components/landing/sbf/LandingPage';
 import Waterfront from './components/landing/waterfront/LandingPage';
 import Rejan from './components/landing/rejan/LandingPage';
@@ -54,7 +54,7 @@ import DarahAlfursan from './components/landing/darah-alfursan/LandingPage';
 import DarahAlmadinah from './components/landing/darah-almadinah/LandingPage';
 import DarahAlwajhah from './components/landing/darah-alwajhah/LandingPage';
 import DarahMakkah from './components/landing/darah-makkah/LandingPage';
-import DarahQomrah from './components/landing/darah-qomrah/LandingPage';
+import DarahAlfursan2 from './components/landing/darah-alfursan2/LandingPage';
 import DarahSadayem from './components/landing/darah-sadayem/LandingPage';
 import Infiniti from './components/landing/infiniti/LandingPage';
 
@@ -88,8 +88,8 @@ function LayoutWrapper({ children }) {
     location.pathname.startsWith('/rolelist') ||
     location.pathname.startsWith('/role-create') ||
     location.pathname.startsWith('/role-edit') ||
-    location.pathname.startsWith('/en/ajdanII')
-    || location.pathname.startsWith('/ar/ajdanII')
+    location.pathname.startsWith('/en/alramis')
+    || location.pathname.startsWith('/ar/alramis')
     || location.pathname.startsWith('/en/ajdan-island')
     || location.pathname.startsWith('/ar/ajdan-island')
     || location.pathname.startsWith('/en/bayfront')
@@ -104,8 +104,8 @@ function LayoutWrapper({ children }) {
     || location.pathname.startsWith('/ar/khuzam')
     || location.pathname.startsWith('/en/sedra-1')
     || location.pathname.startsWith('/ar/sedra-1')
-    || location.pathname.startsWith('/en/sedra-2')
-    || location.pathname.startsWith('/ar/sedra-2')
+    || location.pathname.startsWith('/en/nabadh-al-kobar')
+    || location.pathname.startsWith('/ar/nabadh-al-kobar')
     || location.pathname.startsWith('/en/sbf')
     || location.pathname.startsWith('/ar/sbf')
     || location.pathname.startsWith('/en/waterfront')
@@ -120,8 +120,8 @@ function LayoutWrapper({ children }) {
     || location.pathname.startsWith('/ar/darah-alwajhah')
     || location.pathname.startsWith('/en/darah-makkah')
     || location.pathname.startsWith('/ar/darah-makkah')
-    || location.pathname.startsWith('/en/darah-qomrah')
-    || location.pathname.startsWith('/ar/darah-qomrah')
+    || location.pathname.startsWith('/en/darah-alfursan2')
+    || location.pathname.startsWith('/ar/darah-alfursan2')
     || location.pathname.startsWith('/en/darah-sadayem')
     || location.pathname.startsWith('/ar/darah-sadayem')
     || location.pathname.startsWith('/en/infiniti')
@@ -167,7 +167,7 @@ function PublicRoutes() {
       <Route path="/aboutus" element={<Aboutus />} />
       <Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
 
-      <Route path="/ajdanII" element={<Ajdan2Page />} />
+      <Route path="/alramis" element={<Alramis />} />
       <Route path="/ajdan-island" element={<AjdanIsland />} />
       <Route path="/bayfront" element={<AjdanBayfront />} />
       <Route path="/buhirat" element={<Buhirat />} />
@@ -175,7 +175,7 @@ function PublicRoutes() {
       <Route path="/khobar-peirs" element={<KhobarPeirs />} />
       <Route path="/khuzam" element={<Khuzam />} />
       <Route path="/sedra-1" element={<Sedra1Page />} />
-      <Route path="/sedra-2" element={<Sedra2Page />} />
+      <Route path="/nabadh-al-kobar-2" element={<Nabadh />} />
       <Route path="/sbf" element={<SbfPage />} />
       <Route path="/waterfront" element={<Waterfront />} />
       <Route path="/rejan" element={<Rejan />} />
@@ -183,7 +183,7 @@ function PublicRoutes() {
       <Route path="/darah-almadinah" element={<DarahAlmadinah />} />
       <Route path="/darah-alwajhah" element={<DarahAlwajhah />} />
       <Route path="/darah-makkah" element={<DarahMakkah />} />
-      <Route path="/darah-qomrah" element={<DarahQomrah />} />
+      <Route path="/darah-alfursan2" element={<DarahAlfursan2 />} />
       <Route path="/darah-sadayem" element={<DarahSadayem />} />
       <Route path="/infiniti" element={<Infiniti />} />
       <Route path="*" element={<Navigate to={`/${lang}`} replace />} />

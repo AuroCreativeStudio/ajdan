@@ -193,7 +193,7 @@ const Khuzam = () => {
 
   // Build options from i18n so labels auto-translate
   const MORE_DETAIL_OPTIONS = [
-    { code: "book_space", value: "Book a space", label: t("book_space") },
+    { code: "reserve_villa", value: "Reserve a Villa", label: t("reserve_villa") },
     {
       code: "learn_more",
       value: "Learn more about the project",
@@ -450,7 +450,7 @@ const Khuzam = () => {
   className="absolute inset-0 sm:hidden"
   style={{
     background:
-      "linear-gradient(180deg, rgba(46,42,36,0.5) 0%, rgba(137,130,116,0.3) 100%, rgba(228,217,196,0.4) 30%)",
+      "linear-gradient(rgba(47, 43, 37, 0.6) 0%, rgba(138, 130, 117, 0.6) 57%, rgba(230, 217, 196, 0.3) 84%)",
   }}
 />
 
@@ -459,7 +459,7 @@ const Khuzam = () => {
   className="absolute inset-0 hidden sm:block"
   style={{
     background:
-      "linear-gradient(180deg, rgba(47,43,37,0.8) 0%, rgba(138,130,117,0.4) 57%, rgba(230,217,196,0) 84%)",
+      "linear-gradient(rgba(47, 43, 37, 0.3) 0%, rgba(138, 130, 117, 0.5) 57%, rgba(230, 217, 196, 0.2) 84%)",
   }}
 />
 
@@ -473,7 +473,7 @@ const Khuzam = () => {
           <img
             src={logo}
             alt="Bayfront Logo"
-            className="object-contain  w-32 md:w-44"
+            className="object-contain  w-44 md:w-52"
           />
 
           {/* Download + Ajdan Logo */}

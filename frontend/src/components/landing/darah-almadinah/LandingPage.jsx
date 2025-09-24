@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getListingByIdentifier } from "../../../services/getListingByIdentifier";
-import ContactForm from "../PopupContactForm";
 import logo from "./images/darahnew.png";
 import mobileBg from "./images/darahimgmobile.webp";
 import darklogo from "./images/ajdan.png";
@@ -197,7 +196,7 @@ const DarahAlmadinah = () => {
 
   // Build options from i18n so labels auto-translate
   const MORE_DETAIL_OPTIONS = [
-    { code: "book_space", value: "Book a space", label: t("book_space") },
+    { code: "reserve_villa", value: "Reserve a Villa", label: t("reserve_villa") },
     {
       code: "learn_more",
       value: "Learn more about the project",

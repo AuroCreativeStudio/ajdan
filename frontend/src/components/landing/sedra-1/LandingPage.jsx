@@ -193,7 +193,7 @@ const Sedra1Page = () => {
 
   // Build options from i18n so labels auto-translate
   const MORE_DETAIL_OPTIONS = [
-    { code: "book_space", value: "Book a space", label: t("book_space") },
+    { code: "reserve_villa", value: "Reserve a Villa", label: t("reserve_villa") },
     {
       code: "learn_more",
       value: "Learn more about the project",
