@@ -12,39 +12,53 @@ return (response.data.data || []).map(item => {
         {};
       
       return {
-        id: item.id,
-        documentId: item.documentId,
-        title: locale === 'ar' ? localizedItem.title?.Property_Title || item.title?.Property_Title : item.title?.Property_Title,
-        place: locale === 'ar' ? localizedItem.place || item.place : item.place,
-        building: locale === 'ar' ? localizedItem.building || item.building : item.building,
-        square_feet: locale === 'ar' ? localizedItem.square_feet || item.square_feet : item.square_feet,
-        description: locale === 'ar' ? localizedItem.description || item.description : item.description,
-        slug: locale === 'ar' ? localizedItem.slug || item.slug : item.slug,
-        image: item.image?.url || null,
-        amenities_en: item.amenities_en || [],
-        amenities_ar: localizedItem.amenities_ar || item.amenities_ar || [],
-        property_type_en: item.property_type_en || [],
-        property_type_ar: localizedItem.property_type_ar || item.property_type_ar || [],
-        payment_plan_en: item.payment_plan_en || [],
-        payment_plan_ar: localizedItem.payment_plan_ar || item.payment_plan_ar || [],
-        project_headline: locale === 'ar' ? localizedItem.project_headline || item.project_headline :item.project_headline,    
-        project_description: locale === "ar"? localizedItem.project_description || item.project_description : item.project_description,
-        feature_image: item.feature_image?.url || null,
-        gallery_images: (item.gallery_images || []).map(img =>img.url),   
-       pdf_upload:
-  locale === "ar"
-    ? (localizedItem.pdf_upload && localizedItem.pdf_upload.length > 0
-        ? localizedItem.pdf_upload.map(file => file.url)
-        : (item.pdf_upload && item.pdf_upload.length > 0
-            ? item.pdf_upload.map(file => file.url)
-            : []))
-    : (item.pdf_upload && item.pdf_upload.length > 0
-        ? item.pdf_upload.map(file => file.url)
-        : []),
+  id: item.id,
+  documentId: item.documentId,
 
-       status_blog: !!item.status_blog
-  
-         };
+  // localized text fields
+  title: locale === 'ar'
+    ? localizedItem.title?.Property_Title || item.title?.Property_Title
+    : item.title?.Property_Title,
+  place: locale === 'ar' ? localizedItem.place || item.place : item.place,
+  building: locale === 'ar' ? localizedItem.building || item.building : item.building,
+  square_feet: locale === 'ar' ? localizedItem.square_feet || item.square_feet : item.square_feet,
+  description: locale === 'ar' ? localizedItem.description || item.description : item.description,
+  slug: locale === 'ar' ? localizedItem.slug || item.slug : item.slug,
+  project_headline: locale === 'ar'
+    ? localizedItem.project_headline || item.project_headline
+    : item.project_headline,
+  project_description: locale === 'ar'
+    ? localizedItem.project_description || item.project_description
+    : item.project_description,
+
+  // ✅ always from main entry (no localization)
+  image: item.image?.url || null,
+  feature_image: item.feature_image?.url || null,
+  gallery_images: (item.gallery_images || []).map(img => img.url),
+
+  // localized lists
+  amenities_en: item.amenities_en || [],
+  amenities_ar: localizedItem.amenities_ar || item.amenities_ar || [],
+  property_type_en: item.property_type_en || [],
+  property_type_ar: localizedItem.property_type_ar || item.property_type_ar || [],
+  payment_plan_en: item.payment_plan_en || [],
+  payment_plan_ar: localizedItem.payment_plan_ar || item.payment_plan_ar || [],
+
+  // pdf_upload can be localized
+  pdf_upload:
+    locale === "ar"
+      ? (localizedItem.pdf_upload && localizedItem.pdf_upload.length > 0
+          ? localizedItem.pdf_upload.map(file => file.url)
+          : (item.pdf_upload && item.pdf_upload.length > 0
+              ? item.pdf_upload.map(file => file.url)
+              : []))
+      : (item.pdf_upload && item.pdf_upload.length > 0
+          ? item.pdf_upload.map(file => file.url)
+          : []),
+
+  status_blog: !!item.status_blog,
+};
+
     });
 
   } catch (error) {
