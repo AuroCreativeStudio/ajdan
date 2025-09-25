@@ -5,18 +5,18 @@ import { getListingByIdentifier } from '../../../services/getListingByIdentifier
 import ContactForm from '../PopupContactForm';
 import logo from "./images/khuzam.png";
 import mobileBg from "./images/raseenmobile.webp";
-import darklogo from "./images/ajdan.png";
 import bg from "./images/raseen.webp";
-import wa from "./images/whatsapp.png";
-import ajdan from "./images/logoajdan.png";
+import darklogo from "../../../assets/landing images/ajdan.png";
+import wa from "../../../assets/landing images/whatsapp.png";
+import arrowleft from "../../../assets/landing images/arrow-left.png";
+import arrowright from "../../../assets/landing images/arrow-right.png";
+import saFlag from "../../../assets/landing images/togglear.png";
+import enFlag from "../../../assets/landing images/toggleen.png"; 
+import ajdan from "../../../assets/landing images/logoajdan.png";
 import { Menu, X } from "lucide-react";
 import toast from "react-hot-toast";
-import arrowleft from "./images/arrow-left.png";
-import arrowright from "./images/arrow-right.png";
 import { motion, AnimatePresence } from "framer-motion";  
-import { FaInstagram, FaXTwitter, FaTiktok, FaLinkedin } from "react-icons/fa6";
-import saFlag from "./images/togglear.png";
-import enFlag from "./images/toggleen.png";  
+import { FaInstagram, FaXTwitter, FaTiktok, FaLinkedin } from "react-icons/fa6"; 
 import { getSocialLinks } from "../../../services/socialiconService";
 
 const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://localhost:1337";
