@@ -16,6 +16,10 @@ import { Menu, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaInstagram, FaXTwitter, FaTiktok, FaLinkedin } from "react-icons/fa6";
+import * as countryCodes from "country-codes-list";
+import Select from "react-select";
+
+
 
 import { getSocialLinks } from "../../../services/socialiconService";
 
@@ -30,7 +34,36 @@ const compact = (obj) =>
       ([_, v]) => v !== undefined && v !== null && v !== ""
     )
   );
+const countries = countryCodes.all(); // gives array of { countryNameEn, countryCallingCode, countryCode }
 
+const options = countries.map(c => ({
+  value: `+${c.countryCallingCode}`,
+  label: `${c.countryCode} +${c.countryCallingCode}`, // e.g. RW +250
+}));
+
+const handleDownload = async (url, fileName) => {
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      credentials: "include", // 👈 important for Strapi CORS
+    });
+    if (!response.ok) throw new Error("Network response was not ok");
+
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (err) {
+    console.error("Download failed:", err);
+  }
+};
 // LangToggle component (moved outside of AjdanBayfront)
 const LangToggle = () => {
   const location = useLocation();
@@ -428,7 +461,7 @@ const Sedra1Page = () => {
         {/* Desktop Background */}
         {/* Desktop Background Image */}
         <motion.img
-          src={bg}
+          src={data?.hero_image_desktop ? `${STRAPI_URL}${data.hero_image_desktop}` : bg}
           alt="Background"
           initial={{ scale: 1.1, opacity: 1 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -441,7 +474,7 @@ const Sedra1Page = () => {
 
         {/* Mobile Background Image */}
         <motion.img
-          src={mobileBg}
+          src={data?.hero_image_mobile ? `${STRAPI_URL}${data.hero_image_mobile}` : mobileBg}
           alt="Background Mobile"
           initial={{ scale: 1.1, opacity: 1 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -482,49 +515,34 @@ const Sedra1Page = () => {
 
           {/* Download + Ajdan Logo */}
           <div
-            className={`flex items-center gap-2 md:gap-6 ${
-              i18n.language === "ar"
+            className={`flex items-center gap-2 md:gap-6 ${i18n.language === "ar"
                 ? "justify-start font-orleen"
                 : "justify-end"
-            }`}
+              }`}
           >
             {/* Brochure download buttons */}
-            {data?.pdf_upload?.length > 0 &&
-              data.pdf_upload.map((fileUrl, idx) => (
-                <a
-                  key={idx}
-                  href={`${STRAPI_URL}${fileUrl}`}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <button
-                    style={{
-                      lineHeight: "1",
-                      paddingTop: 0,
-                      paddingBottom: 0,
-                      height: 28,
-                    }}
-                    className={`relative px-3 sm:px-4
+            {data?.pdf_upload && (
+              <button
+                onClick={() => handleDownload(`${STRAPI_URL}${data.pdf_upload}`, 'brochure.pdf')}
+                style={{
+                  lineHeight: "1",
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                  height: 28,
+                }}
+                className={`relative px-3 sm:px-4
     font-regular font-aeoniknormal text-white shadow
     border-[1.5px] border-[#515846] rounded-sm bg-transparent
-    ${
-      i18n.language === "ar"
-        ? "text-[11px] sm:text-[14px] font-orleen" // Arabic sizes
-        : "text-[9px]  sm:text-[12px]" // English sizes
-    }
+    ${i18n.language === "ar"
+                    ? "text-[11px] sm:text-[14px] font-orleen" // Arabic sizes
+                    : "text-[9px]  sm:text-[12px]" // English sizes
+                  }
   `}
-                  >
-                    {i18n.language === "ar"
-                      ? `تنزيل الكتيب${
-                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
-                        }`
-                      : `DOWNLOAD BROCHURE${
-                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
-                        }`}
-                  </button>
-                </a>
-              ))}
+              >
+                {i18n.language === "ar" ? "تنزيل الكتيب" : "Download Brochure"}
+              </button>
+
+            )}
 
             {/* Ajdan Logo */}
             <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#515846] to-[#515846] md:bg-none">
@@ -556,11 +574,10 @@ const Sedra1Page = () => {
               <span
                 className={`bayfront-heading uppercase block md:text-start text-center
     text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px]
-    ${
-      i18n.language === "ar"
-        ? "text-[34px] md:text-[28px] lg:text-[36px] xl:text-[40px]"
-        : ""
-    }
+    ${i18n.language === "ar"
+                    ? "text-[34px] md:text-[28px] lg:text-[36px] xl:text-[40px]"
+                    : ""
+                  }
   `}
               >
                 {data?.project_headline}
@@ -569,11 +586,10 @@ const Sedra1Page = () => {
               <span
                 className={`bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap
     text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm
-    ${
-      i18n.language === "ar"
-        ? "text-[28px] md:text-[24px] lg:text-[32px] xl:text-[34px]"
-        : ""
-    }
+    ${i18n.language === "ar"
+                    ? "text-[28px] md:text-[24px] lg:text-[32px] xl:text-[34px]"
+                    : ""
+                  }
   `}
               >
                 {data?.project_description}
@@ -584,9 +600,8 @@ const Sedra1Page = () => {
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-              className={`hidden my-6 border-t md:block border-white/80 ${
-                i18n.language === "ar" ? "origin-right" : "origin-left" // Right for Arabic, left for English
-              }`}
+              className={`hidden my-6 border-t md:block border-white/80 ${i18n.language === "ar" ? "origin-right" : "origin-left" // Right for Arabic, left for English
+                }`}
             />
           </div>
 
@@ -599,11 +614,10 @@ const Sedra1Page = () => {
             className="w-full max-w-xl xs:w-[95%] sm:p-8 md:p-4 lg:p-12 mx-6 sm:mx-8 md:mx-auto bg-no-repeat sm:mt-0"
           >
             <h2
-              className={`mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm font-aeoniknormal font-regular text-[#FFFFFF] uppercase register ${
-                i18n.language === "ar"
+              className={`mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm font-aeoniknormal font-regular text-[#FFFFFF] uppercase register ${i18n.language === "ar"
                   ? "text-start font-orleen "
                   : "text-start" // Right align for Arabic, left for English
-              }`}
+                }`}
             >
               {t("register_interest")}
             </h2>
@@ -627,14 +641,12 @@ const Sedra1Page = () => {
                   value={formData.username ?? ""}
                   onChange={handleChange}
                   placeholder={t("full_name")}
-                  className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
-                    errors.username ? "border-red-500" : "border-[#DED6CB]"
-                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#DED6CB] uppercase px-4
-                   ${
-                     i18n.language === "ar"
-                       ? "text-[16px] placeholder:text-[16px] placeholder:font-orleen font-orleen"
-                       : ""
-                   }`}
+                  className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${errors.username ? "border-red-500" : "border-[#DED6CB]"
+                    } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#DED6CB] uppercase px-4
+                   ${i18n.language === "ar"
+                      ? "text-[16px] placeholder:text-[16px] placeholder:font-orleen font-orleen"
+                      : ""
+                    }`}
                   aria-invalid={!!errors.username}
                   aria-describedby="err-username"
                   required
@@ -657,15 +669,13 @@ const Sedra1Page = () => {
                   value={formData.email ?? ""}
                   onChange={handleChange}
                   placeholder={t("email_address")}
-                  className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
-                    errors.email ? "border-red-500" : "border-[#DED6CB]"
-                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#DED6CB] px-4
+                  className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${errors.email ? "border-red-500" : "border-[#DED6CB]"
+                    } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#DED6CB] px-4
         
-           ${
-             i18n.language === "ar"
-               ? "text-[16px] placeholder:text-[16px] placeholder:font-orleen font-orleen"
-               : ""
-           }`}
+           ${i18n.language === "ar"
+                      ? "text-[16px] placeholder:text-[16px] placeholder:font-orleen font-orleen"
+                      : ""
+                    }`}
                   aria-invalid={!!errors.email}
                   aria-describedby="err-email"
                   required
@@ -683,20 +693,95 @@ const Sedra1Page = () => {
               {/* Phone */}
               <div>
                 <div className="flex w-full gap-2 phone-stack">
-                  <select
-                    value={dialCode ?? "+966"}
-                    onChange={(e) => setDialCode(e.target.value)}
-                    className={`w-20 h-11 text-[13px] text-[#DED6CB] font-aeoniknormal custom-select1 rounded-sm bg-[#2E2924] border ${
-                      errors.phone ? "border-red-500" : "border-[#DED6CB]"
-                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 ${
-                      !dialCode ? "text-[#DED6CB]" : "text-white"
-                    } ${
-                      i18n.language === "ar" ? "text-[16px] font-orleen" : ""
-                    }`}
-                  >
-                    <option value="+966">+966</option>
-                    <option value="+971">+971</option>
-                  </select>
+                  <Select
+                    options={options}
+                    value={options.find(opt => opt.value === dialCode)}
+                    onChange={(opt) => setDialCode(opt.value)}
+                    className="w-20"
+                    menuPlacement="bottom"
+                    menuShouldScrollIntoView={false}
+                    maxMenuHeight={180} // 4–5 items visible, then scroll
+                    isSearchable
+                    components={{
+                      IndicatorSeparator: () => null, // remove separator
+                      DropdownIndicator: () => null, // remove arrow
+                    }}
+                    styles={{
+                      control: (base, state) => ({
+                        ...base,
+                        backgroundColor: "#2E2924",
+                        borderColor: state.isFocused ? "#E6D9C4" : "#DED6CB", // ✅ custom border on focus
+                        borderRadius: "2px",
+                        minHeight: "44px",
+                        fontSize: "10px",
+                        color: "#E6D9C4",
+                        padding: "0 10px",
+                        boxShadow: "none",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        fontWeight: "normal",
+                        textAlign: "left",
+                        boxShadow: state.isFocused ? "0 0 0 0px #E6D9C4" : "none",
+                        outline: "none",
+                        "&:hover": {
+                          borderColor: "#E6D9C4",
+                        },
+                      }),
+                      valueContainer: (base) => ({
+                        ...base,
+                        padding: "0 4px",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        textAlign: "left",
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        color: "#E6D9C4",
+                        fontSize: "10px",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        textAlign: "left",
+                      }),
+                      input: (base) => ({
+                        ...base,
+                        color: "#E6D9C4",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        fontSize: "10px",
+                        textAlign: "left",
+                      }),
+                      placeholder: (base) => ({
+                        ...base,
+                        color: "#E6D9C4",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        fontSize: "10px",
+                        textAlign: "left",
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        backgroundColor: "#2E2924",
+                        color: "#E6D9C4",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        textAlign: "left",
+                      }),
+                      menuList: (base) => ({
+                        ...base,
+                        maxHeight: 180, // ensures scroll
+                        overflowY: "auto",
+                        scrollbarWidth: "none", // Firefox
+                        msOverflowStyle: "none", // IE/Edge
+                        "&::-webkit-scrollbar": {
+                          display: "none", // Chrome/Safari
+                        },
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: "#2E2924",
+                        color: "#E6D9C4",
+                        borderColor: "#DED6CB",
+                        fontSize: "10px",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        textAlign: "left",
+                        padding: "6px 8px",
+                      }),
+                    }}
+                  />
 
                   <input
                     type="tel"
@@ -708,15 +793,13 @@ const Sedra1Page = () => {
                       setErrors((prev) => ({ ...prev, phone: "" }));
                     }}
                     placeholder={t("mobile_number")}
-                    className={`flex-1 h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
-                      errors.phone ? "border-red-500" : "border-[#DED6CB]"
-                    } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#E6D9C4]
+                    className={`flex-1 h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${errors.phone ? "border-red-500" : "border-[#DED6CB]"
+                      } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#E6D9C4]
           
-           ${
-             i18n.language === "ar"
-               ? "text-[16px] placeholder:text-[16px] placeholder:font-orleen font-orleen"
-               : ""
-           }`}
+           ${i18n.language === "ar"
+                        ? "text-[16px] placeholder:text-[16px] placeholder:font-orleen font-orleen"
+                        : ""
+                      }`}
                     aria-invalid={!!errors.phone}
                     aria-describedby="err-phone"
                     required
@@ -748,11 +831,10 @@ const Sedra1Page = () => {
     focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3
     pl-4 pr-2 min-h-[35px] sm:min-h-auto
     ${moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"}
-    ${
-      i18n.language === "ar"
-        ? "text-[16px] font-orleen"
-        : "text-[9px] md:text-[9px]"
-    }
+    ${i18n.language === "ar"
+                        ? "text-[16px] font-orleen"
+                        : "text-[9px] md:text-[9px]"
+                      }
   `}
                     aria-invalid={!!errors.moreDetailsCode}
                     aria-describedby="err-reason"
@@ -785,9 +867,8 @@ const Sedra1Page = () => {
                   </select>
 
                   <span
-                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#E6D9C4] pointer-events-none ${
-                      i18n.language === "ar" ? "left-3" : "right-3" // Left for Arabic, right for English
-                    }`}
+                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#E6D9C4] pointer-events-none ${i18n.language === "ar" ? "left-3" : "right-3" // Left for Arabic, right for English
+                      }`}
                   >
                     ▼
                   </span>
@@ -864,9 +945,8 @@ const Sedra1Page = () => {
         </main>
 
         <div
-          className={`fixed z-50 flex flex-col items-center gap-3 ${
-            i18n.language === "ar" ? "left-0 sm:left-6" : "right-0 sm:right-6"
-          } bottom-2 sm:bottom-6`}
+          className={`fixed z-50 flex flex-col items-center gap-3 ${i18n.language === "ar" ? "left-0 sm:left-6" : "right-0 sm:right-6"
+            } bottom-2 sm:bottom-6`}
         >
           <LangToggle />
 
@@ -891,9 +971,8 @@ const Sedra1Page = () => {
           slides.map((slide, index) => (
             <motion.div
               key={`${index}-${slide}`}
-              className={`absolute inset-0 transition-all duration-200 ${
-                index === current ? "z-10" : "z-0 pointer-events-none"
-              }`}
+              className={`absolute inset-0 transition-all duration-200 ${index === current ? "z-10" : "z-0 pointer-events-none"
+                }`}
               initial={{ opacity: 0, scale: 1 }}
               animate={{
                 opacity: index === current && scrollY > 50 ? 1 : 0,
@@ -918,9 +997,8 @@ const Sedra1Page = () => {
           slides.map((slide, index) => (
             <motion.div
               key={`${index}-${slide}`}
-              className={`absolute inset-0 transition-all duration-200 ${
-                index === current ? "z-10" : "z-0 pointer-events-none"
-              }`}
+              className={`absolute inset-0 transition-all duration-200 ${index === current ? "z-10" : "z-0 pointer-events-none"
+                }`}
               initial={{ opacity: 0, scale: 1 }}
               animate={{
                 opacity: index === current && scrollY > 50 ? 1 : 0,
@@ -963,9 +1041,8 @@ const Sedra1Page = () => {
               <button
                 key={i}
                 onClick={() => setCurrent(i)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  activeIndex === i ? "bg-white scale-125" : "bg-white/50"
-                }`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${activeIndex === i ? "bg-white scale-125" : "bg-white/50"
+                  }`}
               />
             );
           })}

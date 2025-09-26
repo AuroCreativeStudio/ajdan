@@ -106,74 +106,100 @@ const List = () => {
     }
   };
 
+  const getImageUrl = (featuredImage) => {
+    if (!featuredImage || typeof featuredImage !== 'object') {
+      return image; // Fallback to default image
+    }
+
+    const formats = featuredImage.formats || {};
+    const preferredFormat = formats.large || formats.medium || formats.small || formats.thumbnail;
+
+    const getFullUrl = (path) => {
+      if (!path) return image; // Fallback if path is undefined or null
+      try {
+        return new URL(path).href; // If path is already a full URL
+      } catch {
+        return `${import.meta.env.VITE_API_URL || 'http://localhost:1337'}${path}`; // Construct full URL
+      }
+    };
+
+    if (preferredFormat?.url) {
+      return getFullUrl(preferredFormat.url);
+    }
+
+    if (featuredImage.url) {
+      return getFullUrl(featuredImage.url);
+    }
+
+    return image; // Fallback to default image
+  };
+
   return (
     <div className="mt-24 p-6 mx-auto max-w-7xl">
       {/* Filters */}
-      <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-6 space-y-4">
-        <Dropdown
-          label={lang === 'ar' ? 'اختر مكان:' : 'Choose a Place:'}
-          value={selectedPlace}
-          onChange={setSelectedPlace}
-          options={uniquePlaces}
-          lang={lang}
-        />
-        <Dropdown
-          label={lang === 'ar' ? 'اختر مبنى:' : 'Choose a Building:'}
-          value={selectedBuilding}
-          onChange={setSelectedBuilding}
-          options={uniqueBuildings}
-          lang={lang}
-        />
-        <Dropdown
-          label={lang === 'ar' ? 'اختر المساحة:' : 'Choose Square Feet:'}
-          value={selectedSquareFeet}
-          onChange={setSelectedSquareFeet}
-          options={uniqueSquareFeet}
-          lang={lang}
-        />
-        
-        {/* Multi-select Amenities Filter */}
-        <MultiSelectDropdown
-          label={lang === 'ar' ? 'المرافق:' : 'Amenities:'}
-          selectedValues={selectedAmenities}
-          options={uniqueAmenities}
-          onChange={(value) => toggleSelection(value, selectedAmenities, setSelectedAmenities)}
-          lang={lang}
-        />
-        
-        {/* Multi-select Property Types Filter */}
-        <MultiSelectDropdown
-          label={lang === 'ar' ? 'نوع العقار:' : 'Property Type:'}
-          selectedValues={selectedPropertyTypes}
-          options={uniquePropertyTypes}
-          onChange={(value) => toggleSelection(value, selectedPropertyTypes, setSelectedPropertyTypes)}
-          lang={lang}
-        />
-        
-        {/* Multi-select Payment Plans Filter */}
-        <MultiSelectDropdown
-          label={lang === 'ar' ? 'خطط الدفع:' : 'Payment Plans:'}
-          selectedValues={selectedPaymentPlans}
-          options={uniquePaymentPlans}
-          onChange={(value) => toggleSelection(value, selectedPaymentPlans, setSelectedPaymentPlans)}
-          lang={lang}
-        />
-        
-        {/* Clear all filters button */}
-        <button
-          onClick={() => {
-            setSelectedPlace('');
-            setSelectedBuilding('');
-            setSelectedSquareFeet('');
-            setSelectedAmenities([]);
-            setSelectedPropertyTypes([]);
-            setSelectedPaymentPlans([]);
-          }}
-          className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md"
-        >
-          {lang === 'ar' ? 'مسح جميع الفلاتر' : 'Clear all filters'}
-        </button>
-      </div>
+      <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-6">
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <Dropdown
+      label={lang === 'ar' ? 'اختر مكان:' : 'Choose a Place:'}
+      value={selectedPlace}
+      onChange={setSelectedPlace}
+      options={uniquePlaces}
+      lang={lang}
+    />
+    <Dropdown
+      label={lang === 'ar' ? 'اختر مبنى:' : 'Choose a Building:'}
+      value={selectedBuilding}
+      onChange={setSelectedBuilding}
+      options={uniqueBuildings}
+      lang={lang}
+    />
+    <Dropdown
+      label={lang === 'ar' ? 'اختر المساحة:' : 'Choose Square Feet:'}
+      value={selectedSquareFeet}
+      onChange={setSelectedSquareFeet}
+      options={uniqueSquareFeet}
+      lang={lang}
+    />
+    <MultiSelectDropdown
+      label={lang === 'ar' ? 'المرافق:' : 'Amenities:'}
+      selectedValues={selectedAmenities}
+      options={uniqueAmenities}
+      onChange={(value) => toggleSelection(value, selectedAmenities, setSelectedAmenities)}
+      lang={lang}
+    />
+    <MultiSelectDropdown
+      label={lang === 'ar' ? 'نوع العقار:' : 'Property Type:'}
+      selectedValues={selectedPropertyTypes}
+      options={uniquePropertyTypes}
+      onChange={(value) => toggleSelection(value, selectedPropertyTypes, setSelectedPropertyTypes)}
+      lang={lang}
+    />
+    <MultiSelectDropdown
+      label={lang === 'ar' ? 'خطط الدفع:' : 'Payment Plans:'}
+      selectedValues={selectedPaymentPlans}
+      options={uniquePaymentPlans}
+      onChange={(value) => toggleSelection(value, selectedPaymentPlans, setSelectedPaymentPlans)}
+      lang={lang}
+    />
+  </div>
+
+  {/* Clear all filters button */}
+  <div className="mt-4">
+    <button
+      onClick={() => {
+        setSelectedPlace('');
+        setSelectedBuilding('');
+        setSelectedSquareFeet('');
+        setSelectedAmenities([]);
+        setSelectedPropertyTypes([]);
+        setSelectedPaymentPlans([]);
+      }}
+      className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-md"
+    >
+      {lang === 'ar' ? 'مسح جميع الفلاتر' : 'Clear all filters'}
+    </button>
+  </div>
+</div>
 
       {/* Results */}
 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -185,10 +211,10 @@ const List = () => {
       <Link to={`/${lang}/${item.slug}`}>
         <img
           className="rounded-t-lg w-full h-48 object-cover"
-          src={item.image ? `${API_URL}${item.image}` : image}
+          src={item.featured_image ? getImageUrl(item.featured_image) : image}
           alt={`${item.place} apartment`}
           onError={(e) => {
-            e.target.src = image;
+            e.target.src = image; // Fallback to default image on error
           }}
         />
       </Link>
@@ -199,29 +225,29 @@ const List = () => {
         </h5>
 
         {/* Place and Building */}
-        <div className="mb-2">
+        {/* <div className="mb-2">
           <p className="text-lg font-normal text-gray-700 dark:text-gray-400">
             {item.place}
           </p>
           <p className="text-sm text-gray-600 dark:text-gray-300">
             {item.building}
           </p>
-        </div>
+        </div> */}
 
         {/* Square Feet */}
-        <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+        {/* <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
           <strong>{lang === 'ar' ? 'المساحة:' : 'Size:'}</strong> {item.square_feet} {lang === 'ar' ? 'قدم مربع' : 'sq ft'}
-        </p>
+        </p> */}
 
         {/* Description */}
-        {item.description && (
+        {/* {item.description && (
           <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">
             {item.description}
           </p>
-        )}
+        )} */}
 
         {/* Amenities */}
-        <div className="mb-2">
+        {/* <div className="mb-2">
           <span className="text-sm font-semibold">
             {lang === 'ar' ? 'المرافق:' : 'Amenities:'}
           </span>
@@ -232,10 +258,10 @@ const List = () => {
               </span>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Property Types */}
-        <div className="mb-2">
+        {/* <div className="mb-2">
           <span className="text-sm font-semibold">
             {lang === 'ar' ? 'نوع العقار:' : 'Property Type:'}
           </span>
@@ -246,10 +272,10 @@ const List = () => {
               </span>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Payment Plans */}
-        <div className="mb-4">
+        {/* <div className="mb-4">
           <span className="text-sm font-semibold">
             {lang === 'ar' ? 'خطط الدفع:' : 'Payment Plans:'}
           </span>
@@ -260,7 +286,7 @@ const List = () => {
               </span>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* View More Button */}
         <Link

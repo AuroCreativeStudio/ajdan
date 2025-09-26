@@ -11,12 +11,15 @@ import wa from "../../../assets/landing images/whatsapp.png";
 import arrowleft from "../../../assets/landing images/arrow-left.png";
 import arrowright from "../../../assets/landing images/arrow-right.png";
 import saFlag from "../../../assets/landing images/togglear.png";
-import enFlag from "../../../assets/landing images/toggleen.png"; 
+import enFlag from "../../../assets/landing images/toggleen.png";
 import ajdan from "../../../assets/landing images/logoajdan.png";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaInstagram, FaXTwitter, FaTiktok, FaLinkedin } from "react-icons/fa6";
 import { getSocialLinks } from "../../../services/socialiconService";
+import * as countryCodes from "country-codes-list";
+import Select from "react-select";
+
 
 const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://localhost:1337";
 const STRAPI_TOKEN = import.meta.env.VITE_STRAPI_TOKEN || "";
@@ -29,6 +32,37 @@ const compact = (obj) =>
       ([_, v]) => v !== undefined && v !== null && v !== ""
     )
   );
+
+const countries = countryCodes.all(); // gives array of { countryNameEn, countryCallingCode, countryCode }
+
+const options = countries.map(c => ({
+  value: `+${c.countryCallingCode}`,
+  label: `${c.countryCode} +${c.countryCallingCode}`, // e.g. RW +250
+}));
+
+const handleDownload = async (url, fileName) => {
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      credentials: "include", // 👈 important for Strapi CORS
+    });
+    if (!response.ok) throw new Error("Network response was not ok");
+
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (err) {
+    console.error("Download failed:", err);
+  }
+};
 
 // LangToggle component (moved outside of AjdanBayfront)
 const LangToggle = () => {
@@ -430,7 +464,7 @@ const DarahAlmadinah = () => {
         {/* Desktop Background */}
         {/* Desktop Background Image */}
         <motion.img
-          src={bg}
+          src={data?.hero_image_desktop ? `${STRAPI_URL}${data.hero_image_desktop}` : bg}
           alt="Background"
           initial={{ scale: 1.1, opacity: 1 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -443,7 +477,7 @@ const DarahAlmadinah = () => {
 
         {/* Mobile Background Image */}
         <motion.img
-          src={mobileBg}
+          src={data?.hero_image_mobile ? `${STRAPI_URL}${data.hero_image_mobile}` : mobileBg}
           alt="Background Mobile"
           initial={{ scale: 1.1, opacity: 1 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -484,43 +518,29 @@ const DarahAlmadinah = () => {
 
           {/* Download + Ajdan Logo */}
           <div
-            className={`flex items-center gap-2 md:gap-6 ${
-              i18n.language === "ar" ? "justify-start" : "justify-end"
-            }`}
+            className={`flex items-center gap-2 md:gap-6 ${i18n.language === "ar" ? "justify-start" : "justify-end"
+              }`}
           >
             {/* Brochure download buttons */}
-            {data?.pdf_upload?.length > 0 &&
-              data.pdf_upload.map((fileUrl, idx) => (
-                <a
-                  key={idx}
-                  href={`${STRAPI_URL}${fileUrl}`}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <button
-                    style={{
-                      lineHeight: "1",
-                      paddingTop: 0,
-                      paddingBottom: 0,
-                      fontFamily: "AzerFont",
-                      fontWeight: 400,
-                      height: 28,
-                    }}
-                    className="relative px-3 sm:px-4 text-[9px] sm:text-[12px]
+            {data?.pdf_upload && (
+              <button
+              onClick={() => handleDownload(`${STRAPI_URL}${data.pdf_upload}`, 'brochure.pdf')}
+                style={{
+                  lineHeight: "1",
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                  fontFamily: "AzerFont",
+                  fontWeight: 400,
+                  height: 28,
+                }}
+                className="relative px-3 sm:px-4 text-[9px] sm:text-[12px]
                       text-white shadow
                      border-[1.5px] border-[#8A421F] rounded-sm bg-transparent"
-                  >
-                    {i18n.language === "ar"
-                      ? `تنزيل الكتيب${
-                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
-                        }`
-                      : `Download Brochure${
-                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
-                        }`}
-                  </button>
-                </a>
-              ))}
+              >
+                {i18n.language === "ar" ? "تنزيل الكتيب" : "Download Brochure"}
+              </button>
+
+            )}
 
             {/* Ajdan Logo */}
             <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#8A421F] to-[#8A421F] md:bg-none">
@@ -576,9 +596,8 @@ const DarahAlmadinah = () => {
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-              className={`hidden my-6 border-t md:block border-white/80 ${
-                i18n.language === "ar" ? "origin-right" : "origin-left" // Right for Arabic, left for English
-              }`}
+              className={`hidden my-6 border-t md:block border-white/80 ${i18n.language === "ar" ? "origin-right" : "origin-left" // Right for Arabic, left for English
+                }`}
             />
           </div>
 
@@ -591,9 +610,8 @@ const DarahAlmadinah = () => {
             className="w-full max-w-xl xs:w-[95%] sm:p-8 md:p-4 lg:p-12 mx-6 sm:mx-8 md:mx-auto bg-no-repeat sm:mt-0"
           >
             <h2
-              className={`mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm  text-[#FFFFFF] uppercase register ${
-                i18n.language === "ar" ? "text-start" : "text-start" // Right align for Arabic, left for English
-              }`}
+              className={`mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm  text-[#FFFFFF] uppercase register ${i18n.language === "ar" ? "text-start" : "text-start" // Right align for Arabic, left for English
+                }`}
               style={{
                 fontFamily: "AzerFont",
                 fontWeight: 400,
@@ -628,9 +646,8 @@ const DarahAlmadinah = () => {
                   value={formData.username ?? ""}
                   onChange={handleChange}
                   placeholder={t("full_name")}
-                  className={`w-full h-10 text-[10px] text-white bg-[#012C46] rounded-sm border ${
-                    errors.username ? "border-red-500" : "border-[#5D8595]"
-                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[10px] placeholder-[#5D8595] uppercase px-4`}
+                  className={`w-full h-10 text-[10px] text-white bg-[#012C46] rounded-sm border ${errors.username ? "border-red-500" : "border-[#5D8595]"
+                    } focus:border-[#ffffff] focus:outline-none placeholder:text-[10px] placeholder-[#5D8595] uppercase px-4`}
                   aria-invalid={!!errors.username}
                   aria-describedby="err-username"
                   required
@@ -658,9 +675,8 @@ const DarahAlmadinah = () => {
                   value={formData.email ?? ""}
                   onChange={handleChange}
                   placeholder={t("email_address")}
-                  className={`w-full h-10 text-[10px] text-white bg-[#012C46] rounded-sm border ${
-                    errors.email ? "border-red-500" : "border-[#5D8595]"
-                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[10px] placeholder:text-[#5D8595] px-4`}
+                  className={`w-full h-10 text-[10px] text-white bg-[#012C46] rounded-sm border ${errors.email ? "border-red-500" : "border-[#5D8595]"
+                    } focus:border-[#ffffff] focus:outline-none placeholder:text-[10px] placeholder:text-[#5D8595] px-4`}
                   aria-invalid={!!errors.email}
                   aria-describedby="err-email"
                   required
@@ -678,18 +694,89 @@ const DarahAlmadinah = () => {
               {/* Phone */}
               <div>
                 <div className="flex w-full gap-2 phone-stack">
-                  <select
-                    value={dialCode ?? "+966"}
-                    onChange={(e) => setDialCode(e.target.value)}
-                    className={`w-20 h-10 text-[11px] text-[#5D8595] font-aeoniknormal custom-select2 rounded-sm bg-[#012C46] border ${
-                      errors.phone ? "border-red-500" : "border-[#5D8595]"
-                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 font-normal ${
-                      !dialCode ? "text-[#5D8595]" : "text-white"
-                    }`}
-                  >
-                    <option value="+966">+966</option>
-                    <option value="+971">+971</option>
-                  </select>
+                  <Select
+                    options={options}
+                    value={options.find(opt => opt.value === dialCode)}
+                    onChange={(opt) => setDialCode(opt.value)}
+                    className="w-20"
+                    menuPlacement="bottom"
+                    menuShouldScrollIntoView={false}
+                    maxMenuHeight={180} // 4–5 items visible, then scroll
+                    isSearchable
+                    components={{
+                      IndicatorSeparator: () => null, // remove separator
+                      DropdownIndicator: () => null, // remove arrow
+                    }}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        backgroundColor: "#012C46",
+                        borderColor: "#5D8595",
+                        borderRadius: "2px",
+                        minHeight: "40px",
+                        fontSize: "12px",
+                        color: "#D7E0E2",
+                        padding: "0 10px",
+                        boxShadow: "none",
+                        fontFamily: "AzerFont",
+                        fontWeight: "normal",
+                        textAlign: "left",
+                      }),
+                      valueContainer: (base) => ({
+                        ...base,
+                        padding: "0 4px",
+                        fontFamily: "AzerFont",
+                        textAlign: "left",
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        color: "#5D8595",
+                        fontSize: "12px",
+                        fontFamily: "AzerFont",
+                        textAlign: "left",
+                      }),
+                      input: (base) => ({
+                        ...base,
+                        color: "#5D8595",
+                        fontFamily: "AzerFont",
+                        fontSize: "12px",
+                        textAlign: "left",
+                      }),
+                      placeholder: (base) => ({
+                        ...base,
+                        color: "#5D8595",
+                        fontFamily: "AzerFont",
+                        fontSize: "12px",
+                        textAlign: "left",
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        backgroundColor: "#124A63",
+                        color: "#5D8595",
+                        fontFamily: "AzerFont",
+                        textAlign: "left",
+                      }),
+                      menuList: (base) => ({
+                        ...base,
+                        maxHeight: 180, // ensures scroll
+                        overflowY: "auto",
+                        scrollbarWidth: "none", // Firefox
+                        msOverflowStyle: "none", // IE/Edge
+                        "&::-webkit-scrollbar": {
+                          display: "none", // Chrome/Safari
+                        },
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: "#012C46",
+                        color: "#5D8595",
+                        fontSize: "12px",
+                        fontFamily: "AzerFont",
+                        textAlign: "left",
+                        padding: "6px 8px",
+                      }),
+                    }}
+                  />
 
                   <input
                     type="tel"
@@ -706,9 +793,8 @@ const DarahAlmadinah = () => {
                       setErrors((prev) => ({ ...prev, phone: "" }));
                     }}
                     placeholder={t("mobile_number")}
-                    className={`flex-1 h-10 text-[10px] text-white bg-[#012C46] rounded-sm border ${
-                      errors.phone ? "border-red-500" : "border-[#5D8595]"
-                    } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[10px] placeholder:text-start placeholder:text-[#5D8595]
+                    className={`flex-1 h-10 text-[10px] text-white bg-[#012C46] rounded-sm border ${errors.phone ? "border-red-500" : "border-[#5D8595]"
+                      } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[10px] placeholder:text-start placeholder:text-[#5D8595]
           `}
                     aria-invalid={!!errors.phone}
                     aria-describedby="err-phone"
@@ -740,13 +826,11 @@ const DarahAlmadinah = () => {
                       setMoreDetailsCode(e.target.value);
                       setErrors((prev) => ({ ...prev, moreDetailsCode: "" }));
                     }}
-                    className={`w-full h-10 text-[9px] sm:text-[9px] bg-[#012C46] rounded-sm border custom-select2 ${
-                      errors.moreDetailsCode
+                    className={`w-full h-10 text-[9px] sm:text-[9px] bg-[#012C46] rounded-sm border custom-select2 ${errors.moreDetailsCode
                         ? "border-red-500"
                         : "border-[#5D8595]"
-                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3 pl-4 pr-2 min-h-[35px] sm:min-h-auto ${
-                      moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"
-                    }`}
+                      } focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3 pl-4 pr-2 min-h-[35px] sm:min-h-auto ${moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"
+                      }`}
                     aria-invalid={!!errors.moreDetailsCode}
                     aria-describedby="err-reason"
                     required
@@ -769,9 +853,8 @@ const DarahAlmadinah = () => {
                     ))}
                   </select>
                   <span
-                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#E6D9C4] pointer-events-none ${
-                      i18n.language === "ar" ? "left-3" : "right-3" // Left for Arabic, right for English
-                    }`}
+                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#E6D9C4] pointer-events-none ${i18n.language === "ar" ? "left-3" : "right-3" // Left for Arabic, right for English
+                      }`}
                   >
                     ▼
                   </span>
@@ -825,22 +908,22 @@ const DarahAlmadinah = () => {
 
             {/* Buttons Row (under form) */}
             <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
-  {/* WhatsApp Icon */}
-  {socialLinks?.whatsapp && (
-    <a
-      href={socialLinks.whatsapp}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="transition hover:scale-110 ml-[1px]"
-    >
-      <img
-        src={wa}
-        alt="WhatsApp"
-        className="object-contain w-8 sm:w-12 sm:h-12 drop-shadow-lg"
-      />
-    </a>
-  )}
-</div>
+              {/* WhatsApp Icon */}
+              {socialLinks?.whatsapp && (
+                <a
+                  href={socialLinks.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition hover:scale-110 ml-[1px]"
+                >
+                  <img
+                    src={wa}
+                    alt="WhatsApp"
+                    className="object-contain w-8 sm:w-12 sm:h-12 drop-shadow-lg"
+                  />
+                </a>
+              )}
+            </div>
           </motion.div>
 
           {/* Mobile-only subheading spacer */}
@@ -848,9 +931,8 @@ const DarahAlmadinah = () => {
         </main>
 
         <div
-          className={`fixed z-50 flex flex-col items-center gap-3 ${
-            i18n.language === "ar" ? "left-0 sm:left-6" : "right-0 sm:right-6"
-          } bottom-2 sm:bottom-6`}
+          className={`fixed z-50 flex flex-col items-center gap-3 ${i18n.language === "ar" ? "left-0 sm:left-6" : "right-0 sm:right-6"
+            } bottom-2 sm:bottom-6`}
         >
           <LangToggle />
 
@@ -875,9 +957,8 @@ const DarahAlmadinah = () => {
           slides.map((slide, index) => (
             <motion.div
               key={`${index}-${slide}`}
-              className={`absolute inset-0 transition-all duration-200 ${
-                index === current ? "z-10" : "z-0 pointer-events-none"
-              }`}
+              className={`absolute inset-0 transition-all duration-200 ${index === current ? "z-10" : "z-0 pointer-events-none"
+                }`}
               initial={{ opacity: 0, scale: 1 }}
               animate={{
                 opacity: index === current && scrollY > 50 ? 1 : 0,
@@ -902,9 +983,8 @@ const DarahAlmadinah = () => {
           slides.map((slide, index) => (
             <motion.div
               key={`${index}-${slide}`}
-              className={`absolute inset-0 transition-all duration-200 ${
-                index === current ? "z-10" : "z-0 pointer-events-none"
-              }`}
+              className={`absolute inset-0 transition-all duration-200 ${index === current ? "z-10" : "z-0 pointer-events-none"
+                }`}
               initial={{ opacity: 0, scale: 1 }}
               animate={{
                 opacity: index === current && scrollY > 50 ? 1 : 0,
@@ -947,9 +1027,8 @@ const DarahAlmadinah = () => {
               <button
                 key={i}
                 onClick={() => setCurrent(i)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  activeIndex === i ? "bg-white scale-125" : "bg-white/50"
-                }`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${activeIndex === i ? "bg-white scale-125" : "bg-white/50"
+                  }`}
               />
             );
           })}

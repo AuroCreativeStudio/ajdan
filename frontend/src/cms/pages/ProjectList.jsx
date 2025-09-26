@@ -10,15 +10,14 @@ const BASE_URL = import.meta.env.VITE_STRAPI_URL || 'http://localhost:1337';
 
 const ITEMS_PER_PAGE = 6;
 
-function getImageUrl(featureImage) {
+function getImageUrl(featuredImage) {
   const defaultImage = image;
 
-  if (!featureImage || !Array.isArray(featureImage) || featureImage.length === 0) {
+  if (!featuredImage || typeof featuredImage !== 'object') {
     return defaultImage;
   }
 
-  const imageObj = featureImage[0];
-  const formats = imageObj.formats || {};
+  const formats = featuredImage.formats || {};
   const preferredFormat = formats.large || formats.medium || formats.small || formats.thumbnail;
 
   const getFullUrl = (path) => {
@@ -34,8 +33,8 @@ function getImageUrl(featureImage) {
     return getFullUrl(preferredFormat.url);
   }
 
-  if (imageObj.url) {
-    return getFullUrl(imageObj.url);
+  if (featuredImage.url) {
+    return getFullUrl(featuredImage.url);
   }
 
   return defaultImage;
@@ -50,7 +49,7 @@ function ProjectList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get('page')) || 1;
   const navigate = useNavigate();
-  const lang = window.location.pathname.split('/')[1] || 'en'; 
+  const lang = window.location.pathname.split('/')[1] || 'en';
 
   useEffect(() => {
     async function fetchProjectList() {
@@ -58,7 +57,7 @@ function ProjectList() {
         const data = await fetchApartmentListCMS();
         const projects = Array.isArray(data) ? data : data.data || [];
         setProjectList(projects);
-        console.log("data:",projects)
+        console.log("data:", projects)
       } catch (error) {
         console.error('Error Fetching ProjectList', error);
         toast.error('Failed to load projects');
@@ -104,14 +103,14 @@ function ProjectList() {
   };
 
   return (
- <>
+    <>
       <div className="flex h-screen bg-white">
         <div className="w-64 bg-white"></div>
         <div className="flex-1 flex flex-col">
           <div className="flex items-center justify-between w-full p-6">
-            <h1 className="text-3xl text-gray-800 font-headline">Project List</h1>
+            <h1 className="text-3xl text-gray-800 font-headline pt-10">Project List</h1>
           </div>
-          <div className="flex-1 overflow-auto px-6 pb-4">
+          <div className="flex-1  px-6 pb-4">
             <div className="bg-white rounded-lg shadow-sm">
               <table className="w-full text-sm text-left text-gray-500">
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 font-headline">
@@ -133,8 +132,8 @@ function ProjectList() {
                     paginatedProjects.map((project, idx) => (
                       <tr key={project.id || idx} className="bg-white border-b font-body border-gray-200">
                         <td className="px-6 py-4">
-                <img
-                            src={getImageUrl(project.feature_image)}
+                          <img
+                            src={getImageUrl(project.featured_image)}
                             alt={project.title?.Property_Title || "project image"}
                             className="w-32 h-16  object-cover "
                             onError={(e) => {
@@ -160,13 +159,13 @@ function ProjectList() {
                           <button
                             className="action-button"
                             onClick={() => handleUpdate(project)}
-                          >  
+                          >
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 mr-1">
-                              <path d="M12 20H21M3 20H4.67454C5.16372 20 5.40832 20 5.63849 19.9447C5.84256 19.8957 6.03765 19.8149 6.2166 19.7053C6.41843 19.5816 6.59138 19.4086 6.93729 19.0627L19.5 6.5C20.3284 5.67157 20.3284 4.32843 19.5 3.5C18.6716 2.67157 17.3284 2.67157 16.5 3.5L3.93726 16.0627C3.59136 16.4086 3.4184 16.5816 3.29472 16.7834C3.18506 16.9624 3.10425 17.1574 3.05526 17.3615C3 17.5917 3 17.8363 3 18.3255V20Z" 
-                              stroke="currentColor" 
-                              strokeWidth="2" 
-                              strokeLinecap="round" 
-                              strokeLinejoin="round"/>
+                              <path d="M12 20H21M3 20H4.67454C5.16372 20 5.40832 20 5.63849 19.9447C5.84256 19.8957 6.03765 19.8149 6.2166 19.7053C6.41843 19.5816 6.59138 19.4086 6.93729 19.0627L19.5 6.5C20.3284 5.67157 20.3284 4.32843 19.5 3.5C18.6716 2.67157 17.3284 2.67157 16.5 3.5L3.93726 16.0627C3.59136 16.4086 3.4184 16.5816 3.29472 16.7834C3.18506 16.9624 3.10425 17.1574 3.05526 17.3615C3 17.5917 3 17.8363 3 18.3255V20Z"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round" />
                             </svg>
                             Edit
                           </button>
@@ -184,10 +183,10 @@ function ProjectList() {
               </table>
             </div>
           </div>
-          
+
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="pagination-container mb-0">
+            <div className="pagination-container pb-10">
               <button
                 className="pagination-button"
                 onClick={prevPage}
@@ -195,11 +194,11 @@ function ProjectList() {
               >
                 Previous
               </button>
-              
+
               <div className="flex items-center gap-2">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <button 
-                    key={page} 
+                  <button
+                    key={page}
                     className={`pagination-page-button ${currentPage === page ? 'active' : ''}`}
                     onClick={() => handlePageChange(page)}
                   >
@@ -207,7 +206,7 @@ function ProjectList() {
                   </button>
                 ))}
               </div>
-              
+
               <button
                 className="pagination-button"
                 onClick={nextPage}

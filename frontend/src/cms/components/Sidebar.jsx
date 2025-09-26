@@ -9,7 +9,8 @@ import {
   HiUserGroup,
   HiInformationCircle,
   HiLogout,
-  HiMenu
+  HiMenu,
+  HiShare
 } from 'react-icons/hi';
 import { useLocation } from 'react-router-dom';
 import ajdanLogo from '../../assets/image/ajdan-light-logo.png';
@@ -53,74 +54,71 @@ function Sidebar({ handleLogout }) {
         <a
           href='dashboard'
           className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/dashboard')
-              ? 'text-secondary-lavendergray6 font-medium'
-              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            ? 'text-secondary-lavendergray6 font-medium'
+            : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
             }`}
         >
           <HiChartPie className="text-lg" />
           {!collapsed && 'Dashboard'}
         </a>
-          <a
+        <a
           href="/popuplist"
           className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/popuplist')
-              ? 'text-secondary-lavendergray6 font-medium'
-              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            ? 'text-secondary-lavendergray6 font-medium'
+            : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
             }`}
         >
           <HiInformationCircle className="text-lg" />
           {!collapsed && 'Project Enquiries'}
         </a>
-          <a
+        <a
           href="/contactlist"
           className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/contactlist')
-              ? 'text-secondary-lavendergray6 font-medium'
-              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            ? 'text-secondary-lavendergray6 font-medium'
+            : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
             }`}
         >
           <HiPhone className="text-lg" />
           {!collapsed && 'Contact Enquires Forms'}
         </a>
-          <a
+        <a
           href="/newsletter"
           className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/newsletter')
-              ? 'text-secondary-lavendergray6 font-medium'
-              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            ? 'text-secondary-lavendergray6 font-medium'
+            : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
             }`}
         >
           <HiMail className="text-lg" />
           {!collapsed && 'Newsletter Enquires'}
         </a>
-          <a
-            href="/teamlist"
-            className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${
-            ['/teamlist', '/teamcreate', '/teamupdate'].includes(location.pathname)
-             ? 'text-secondary-lavendergray6 font-medium'
-             : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
-             }`}
-            >
-            <HiUserGroup className="text-lg" />
-            {!collapsed && 'About Us Team'}
-            </a>
-          <a
+        <a
+          href="/teamlist"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${['/teamlist', '/teamcreate', '/teamupdate'].includes(location.pathname)
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
+        >
+          <HiUserGroup className="text-lg" />
+          {!collapsed && 'About Us Team'}
+        </a>
+        <a
           href="/projectlist"
-            className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${
-            ['/projectlist', '/projectupdate',].includes(location.pathname)
-             ? 'text-secondary-lavendergray6 font-medium'
-             : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
-             }`}
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${['/projectlist', '/projectupdate',].includes(location.pathname)
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
         >
           <HiFolder className="text-lg" />
           {!collapsed && 'Project Listing'}
         </a>
-       
+
         <a
           href="/bloglist"
-         className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${
-           ['/bloglist', '/create', '/edit/'].includes(location.pathname)
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${['/bloglist', '/create', '/edit/'].includes(location.pathname)
 
-             ? 'text-secondary-lavendergray6 font-medium'
-             : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
-             }`}
+              ? 'text-secondary-lavendergray6 font-medium'
+              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            }`}
         >
           <HiNewspaper className="text-lg" />
           {!collapsed && 'News'}
@@ -128,25 +126,23 @@ function Sidebar({ handleLogout }) {
         <a
           href="/userlist"
           className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/userlist')
-              ? 'text-secondary-lavendergray6 font-medium'
-              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+            ? 'text-secondary-lavendergray6 font-medium'
+            : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
             }`}
         >
           <HiFolder className="text-lg" />
           {!collapsed && 'Users'}
         </a>
-      
-              <a
-          href="/rolelist"
-          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/rolelist')
-              ? 'text-secondary-lavendergray6 font-medium'
-              : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
+        <a
+          href="/socialmedia-links"
+          className={`flex items-center gap-2 px-2 py-2 rounded text-[14px] font-semibold ${isActive('/socialmedia-links')
+            ? 'text-secondary-lavendergray6 font-medium'
+            : 'text-white hover:text-main-silver3-600 hover:bg-secondary-dustyblue1'
             }`}
         >
-          <HiFolder className="text-lg" />
-          {!collapsed && 'Roles'}
+          <HiShare className="text-lg" />
+          {!collapsed && 'Social Media Links'}
         </a>
-      
       </nav>
     </div>
   );

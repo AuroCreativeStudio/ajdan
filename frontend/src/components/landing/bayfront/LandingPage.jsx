@@ -17,9 +17,12 @@ import { FaInstagram, FaXTwitter, FaTiktok, FaLinkedin } from "react-icons/fa6";
 import { AnimatePresence, motion } from "framer-motion";
 import saFlag from "./images/togglear.png";
 import enFlag from "./images/toggleen.png";
+import * as countryCodes from "country-codes-list";
+import Select from "react-select";
 
 const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://localhost:1337";
 const STRAPI_TOKEN = import.meta.env.VITE_STRAPI_TOKEN || "";
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^\d{7,15}$/;
 
@@ -30,6 +33,40 @@ const compact = (obj) =>
     )
   );
 
+const countries = countryCodes.all(); // gives array of { countryNameEn, countryCallingCode, countryCode }
+
+const options = countries.map(c => ({
+  value: `+${c.countryCallingCode}`,
+  label: `${c.countryCode} +${c.countryCallingCode}`, // e.g. RW +250
+}));
+
+
+const handleDownload = async (url, fileName) => {
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      credentials: "include", // 👈 important for Strapi CORS
+    });
+    if (!response.ok) throw new Error("Network response was not ok");
+
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (err) {
+    console.error("Download failed:", err);
+  }
+};
+
+
+
 // LangToggle component (moved outside of AjdanBayfront)
 const LangToggle = () => {
   const location = useLocation();
@@ -39,6 +76,15 @@ const LangToggle = () => {
   // Get current language from URL or i18n
   const match = location.pathname.match(/^\/(en|ar)(\/|$)/);
   const [lang, setLang] = useState(match ? match[1] : i18n.language || "en");
+
+
+  const withBaseUrl = (file) => {
+    if (!file) return null;
+    const url = file.url || file?.attributes?.url;
+    if (!url) return null;
+    return url.startsWith("http") ? url : `${API_URL}${url}`;
+  };
+
 
   // Sync with i18n language changes
   useEffect(() => {
@@ -422,7 +468,7 @@ const AjdanBayfront = () => {
       <motion.div className="relative flex items-center justify-center w-full min-h-screen overflow-hidden hero">
         {/* Desktop Background */}
         <motion.img
-          src={bg}
+          src={data?.hero_image_desktop ? `${STRAPI_URL}${data.hero_image_desktop}` : bg}
           alt="Background"
           initial={{ scale: 1.1, opacity: 1 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -435,7 +481,7 @@ const AjdanBayfront = () => {
 
         {/* Mobile Background */}
         <motion.img
-          src={mobileBg}
+          src={data?.hero_image_mobile ? `${STRAPI_URL}${data.hero_image_mobile}` : mobileBg}
           alt="Background Mobile"
           initial={{ scale: 1.1, opacity: 1 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -467,46 +513,27 @@ const AjdanBayfront = () => {
           {/* Right Side: Download + Ajdan Logo */}
           {/* Download + Ajdan Logo */}
           <div
-            className={`flex items-center gap-2 md:gap-6 ${
-              i18n.language === "ar" ? "justify-start" : "justify-end"
-            }`}
+            className={`flex items-center gap-2 md:gap-6 ${i18n.language === "ar" ? "justify-start" : "justify-end"
+              }`}
           >
             {/* Brochure download buttons */}
-            {data?.pdf_upload?.length > 0 &&
-              data.pdf_upload.map((fileUrl, idx) => (
-                <a
-                  key={idx}
-                  href={`${STRAPI_URL}${fileUrl}`}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <button
-                    style={{
-                      lineHeight: "1",
-                      paddingTop: 0,
-                      paddingBottom: 0,
-                      height: 28,
-                    }}
-                    className={`relative px-3 sm:px-4
-    text-[9px] sm:text-[12px]   /* default for English */
-    font-regular font-commuter text-white shadow
-    border-[1.5px] border-[#C1A580] rounded-sm bg-transparent
-    ${
-      i18n.language === "ar" ? "text-[11px] sm:text-[15px]" : ""
-    }  /* bump up for Arabic */
-  `}
-                  >
-                    {i18n.language === "ar"
-                      ? `تنزيل الكتيب${
-                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
-                        }`
-                      : `Download Brochure${
-                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
-                        }`}
-                  </button>
-                </a>
-              ))}
+            {data?.pdf_upload && (
+              <button
+                onClick={() => handleDownload(`${STRAPI_URL}${data.pdf_upload}`, 'brochure.pdf')}
+                style={{ lineHeight: "1", paddingTop: 0, paddingBottom: 0, height: 28 }}
+                className={`relative px-3 sm:px-4
+      text-[9px] sm:text-[12px]
+      font-regular font-commuter text-white shadow
+      border-[1.5px] border-[#C1A580] rounded-sm bg-transparent
+      hover:bg-[#C1A580] hover:bg-opacity-20 transition-colors
+      ${i18n.language === "ar" ? "text-[11px] sm:text-[15px]" : ""}
+    `}
+              >
+                {i18n.language === "ar" ? "تنزيل الكتيب" : "Download Brochure"}
+              </button>
+            )}
+
+
 
             {/* Ajdan Logo */}
             <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580] md:bg-none">
@@ -538,11 +565,10 @@ const AjdanBayfront = () => {
               <span
                 className={`bayfront-heading uppercase block md:text-start text-center
     text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px]
-    ${
-      i18n.language === "ar"
-        ? "text-[34px] md:text-[28px] lg:text-[36px] xl:text-[40px]"
-        : ""
-    }
+    ${i18n.language === "ar"
+                    ? "text-[34px] md:text-[28px] lg:text-[36px] xl:text-[40px]"
+                    : ""
+                  }
   `}
               >
                 {data?.project_headline}
@@ -551,11 +577,10 @@ const AjdanBayfront = () => {
               <span
                 className={`bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap
     text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm
-    ${
-      i18n.language === "ar"
-        ? "text-[28px] md:text-[24px] lg:text-[32px] xl:text-[34px]"
-        : ""
-    }
+    ${i18n.language === "ar"
+                    ? "text-[28px] md:text-[24px] lg:text-[32px] xl:text-[34px]"
+                    : ""
+                  }
   `}
               >
                 {data?.project_description}
@@ -566,9 +591,8 @@ const AjdanBayfront = () => {
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-              className={`hidden my-6 border-t md:block border-white/80 ${
-                i18n.language === "ar" ? "origin-right" : "origin-left" // Right for Arabic, left for English
-              }`}
+              className={`hidden my-6 border-t md:block border-white/80 ${i18n.language === "ar" ? "origin-right" : "origin-left" // Right for Arabic, left for English
+                }`}
             />
           </div>
 
@@ -639,9 +663,8 @@ const AjdanBayfront = () => {
                   value={formData.email ?? ""}
                   onChange={handleChange}
                   placeholder={t("email_address")}
-                  className={`w-full h-11 text-[10px] text-white bg-[#124A63] rounded-sm border ${
-                    errors.email ? "border-red-500" : "border-[#AFD4E0]"
-                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#D7E0E2] px-4
+                  className={`w-full h-11 text-[10px] text-white bg-[#124A63] rounded-sm border ${errors.email ? "border-red-500" : "border-[#AFD4E0]"
+                    } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#D7E0E2] px-4
        font-chapaza [&::placeholder]:font-commuter
         ${i18n.language === "ar" ? "text-[12px] placeholder:text-[14px]" : ""}`}
                   aria-invalid={!!errors.email}
@@ -661,18 +684,92 @@ const AjdanBayfront = () => {
               {/* Phone */}
               <div>
                 <div className="flex w-full gap-2 phone-stack">
-                  <select
-                    value={dialCode ?? "+966"}
-                    onChange={(e) => setDialCode(e.target.value)}
-                    className={`w-20 h-11 text-[11px] text-[#D7E0E2] font-chapaza rounded-sm bg-[#124A63] border ${
-                      errors.phone ? "border-red-500" : "border-[#AFD4E0]"
-                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 font-normal ${
-                      !dialCode ? "text-[#D7E0E2]" : "text-white"
-                    } `}
-                  >
-                    <option value="+966">+966</option>
-                    <option value="+971">+971</option>
-                  </select>
+                  <Select
+                    options={options}
+                    value={options.find(opt => opt.value === dialCode)}
+                    onChange={(opt) => setDialCode(opt.value)}
+                    className="w-20"
+                    menuPlacement="bottom"
+                    menuShouldScrollIntoView={false}
+                    maxMenuHeight={180} // 4–5 items visible, then scroll
+                    isSearchable
+                    components={{
+                      IndicatorSeparator: () => null, // remove separator
+                      DropdownIndicator: () => null, // remove arrow
+                    }}
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        backgroundColor: "#124A63",
+                        borderColor: "#AFD4E0",
+                        borderRadius: "2px",
+                        minHeight: "44px",
+                        fontSize: "12px",
+                        color: "#D7E0E2",
+                        padding: "0 10px",
+                        boxShadow: "none",
+                        fontFamily: "Chapaza, sans-serif",
+                        fontWeight: "normal",
+                        textAlign: "left",
+                      }),
+                      valueContainer: (base) => ({
+                        ...base,
+                        padding: "0 4px",
+                        fontFamily: "Chapaza, sans-serif",
+                        textAlign: "left",
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        color: "#D7E0E2",
+                        fontSize: "12px",
+                        fontFamily: "Chapaza, sans-serif",
+                        textAlign: "left",
+                      }),
+                      input: (base) => ({
+                        ...base,
+                        color: "#D7E0E2",
+                        fontFamily: "Chapaza, sans-serif",
+                        fontSize: "12px",
+                        textAlign: "left",
+                      }),
+                      placeholder: (base) => ({
+                        ...base,
+                        color: "#D7E0E2",
+                        fontFamily: "Chapaza, sans-serif",
+                        fontSize: "12px",
+                        textAlign: "left",
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        backgroundColor: "#124A63",
+                        color: "#D7E0E2",
+                        fontFamily: "Chapaza, sans-serif",
+                        textAlign: "left",
+                      }),
+                      menuList: (base) => ({
+                        ...base,
+                        maxHeight: 180, // ensures scroll
+                        overflowY: "auto",
+                        scrollbarWidth: "none", // Firefox
+                        msOverflowStyle: "none", // IE/Edge
+                        "&::-webkit-scrollbar": {
+                          display: "none", // Chrome/Safari
+                        },
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isFocused ? "#0f3a4f" : "#124A63",
+                        color: "#D7E0E2",
+                        fontSize: "12px",
+                        fontFamily: "Chapaza, sans-serif",
+                        textAlign: "left",
+                        padding: "6px 8px",
+                      }),
+                    }}
+                  />
+
+
+
 
                   <input
                     type="tel"
@@ -684,18 +781,16 @@ const AjdanBayfront = () => {
                       setErrors((prev) => ({ ...prev, phone: "" }));
                     }}
                     placeholder={t("mobile_number")}
-                    className={`flex-1 h-11 text-[10px] text-white bg-[#124A63] rounded-sm border ${
-                      errors.phone ? "border-red-500" : "border-[#AFD4E0]"
-                    } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#D7E0E2]
-         font-chapaza [&::placeholder]:font-commuter
-         ${
-           i18n.language === "ar" ? "text-[12px] placeholder:text-[14px]" : ""
-         }`}
+                    className={`flex-1 h-11 text-[10px] text-white bg-[#124A63] rounded-sm border ${errors.phone ? "border-red-500" : "border-[#AFD4E0]"
+                      } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#D7E0E2]
+        font-chapaza [&::placeholder]:font-commuter
+        ${i18n.language === "ar" ? "text-[12px] placeholder:text-[14px]" : ""}`}
                     aria-invalid={!!errors.phone}
                     aria-describedby="err-phone"
                     required
                   />
                 </div>
+
                 {errors.phone && (
                   <p
                     id="err-phone"
@@ -730,9 +825,8 @@ const AjdanBayfront = () => {
                     <option
                       value=""
                       disabled
-                      className={`${
-                        i18n.language === "ar" ? "text-[14px]" : "text-[9px]"
-                      } text-[#D7E0E2]`}
+                      className={`${i18n.language === "ar" ? "text-[14px]" : "text-[9px]"
+                        } text-[#D7E0E2]`}
                     >
                       {t("more_details")}
                     </option>
@@ -741,9 +835,8 @@ const AjdanBayfront = () => {
                       <option
                         key={opt.code}
                         value={opt.code}
-                        className={`${
-                          i18n.language === "ar" ? "text-[14px]" : "text-[9px]"
-                        } text-white`}
+                        className={`${i18n.language === "ar" ? "text-[14px]" : "text-[9px]"
+                          } text-white`}
                       >
                         {opt.label}
                       </option>
@@ -751,9 +844,8 @@ const AjdanBayfront = () => {
                   </select>
 
                   <span
-                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#D7E0E2] pointer-events-none ${
-                      i18n.language === "ar" ? "left-3" : "right-3" // Left for Arabic, right for English
-                    }`}
+                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#D7E0E2] pointer-events-none ${i18n.language === "ar" ? "left-3" : "right-3" // Left for Arabic, right for English
+                      }`}
                   >
                     ▼
                   </span>
@@ -835,9 +927,8 @@ const AjdanBayfront = () => {
         </main>
 
         <div
-          className={`fixed z-50 flex flex-col items-center gap-3 ${
-            i18n.language === "ar" ? "left-0 sm:left-6" : "right-0 sm:right-6"
-          } bottom-2 sm:bottom-6`}
+          className={`fixed z-50 flex flex-col items-center gap-3 ${i18n.language === "ar" ? "left-0 sm:left-6" : "right-0 sm:right-6"
+            } bottom-2 sm:bottom-6`}
         >
           <LangToggle />
 
@@ -862,9 +953,8 @@ const AjdanBayfront = () => {
           slides.map((slide, index) => (
             <motion.div
               key={`${index}-${slide}`}
-              className={`absolute inset-0 transition-all duration-200 ${
-                index === current ? "z-10" : "z-0 pointer-events-none"
-              }`}
+              className={`absolute inset-0 transition-all duration-200 ${index === current ? "z-10" : "z-0 pointer-events-none"
+                }`}
               initial={{ opacity: 0, scale: 1 }}
               animate={{
                 opacity: index === current && scrollY > 50 ? 1 : 0,
@@ -889,9 +979,8 @@ const AjdanBayfront = () => {
           slides.map((slide, index) => (
             <motion.div
               key={`${index}-${slide}`}
-              className={`absolute inset-0 transition-all duration-200 ${
-                index === current ? "z-10" : "z-0 pointer-events-none"
-              }`}
+              className={`absolute inset-0 transition-all duration-200 ${index === current ? "z-10" : "z-0 pointer-events-none"
+                }`}
               initial={{ opacity: 0, scale: 1 }}
               animate={{
                 opacity: index === current && scrollY > 50 ? 1 : 0,
@@ -934,9 +1023,8 @@ const AjdanBayfront = () => {
               <button
                 key={i}
                 onClick={() => setCurrent(i)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  activeIndex === i ? "bg-white scale-125" : "bg-white/50"
-                }`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${activeIndex === i ? "bg-white scale-125" : "bg-white/50"
+                  }`}
               />
             );
           })}

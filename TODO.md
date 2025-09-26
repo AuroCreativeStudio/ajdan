@@ -1,0 +1,2 @@
+- [x] Fix featured_image fetching in listService.js: correct field name to 'featured_image' and return full object instead of .url
+- [ ] Test the List component to ensure images load properly

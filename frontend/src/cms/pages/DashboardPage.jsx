@@ -10,11 +10,11 @@ import ApexCharts from 'react-apexcharts';
 function Dashboard({ token, user }) {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
-  const { cmsLang } = useContext(CmsLangContext); // 👉 Get current language
+  const { cmsLang } = useContext(CmsLangContext); 
   const [contactList, setContactList] = useState([]);
   const [projectList, setProjectList] = useState([]);
   const [newsletterList, setNewsletterList] = useState([]);
-  const [filter, setFilter] = useState('30days'); // 'today', '7days', '30days'
+  const [filter, setFilter] = useState('30days'); 
   const [isLoading, setIsLoading] = useState(true);
 
   const getGraphData = () => {

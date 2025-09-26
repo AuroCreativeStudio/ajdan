@@ -13,11 +13,15 @@ import wa from "../../../assets/landing images/whatsapp.png";
 import arrowleft from "../../../assets/landing images/arrow-left.png";
 import arrowright from "../../../assets/landing images/arrow-right.png";
 import saFlag from "../../../assets/landing images/togglear.png";
-import enFlag from "../../../assets/landing images/toggleen.png"; 
+import enFlag from "../../../assets/landing images/toggleen.png";
 import ajdan from "../../../assets/landing images/logoajdan.png";
-import { motion, AnimatePresence } from "framer-motion";  
+import { motion, AnimatePresence } from "framer-motion";
 import { FaInstagram, FaXTwitter, FaTiktok, FaLinkedin } from "react-icons/fa6";
 import { getSocialLinks } from "../../../services/socialiconService";
+import * as countryCodes from "country-codes-list";
+import Select from "react-select";
+
+
 
 const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://localhost:1337";
 const STRAPI_TOKEN = import.meta.env.VITE_STRAPI_TOKEN || "";
@@ -30,6 +34,38 @@ const compact = (obj) =>
       ([_, v]) => v !== undefined && v !== null && v !== ""
     )
   );
+
+const countries = countryCodes.all(); // gives array of { countryNameEn, countryCallingCode, countryCode }
+
+const options = countries.map(c => ({
+  value: `+${c.countryCallingCode}`,
+  label: `${c.countryCode} +${c.countryCallingCode}`, // e.g. RW +250
+}));
+
+const handleDownload = async (url, fileName) => {
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      credentials: "include", // 👈 important for Strapi CORS
+    });
+    if (!response.ok) throw new Error("Network response was not ok");
+
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (err) {
+    console.error("Download failed:", err);
+  }
+};
+
 
 // LangToggle component (moved outside of AjdanBayfront)
 const LangToggle = () => {
@@ -422,46 +458,43 @@ const Rejan = () => {
     <>
       <motion.div className="relative flex items-center justify-center w-full min-h-screen overflow-hidden hero">
         {/* Desktop Background */}
-     {/* Desktop Background Image */}
-<motion.img
-  src={bg}
-  alt="Background"
-  initial={{ scale: 1.1, opacity: 1 }}
-  animate={{ scale: 1, opacity: 1 }}
-  transition={{ duration: 22, ease: "easeOut" }}
-  className="absolute inset-0 hidden sm:block w-full h-full object-cover object-center"
-  style={{
-    transform: i18n.language === "ar" ? "scaleX(-1)" : "scaleX(1)",
-  }}
-/>
+        {/* Desktop Background Image */}
+        <motion.img
+          src={data?.hero_image_desktop ? `${STRAPI_URL}${data.hero_image_desktop}` : bg} alt="Background"
+          initial={{ scale: 1.1, opacity: 1 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 22, ease: "easeOut" }}
+          className="absolute inset-0 hidden sm:block w-full h-full object-cover object-center"
+          style={{
+            transform: i18n.language === "ar" ? "scaleX(-1)" : "scaleX(1)",
+          }}
+        />
 
-{/* Mobile Background Image */}
-<motion.img
-  src={mobileBg}
-  alt="Background Mobile"
-  initial={{ scale: 1.1, opacity: 1 }}
-  animate={{ scale: 1, opacity: 1 }}
-  transition={{ duration: 22, ease: "easeOut" }}
-  className="absolute inset-0 sm:hidden w-full h-[100vh] object-cover object-left"
- />
+        {/* Mobile Background Image */}
+        <motion.img
+          src={data?.hero_image_mobile ? `${STRAPI_URL}${data.hero_image_mobile}` : mobileBg} initial={{ scale: 1.1, opacity: 1 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 22, ease: "easeOut" }}
+          className="absolute inset-0 sm:hidden w-full h-[100vh] object-cover object-left"
+        />
 
-{/* Mobile Gradient Overlay */}
-<div
-  className="absolute inset-0 sm:hidden"
-  style={{
-    background:
-      "linear-gradient(rgba(47, 43, 37, 0.6) 0%, rgba(138, 130, 117, 0.4) 57%, rgba(230, 217, 196, 0.1) 84%)",
-  }}
-/>
+        {/* Mobile Gradient Overlay */}
+        <div
+          className="absolute inset-0 sm:hidden"
+          style={{
+            background:
+              "linear-gradient(rgba(47, 43, 37, 0.6) 0%, rgba(138, 130, 117, 0.4) 57%, rgba(230, 217, 196, 0.1) 84%)",
+          }}
+        />
 
-{/* Desktop Gradient Overlay */}
-<div
-  className="absolute inset-0 hidden sm:block"
-  style={{
-    background:
-      "linear-gradient(rgba(47, 43, 37, 0.6) 0%, rgba(138, 130, 117, 0.4) 57%, rgba(230, 217, 196, 0.1) 84%)",
-  }}
-/>
+        {/* Desktop Gradient Overlay */}
+        <div
+          className="absolute inset-0 hidden sm:block"
+          style={{
+            background:
+              "linear-gradient(rgba(47, 43, 37, 0.6) 0%, rgba(138, 130, 117, 0.4) 57%, rgba(230, 217, 196, 0.1) 84%)",
+          }}
+        />
 
         <motion.header
           initial={{ y: -50, opacity: 0 }}
@@ -478,44 +511,34 @@ const Rejan = () => {
 
           {/* Download + Ajdan Logo */}
           <div
-            className={`flex items-center gap-2 md:gap-6 ${
-              i18n.language === "ar" ? "justify-start" : "justify-end"
-            }`}
+            className={`flex items-center gap-2 md:gap-6 ${i18n.language === "ar" ? "justify-start" : "justify-end"
+              }`}
           >
             {/* Brochure download buttons */}
-            {data?.pdf_upload?.length > 0 &&
-              data.pdf_upload.map((fileUrl, idx) => (
-                <a
-                  key={idx}
-                  href={`${STRAPI_URL}${fileUrl}`}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                 <button
-  style={{
-    lineHeight: "1",
-    paddingTop: 0,
-    paddingBottom: 0,
-    height: 28,
-  }}
-  className={`relative px-3 sm:px-4
+            {data?.pdf_upload && (
+
+              <button
+              onClick={() => handleDownload(`${STRAPI_URL}${data.pdf_upload}`, 'brochure.pdf')}
+                style={{
+                  lineHeight: "1",
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                  height: 28,
+                }}
+                className={`relative px-3 sm:px-4
     font-regular font-aeoniknormal text-white shadow
     border-[1.5px] border-[#515846] rounded-sm bg-transparent
-    ${
-      i18n.language === "ar"
-        ? "text-[11px] sm:text-[14px] font-orleen"     // Arabic sizes
-        : "text-[9px]  sm:text-[12px]"    // English sizes
-    }
+    ${i18n.language === "ar"
+                    ? "text-[11px] sm:text-[14px] font-orleen"     // Arabic sizes
+                    : "text-[9px]  sm:text-[12px]"    // English sizes
+                  }
   `}
->
-  {i18n.language === "ar"
-    ? `تنزيل الكتيب${data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""}`
-    : `DOWNLOAD BROCHURE${data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""}`}
-</button>
+              >
+                {i18n.language === "ar" ? "تنزيل الكتيب" : "Download Brochure"}
+              </button>
 
-                </a>
-              ))}
+
+            )}
 
             {/* Ajdan Logo */}
             <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#515846] to-[#515846] md:bg-none">
@@ -545,22 +568,22 @@ const Rejan = () => {
               className="leading-none text-white font-apollo font-regular"
             >
               <span
-  className={`bayfront-heading uppercase block md:text-start text-center
+                className={`bayfront-heading uppercase block md:text-start text-center
     text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px]
     ${i18n.language === "ar" ? "text-[34px] md:text-[28px] lg:text-[36px] xl:text-[40px]" : ""}
   `}
->
-  {data?.project_headline}
-</span>
+              >
+                {data?.project_headline}
+              </span>
 
-<span
-  className={`bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap
+              <span
+                className={`bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap
     text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm
     ${i18n.language === "ar" ? "text-[28px] md:text-[24px] lg:text-[32px] xl:text-[34px]" : ""}
   `}
->
-  {data?.project_description}
-</span>
+              >
+                {data?.project_description}
+              </span>
 
             </motion.h1>
 
@@ -568,9 +591,8 @@ const Rejan = () => {
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-              className={`hidden my-6 border-t md:block border-white/80 ${
-                i18n.language === "ar" ? "origin-right" : "origin-left" // Right for Arabic, left for English
-              }`}
+              className={`hidden my-6 border-t md:block border-white/80 ${i18n.language === "ar" ? "origin-right" : "origin-left" // Right for Arabic, left for English
+                }`}
             />
           </div>
 
@@ -582,18 +604,18 @@ const Rejan = () => {
             transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
             className="w-full max-w-xl xs:w-[95%] sm:p-8 md:p-4 lg:p-12 mx-6 sm:mx-8 md:mx-auto bg-no-repeat sm:mt-0"
           >
-         <h2
-  className={`
+            <h2
+              className={`
     mb-4
     text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm
     font-aeoniknormal font-regular text-[#FFFFFF] uppercase register
     ${i18n.language === "ar"
-      ? "text-right text-[12px] sm:text-[15px] md:text-base font-orleen"
-      : "text-left"}
+                  ? "text-right text-[12px] sm:text-[15px] md:text-base font-orleen"
+                  : "text-left"}
   `}
->
-  {t("register_interest")}
-</h2>
+            >
+              {t("register_interest")}
+            </h2>
 
             <form
               className="flex flex-col gap-2 font-aeoniknormal font-regular"
@@ -615,9 +637,8 @@ const Rejan = () => {
                   value={formData.username ?? ""}
                   onChange={handleChange}
                   placeholder={t("full_name")}
-                  className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
-                    errors.username ? "border-red-500" : "border-[#DED6CB]"
-                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#DED6CB] uppercase px-4
+                  className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${errors.username ? "border-red-500" : "border-[#DED6CB]"
+                    } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#DED6CB] uppercase px-4
                    ${i18n.language === "ar" ? "text-[12px] font-orleen placeholder:text-[15px]" : ""}`}
                   aria-invalid={!!errors.username}
                   aria-describedby="err-username"
@@ -641,9 +662,8 @@ const Rejan = () => {
                   value={formData.email ?? ""}
                   onChange={handleChange}
                   placeholder={t("email_address")}
-                  className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
-                    errors.email ? "border-red-500" : "border-[#DED6CB]"
-                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#DED6CB] px-4
+                  className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${errors.email ? "border-red-500" : "border-[#DED6CB]"
+                    } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#DED6CB] px-4
     
          ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px] font-orleen" : ""}`}
                   aria-invalid={!!errors.email}
@@ -663,18 +683,95 @@ const Rejan = () => {
               {/* Phone */}
               <div>
                 <div className="flex w-full gap-2 phone-stack">
-                  <select
-                    value={dialCode ?? "+966"}
-                    onChange={(e) => setDialCode(e.target.value)}
-                    className={`w-20 h-11 text-[13px] text-[#DED6CB] font-aeoniknormal custom-select1 rounded-sm bg-[#2E2924] border ${
-                      errors.phone ? "border-red-500" : "border-[#DED6CB]"
-                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 font-normal ${
-                      !dialCode ? "text-[#DED6CB]" : "text-white"
-                    }${i18n.language === "ar" ? "text-[16px] font-orleen" : ""}`}
-                  >
-                    <option value="+966">+966</option>
-                    <option value="+971">+971</option>
-                  </select>
+                  <Select
+                    options={options}
+                    value={options.find(opt => opt.value === dialCode)}
+                    onChange={(opt) => setDialCode(opt.value)}
+                    className="w-20"
+                    menuPlacement="bottom"
+                    menuShouldScrollIntoView={false}
+                    maxMenuHeight={180} // 4–5 items visible, then scroll
+                    isSearchable
+                    components={{
+                      IndicatorSeparator: () => null, // remove separator
+                      DropdownIndicator: () => null, // remove arrow
+                    }}
+                    styles={{
+                      control: (base, state) => ({
+                        ...base,
+                        backgroundColor: "#2E2924",
+                        borderColor: state.isFocused ? "#E6D9C4" : "#DED6CB", // ✅ custom border on focus
+                        borderRadius: "2px",
+                        minHeight: "44px",
+                        fontSize: "10px",
+                        color: "#E6D9C4",
+                        padding: "0 10px",
+                        boxShadow: "none",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        fontWeight: "normal",
+                        textAlign: "left",
+                        boxShadow: state.isFocused ? "0 0 0 0px #E6D9C4" : "none",
+                        outline: "none",
+                        "&:hover": {
+                          borderColor: "#E6D9C4",
+                        },
+                      }),
+                      valueContainer: (base) => ({
+                        ...base,
+                        padding: "0 4px",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        textAlign: "left",
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        color: "#E6D9C4",
+                        fontSize: "10px",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        textAlign: "left",
+                      }),
+                      input: (base) => ({
+                        ...base,
+                        color: "#E6D9C4",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        fontSize: "10px",
+                        textAlign: "left",
+                      }),
+                      placeholder: (base) => ({
+                        ...base,
+                        color: "#E6D9C4",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        fontSize: "10px",
+                        textAlign: "left",
+                      }),
+                      menu: (base) => ({
+                        ...base,
+                        backgroundColor: "#2E2924",
+                        color: "#E6D9C4",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        textAlign: "left",
+                      }),
+                      menuList: (base) => ({
+                        ...base,
+                        maxHeight: 180, // ensures scroll
+                        overflowY: "auto",
+                        scrollbarWidth: "none", // Firefox
+                        msOverflowStyle: "none", // IE/Edge
+                        "&::-webkit-scrollbar": {
+                          display: "none", // Chrome/Safari
+                        },
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: "#2E2924",
+                        color: "#E6D9C4",
+                        borderColor: "#DED6CB",
+                        fontSize: "10px",
+                        fontFamily: "AeonikTRIAL, sans-serif",
+                        textAlign: "left",
+                        padding: "6px 8px",
+                      }),
+                    }}
+                  />
 
                   <input
                     type="tel"
@@ -686,9 +783,8 @@ const Rejan = () => {
                       setErrors((prev) => ({ ...prev, phone: "" }));
                     }}
                     placeholder={t("mobile_number")}
-                    className={`flex-1 h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
-                      errors.phone ? "border-red-500" : "border-[#DED6CB]"
-                    } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#E6D9C4]
+                    className={`flex-1 h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${errors.phone ? "border-red-500" : "border-[#DED6CB]"
+                      } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#E6D9C4]
 
            ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px] font-orleen" : ""}`}
                     aria-invalid={!!errors.phone}
@@ -709,14 +805,14 @@ const Rejan = () => {
               {/* Reason */}
               <div>
                 <div className="relative w-full">
-                 <select
-  name="more_details_code"
-  value={moreDetailsCode}
-  onChange={(e) => {
-    setMoreDetailsCode(e.target.value);
-    setErrors((prev) => ({ ...prev, moreDetailsCode: "" }));
-  }}
-  className={`
+                  <select
+                    name="more_details_code"
+                    value={moreDetailsCode}
+                    onChange={(e) => {
+                      setMoreDetailsCode(e.target.value);
+                      setErrors((prev) => ({ ...prev, moreDetailsCode: "" }));
+                    }}
+                    className={`
     w-full h-11 bg-[#2E2924] rounded-sm border custom-select1
     ${errors.moreDetailsCode ? "border-red-500" : "border-[#DED6CB]"}
     focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3
@@ -724,32 +820,31 @@ const Rejan = () => {
     ${moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"}
     ${i18n.language === "ar" ? "text-[14px] font-orleen" : "text-[9px] md:text-[9px]"}
   `}
-  aria-invalid={!!errors.moreDetailsCode}
-  aria-describedby="err-reason"
-  required
->
-  <option
-    value=""
-    disabled
-    className={i18n.language === "ar" ? "text-[14px] font-orleen" : "text-[9px] text-[#E6D9C4]"}
-  >
-    {t("more_details")}
-  </option>
-  {MORE_DETAIL_OPTIONS.map((opt) => (
-    <option
-      key={opt.code}
-      value={opt.code}
-      className={i18n.language === "ar" ? "text-[14px] font-orleen" : "text-[9px] text-white"}
-    >
-      {opt.label}
-    </option>
-  ))}
-</select>
+                    aria-invalid={!!errors.moreDetailsCode}
+                    aria-describedby="err-reason"
+                    required
+                  >
+                    <option
+                      value=""
+                      disabled
+                      className={i18n.language === "ar" ? "text-[14px] font-orleen" : "text-[9px] text-[#E6D9C4]"}
+                    >
+                      {t("more_details")}
+                    </option>
+                    {MORE_DETAIL_OPTIONS.map((opt) => (
+                      <option
+                        key={opt.code}
+                        value={opt.code}
+                        className={i18n.language === "ar" ? "text-[14px] font-orleen" : "text-[9px] text-white"}
+                      >
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
 
                   <span
-                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#E6D9C4] pointer-events-none ${
-                      i18n.language === "ar" ? "left-3 font-orleen" : "right-3" // Left for Arabic, right for English
-                    }`}
+                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#E6D9C4] pointer-events-none ${i18n.language === "ar" ? "left-3 font-orleen" : "right-3" // Left for Arabic, right for English
+                      }`}
                   >
                     ▼
                   </span>
@@ -802,23 +897,23 @@ const Rejan = () => {
             />
 
             {/* Buttons Row (under form) */}
-           <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
-             {/* WhatsApp Icon */}
-             {socialLinks?.whatsapp && (
-               <a
-                 href={socialLinks.whatsapp}
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 className="transition hover:scale-110 ml-[1px]"
-               >
-                 <img
-                   src={wa}
-                   alt="WhatsApp"
-                   className="object-contain w-8 sm:w-12 sm:h-12 drop-shadow-lg"
-                 />
-               </a>
-             )}
-           </div>
+            <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
+              {/* WhatsApp Icon */}
+              {socialLinks?.whatsapp && (
+                <a
+                  href={socialLinks.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition hover:scale-110 ml-[1px]"
+                >
+                  <img
+                    src={wa}
+                    alt="WhatsApp"
+                    className="object-contain w-8 sm:w-12 sm:h-12 drop-shadow-lg"
+                  />
+                </a>
+              )}
+            </div>
           </motion.div>
 
           {/* Mobile-only subheading spacer */}
@@ -826,9 +921,8 @@ const Rejan = () => {
         </main>
 
         <div
-          className={`fixed z-50 flex flex-col items-center gap-3 ${
-            i18n.language === "ar" ? "left-0 sm:left-6" : "right-0 sm:right-6"
-          } bottom-2 sm:bottom-6`}
+          className={`fixed z-50 flex flex-col items-center gap-3 ${i18n.language === "ar" ? "left-0 sm:left-6" : "right-0 sm:right-6"
+            } bottom-2 sm:bottom-6`}
         >
           <LangToggle />
 
@@ -853,9 +947,8 @@ const Rejan = () => {
           slides.map((slide, index) => (
             <motion.div
               key={`${index}-${slide}`}
-              className={`absolute inset-0 transition-all duration-200 ${
-                index === current ? "z-10" : "z-0 pointer-events-none"
-              }`}
+              className={`absolute inset-0 transition-all duration-200 ${index === current ? "z-10" : "z-0 pointer-events-none"
+                }`}
               initial={{ opacity: 0, scale: 1 }}
               animate={{
                 opacity: index === current && scrollY > 50 ? 1 : 0,
@@ -880,9 +973,8 @@ const Rejan = () => {
           slides.map((slide, index) => (
             <motion.div
               key={`${index}-${slide}`}
-              className={`absolute inset-0 transition-all duration-200 ${
-                index === current ? "z-10" : "z-0 pointer-events-none"
-              }`}
+              className={`absolute inset-0 transition-all duration-200 ${index === current ? "z-10" : "z-0 pointer-events-none"
+                }`}
               initial={{ opacity: 0, scale: 1 }}
               animate={{
                 opacity: index === current && scrollY > 50 ? 1 : 0,
@@ -925,9 +1017,8 @@ const Rejan = () => {
               <button
                 key={i}
                 onClick={() => setCurrent(i)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  activeIndex === i ? "bg-white scale-125" : "bg-white/50"
-                }`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${activeIndex === i ? "bg-white scale-125" : "bg-white/50"
+                  }`}
               />
             );
           })}

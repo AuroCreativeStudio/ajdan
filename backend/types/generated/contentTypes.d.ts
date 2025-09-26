@@ -655,6 +655,24 @@ export interface ApiListList extends Struct.CollectionTypeSchema {
     featured_image: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios'
     >;
+    gallery_images: Schema.Attribute.Media<'images' | 'files', true> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    hero_image_desktop: Schema.Attribute.Media<'images' | 'files'> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    hero_image_mobile: Schema.Attribute.Media<'files' | 'images'> &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     locale: Schema.Attribute.String;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::list.list'>;
     payment_plan_ar: Schema.Attribute.JSON &
@@ -682,12 +700,40 @@ export interface ApiListList extends Struct.CollectionTypeSchema {
         };
       }> &
       Schema.Attribute.DefaultTo<'[]'>;
+    pdf_upload: Schema.Attribute.Media &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
     place: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
       }>;
+    project_description: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    project_headline: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    project_stage_ar: Schema.Attribute.Enumeration<
+      [
+        '\u062A\u062D\u062A \u0627\u0644\u0625\u0646\u0634\u0627\u0621',
+        '\u0645\u062A\u0648\u0641\u0631 \u0627\u0644\u0622\u0646',
+        '\u0627\u0644\u0642\u0627\u062F\u0645\u0629',
+      ]
+    >;
+    project_stage_en: Schema.Attribute.Enumeration<
+      ['Under Construction', 'Available Now', 'Upcoming']
+    >;
     property_type_ar: Schema.Attribute.JSON &
       Schema.Attribute.CustomField<
         'plugin::multi-select.multi-select',
@@ -831,6 +877,12 @@ export interface ApiProjectContactFormProjectContactForm
           localized: true;
         };
       }>;
+    more_details: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     phone: Schema.Attribute.BigInteger &
       Schema.Attribute.SetPluginOptions<{
         i18n: {
@@ -898,6 +950,68 @@ export interface ApiProjectListProjectList extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSocialLinkSocialLink extends Struct.CollectionTypeSchema {
+  collectionName: 'social_links';
+  info: {
+    description: '';
+    displayName: 'social link';
+    pluralName: 'social-links';
+    singularName: 'social-link';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  pluginOptions: {
+    i18n: {
+      localized: true;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    instagram: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    linkedin: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::social-link.social-link'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    tiktok: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    twitter: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    whatsapp: Schema.Attribute.String &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: false;
+        };
+      }>;
   };
 }
 
@@ -1480,6 +1594,7 @@ declare module '@strapi/strapi' {
       'api::newsletter.newsletter': ApiNewsletterNewsletter;
       'api::project-contact-form.project-contact-form': ApiProjectContactFormProjectContactForm;
       'api::project-list.project-list': ApiProjectListProjectList;
+      'api::social-link.social-link': ApiSocialLinkSocialLink;
       'api::userdetail.userdetail': ApiUserdetailUserdetail;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

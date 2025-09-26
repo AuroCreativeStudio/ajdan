@@ -34,6 +34,7 @@ import TeamUpdate from './cms/pages/TeamUpdate';
 import ProjectPopupList from './cms/pages/ProjectPopupList';
 import UserList from './cms/pages/UserList';
 import UserForm from './cms/pages/UserForm';
+import Socialmedia from './cms/pages/Socialmedia';
 import RoleList from './cms/pages/RoleList';
 import RoleForm from './cms/pages/RoleForm';
 import RoleProtectedRoute from './cms/components/RoleProtectedRoute';
@@ -85,6 +86,7 @@ function LayoutWrapper({ children }) {
     location.pathname.startsWith('/userlist') ||
     location.pathname.startsWith('/user-create') ||
     location.pathname.startsWith('/user-edit') ||
+    location.pathname.startsWith('/socialmedia-links') ||
     location.pathname.startsWith('/rolelist') ||
     location.pathname.startsWith('/role-create') ||
     location.pathname.startsWith('/role-edit') ||
@@ -340,6 +342,16 @@ function AppRoutes({ setToken, setUser, user }) {
           </CmsLayout>
         }
       />
+            <Route
+        path="/socialmedia-links"
+        element={
+          <CmsLayout>
+            <ProtectedRoute>
+              <Socialmedia />
+            </ProtectedRoute>
+          </CmsLayout>
+        }
+      />
       <Route
         path="/userlist"
         element={
@@ -432,6 +444,7 @@ function App() {
     '/user-edit',
     '/rolelist',
     '/role-create',
+    '/socialmedia-links', 
     '/role-edit'
   ];
 
