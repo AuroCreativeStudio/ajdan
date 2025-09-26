@@ -141,7 +141,7 @@ const SuccessPopup = ({ open, onClose, title, body, okLabel = "OK" }) => {
               className="w-full max-w-xs rounded-2xl shadow-2xl ring-1 ring-[#1aa0e0]/40 overflow-hidden"
             >
               <div className="bg-[#DED6CB] p-6 text-center relative">
-                <div className="mx-auto mb-4 h-10 w-10 rounded-lg grid place-items-center bg-[#C1A580]">
+                <div className="mx-auto mb-4 h-10 w-10 rounded-lg grid place-items-center bg-[#FD5645]">
                   <img
                     src={logoTile}
                     alt=""
@@ -151,20 +151,27 @@ const SuccessPopup = ({ open, onClose, title, body, okLabel = "OK" }) => {
                 </div>
 
                 <h3 className="sr-only">{title}</h3>
-                <p className="text-[13px] leading-5 font-cyrillic text-[#39215C]">
-                  {body}
-                </p>
+              <p
+  className={`text-[13px] leading-5 text-[#39215C] ${
+    i18n.language === "ar" ? "font-univers text-[16px]" : "font-cyrillic"
+  }`}
+>
+  {body}
+</p>
+
 
                 <div className="mt-6">
-                  <button
-                    onClick={onClose}
-                    className="w-24 h-9 rounded-md text-white text-[12px] font-cyrillic
-                               bg-gradient-to-r from-[#9E331A] to-[#BA4F21]
-                               hover:from-[#BA4F21] hover:to-[#9E331A]
-                               transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-white/50"
-                  >
-                    {okLabel}
-                  </button>
+             <button
+  onClick={onClose}
+  className={`w-24 h-9 rounded-md text-white text-[12px] 
+              bg-gradient-to-r from-[#9E331A] to-[#BA4F21]
+              hover:from-[#BA4F21] hover:to-[#9E331A]
+              transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-white/50
+              ${i18n.language === "ar" ? "font-univers text-[14px]" : "font-cyrillic"}`}
+>
+  {okLabel}
+</button>
+
                 </div>
               </div>
             </motion.div>
@@ -499,21 +506,21 @@ const AjdanIsland = () => {
         }}
         className={`relative px-3 sm:px-4
           font-regular font-cyrillic text-white shadow
-          border-[1.5px] border-[#9E331A] rounded-sm bg-transparent
+          border-[1.5px] border-[#FD5645] rounded-sm bg-transparent
           ${
             i18n.language === "ar"
-              ? "text-[11px] sm:text-[14px]" // Arabic sizes
+              ? "text-[11px] sm:text-[14px] font-univers" // Arabic sizes
               : "text-[9px] sm:text-[12px]" // English sizes
           }
         `}
       >
-        {i18n.language === "ar" ? "تنزيل الكتيب" : "Download Brochure"}
+        {i18n.language === "ar" ? "تنزيل الكتيب" : "DOWNLOAD BROCHURE"}
       </button>
     </a>
   )}
 
   {/* Ajdan Logo */}
-  <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#9E331A] to-[#9E331A] md:bg-none">
+  <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#FD5645] to-[#FD5645] md:bg-none">
     <a
       href="https://ajdan.com/"
       target="_blank"
@@ -543,7 +550,7 @@ const AjdanIsland = () => {
               <span
   className={`bayfront-heading uppercase block md:text-start text-center
     text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px]
-    ${i18n.language === "ar" ? "text-[34px] md:text-[28px] lg:text-[36px] xl:text-[40px]" : ""}
+    ${i18n.language === "ar" ? "text-[34px] md:text-[28px] lg:text-[36px] xl:text-[40px] font-univers" : ""}
   `}
 >
   {data?.project_headline}
@@ -552,7 +559,7 @@ const AjdanIsland = () => {
 <span
   className={`bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap
     text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm
-    ${i18n.language === "ar" ? "text-[28px] md:text-[24px] lg:text-[32px] xl:text-[34px]" : ""}
+    ${i18n.language === "ar" ? "text-[28px] md:text-[24px] lg:text-[32px] xl:text-[34px] font-univers" : ""}
   `}
 >
   {data?.project_description}
@@ -584,7 +591,7 @@ const AjdanIsland = () => {
     text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm
     font-cyrillic font-regular text-[#FFFFFF] uppercase register
     ${i18n.language === "ar"
-      ? "text-right text-[12px] sm:text-[15px] md:text-base"
+      ? "text-right text-[12px] sm:text-[15px] md:text-base font-univers"
       : "text-left"}
   `}
 >
@@ -614,7 +621,7 @@ const AjdanIsland = () => {
                   className={`w-full h-11 text-[10px] text-white bg-[#39215C] rounded-sm border ${
                     errors.username ? "border-red-500" : "border-[#C2995B]"
                   } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#C2995B] uppercase px-4
-                   ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
+                   ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px] font-univers" : ""}`}
                   aria-invalid={!!errors.username}
                   aria-describedby="err-username"
                   required
@@ -641,7 +648,7 @@ const AjdanIsland = () => {
                     errors.email ? "border-red-500" : "border-[#C2995B]"
                   } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#C2995B] px-4
         [&::placeholder]:font-cyrillic
-         ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
+         ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px] font-univers" : ""}`}
                   aria-invalid={!!errors.email}
                   aria-describedby="err-email"
                   required
@@ -659,18 +666,19 @@ const AjdanIsland = () => {
               {/* Phone */}
               <div>
                 <div className="flex w-full gap-2 phone-stack">
-                  <select
-                    value={dialCode ?? "+966"}
-                    onChange={(e) => setDialCode(e.target.value)}
-                    className={`w-20 h-11 text-[13px] text-[#DED6CB] font-cyrillic custom-select4 rounded-sm bg-[#39215C] border ${
-                      errors.phone ? "border-red-500" : "border-[#C2995B]"
-                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 font-normal ${
-                      !dialCode ? "text-[#C2995B]" : "text-white"
-                    }`}
-                  >
-                    <option value="+966">+966</option>
-                    <option value="+971">+971</option>
-                  </select>
+                <select
+  value={dialCode ?? "+966"}
+  onChange={(e) => setDialCode(e.target.value)}
+  className={`w-20 h-11 text-[13px] text-[#DED6CB] font-cyrillic custom-select4 rounded-sm bg-[#39215C] border ${
+    errors.phone ? "border-red-500" : "border-[#C2995B]"
+  } focus:border-[#ffffff] focus:outline-none appearance-none px-3 font-normal ${
+    !dialCode ? "text-[#C2995B]" : "text-white"
+  } ${i18n.language === "ar" ? "text-[16px] font-orleen" : ""}`}
+>
+  <option value="+966">+966</option>
+  <option value="+971">+971</option>
+</select>
+
 
                   <input
                     type="tel"
@@ -718,7 +726,7 @@ const AjdanIsland = () => {
     focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3
     pl-4 pr-2 min-h-[35px] sm:min-h-auto
     ${moreDetailsCode === "" ? "text-[#C2995B]" : "text-white"}
-    ${i18n.language === "ar" ? "text-[14px]" : "text-[9px] md:text-[9px]"}
+    ${i18n.language === "ar" ? "text-[14px] font-univers" : "text-[9px] md:text-[9px]"}
   `}
   aria-invalid={!!errors.moreDetailsCode}
   aria-describedby="err-reason"
@@ -735,7 +743,7 @@ const AjdanIsland = () => {
     <option
       key={opt.code}
       value={opt.code}
-      className={i18n.language === "ar" ? "text-[14px]" : "text-[9px] text-white"}
+      className={i18n.language === "ar" ? "text-[14px] font-univres" : "text-[9px] text-white"}
     >
       {opt.label}
     </option>
@@ -776,8 +784,10 @@ const AjdanIsland = () => {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#FD5645] to-[#FF909A] hover:from-[#FF909A] hover:to-[#FD5645] text-[10px] md:text-[12px] transition-all duration-700 ease-in-out items-center justify-center uppercase
-    ${i18n.language === "ar" ? "text-[12px] md:text-[14px]" : ""}
+                  className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#FD5645] to-[#FF909A] to-[150%]
+
+ hover:from-[#FF909A] hover:to-[#FD5645] text-[10px] md:text-[12px] transition-all duration-700 ease-in-out items-center justify-center uppercase
+    ${i18n.language === "ar" ? "text-[12px] md:text-[14px] font-univers" : ""}
     ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
                   {submitting ? t("submitting") ?? "Submitting…" : t("submit")}
@@ -962,7 +972,7 @@ const AjdanIsland = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#9E331A] text-white text-base rounded-sm hover:bg-[#9E331A] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#FD5645] text-white text-base rounded-sm hover:bg-[#FD5645] transition"
                 >
                   <FaInstagram />
                 </motion.a>
@@ -977,7 +987,7 @@ const AjdanIsland = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#9E331A] text-white text-base rounded-sm hover:bg-[#9E331A] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#FD5645] text-white text-base rounded-sm hover:bg-[#FD5645] transition"
                 >
                   <FaXTwitter />
                 </motion.a>
@@ -992,7 +1002,7 @@ const AjdanIsland = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#9E331A] text-white text-base rounded-sm hover:bg-[#9E331A] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#FD5645] text-white text-base rounded-sm hover:bg-[#FD5645] transition"
                 >
                   <FaTiktok />
                 </motion.a>
@@ -1007,7 +1017,7 @@ const AjdanIsland = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#9E331A] text-white text-base rounded-sm hover:bg-[#9E331A] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#FD5645] text-white text-base rounded-sm hover:bg-[#FD5645] transition"
                 >
                   <FaLinkedin />
                 </motion.a>
@@ -1036,7 +1046,7 @@ const AjdanIsland = () => {
         <div className="bg-[#39215C] py-4">
           <div className="max-w-[1340px] mx-auto px-6 flex items-center justify-center">
             {i18n.language === "ar" ? (
-              <p className="text-[9px] text-center text-white font-cyrillic md:text-[10px]">
+              <p className="text-[9px] text-center text-white font-univers md:text-[10px]">
                 © حقوق النشر{" "}
                 <a
                   href="https://ajdan.com/"
@@ -1046,7 +1056,7 @@ const AjdanIsland = () => {
                 >
                   أجدان
                 </a>{" "}
-                <span className="font-cyrillic">|</span> جميع الحقوق محفوظة.
+                <span className="font-univers">|</span> جميع الحقوق محفوظة.
               </p>
             ) : (
               <p className="text-[9px] text-center text-white font-cyrillic md:text-[10px]">
