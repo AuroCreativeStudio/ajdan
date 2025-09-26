@@ -479,7 +479,7 @@ const Khuzam = () => {
           {/* Download + Ajdan Logo */}
           <div
             className={`flex items-center gap-2 md:gap-6 ${
-              i18n.language === "ar" ? "justify-start" : "justify-end"
+              i18n.language === "ar" ? "justify-start " : "justify-end"
             }`}
           >
             {/* Brochure download buttons */}
@@ -501,24 +501,24 @@ const Khuzam = () => {
   }}
   className={`relative px-3 sm:px-4
     font-regular font-aeoniknormal text-white shadow
-    border-[1.5px] border-[#707A64] rounded-sm bg-transparent
+    border-[1.5px] border-[#515846] rounded-sm bg-transparent
     ${
       i18n.language === "ar"
-        ? "text-[11px] sm:text-[14px]"     // Arabic sizes
+        ? "text-[11px] sm:text-[14px] font-orleen"     // Arabic sizes
         : "text-[9px]  sm:text-[12px]"    // English sizes
     }
   `}
 >
   {i18n.language === "ar"
     ? `تنزيل الكتيب${data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""}`
-    : `Download Brochure${data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""}`}
+    : `DOWNLOAD BROCHURE${data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""}`}
 </button>
 
                 </a>
               ))}
 
             {/* Ajdan Logo */}
-            <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580] md:bg-none">
+            <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#515846] to-[#515846] md:bg-none">
               <a
                 href="https://ajdan.com/"
                 target="_blank"
@@ -588,7 +588,7 @@ const Khuzam = () => {
     text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm
     font-aeoniknormal font-regular text-[#FFFFFF] uppercase register
     ${i18n.language === "ar"
-      ? "text-right text-[12px] sm:text-[15px] md:text-base"
+      ? "text-right text-[12px] sm:text-[15px] md:text-base font-orleen"
       : "text-left"}
   `}
 >
@@ -618,7 +618,7 @@ const Khuzam = () => {
                   className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
                     errors.username ? "border-red-500" : "border-[#DED6CB]"
                   } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#DED6CB] uppercase px-4
-                   ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
+                   ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px] font-orleen" : ""}`}
                   aria-invalid={!!errors.username}
                   aria-describedby="err-username"
                   required
@@ -644,8 +644,8 @@ const Khuzam = () => {
                   className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
                     errors.email ? "border-red-500" : "border-[#DED6CB]"
                   } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#DED6CB] px-4
-        [&::placeholder]:font-aeoniknormal
-         ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
+    
+         ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px] font-orleen" : ""}`}
                   aria-invalid={!!errors.email}
                   aria-describedby="err-email"
                   required
@@ -670,7 +670,7 @@ const Khuzam = () => {
                       errors.phone ? "border-red-500" : "border-[#DED6CB]"
                     } focus:border-[#ffffff] focus:outline-none appearance-none px-3 font-normal ${
                       !dialCode ? "text-[#DED6CB]" : "text-white"
-                    }`}
+                    } ${i18n.language === "ar" ? "text-[16px] font-orleen" : ""}`}
                   >
                     <option value="+966">+966</option>
                     <option value="+971">+971</option>
@@ -689,8 +689,8 @@ const Khuzam = () => {
                     className={`flex-1 h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
                       errors.phone ? "border-red-500" : "border-[#DED6CB]"
                     } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#E6D9C4]
-          [&::placeholder]:font-aeoniknormal
-           ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
+          
+           ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px] font-orleen" : ""}`}
                     aria-invalid={!!errors.phone}
                     aria-describedby="err-phone"
                     required
@@ -722,7 +722,7 @@ const Khuzam = () => {
     focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3
     pl-4 pr-2 min-h-[35px] sm:min-h-auto
     ${moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"}
-    ${i18n.language === "ar" ? "text-[14px]" : "text-[9px] md:text-[9px]"}
+    ${i18n.language === "ar" ? "text-[14px] font-orleen" : "text-[9px] md:text-[9px]"}
   `}
   aria-invalid={!!errors.moreDetailsCode}
   aria-describedby="err-reason"
@@ -731,7 +731,7 @@ const Khuzam = () => {
   <option
     value=""
     disabled
-    className={i18n.language === "ar" ? "text-[14px]" : "text-[9px] text-[#E6D9C4]"}
+    className={i18n.language === "ar" ? "text-[14px] font-orleen" : "text-[9px] text-[#E6D9C4]"}
   >
     {t("more_details")}
   </option>
@@ -739,7 +739,7 @@ const Khuzam = () => {
     <option
       key={opt.code}
       value={opt.code}
-      className={i18n.language === "ar" ? "text-[14px]" : "text-[9px] text-white"}
+      className={i18n.language === "ar" ? "text-[14px] font-orleen" : "text-[9px] text-white"}
     >
       {opt.label}
     </option>
@@ -748,7 +748,7 @@ const Khuzam = () => {
 
                   <span
                     className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#E6D9C4] pointer-events-none ${
-                      i18n.language === "ar" ? "left-3" : "right-3" // Left for Arabic, right for English
+                      i18n.language === "ar" ? "left-3 font-orleen" : "right-3" // Left for Arabic, right for English
                     }`}
                   >
                     ▼
@@ -781,7 +781,7 @@ const Khuzam = () => {
                   type="submit"
                   disabled={submitting}
                   className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#515846] to-[#707A64] hover:from-[#707A64] hover:to-[#515846] text-[10px] md:text-[12px] transition-all duration-700 ease-in-out items-center justify-center uppercase
-    ${i18n.language === "ar" ? "text-[12px] md:text-[14px]" : ""}
+    ${i18n.language === "ar" ? "text-[12px] md:text-[14px] font-orleen" : ""}
     ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
                   {submitting ? t("submitting") ?? "Submitting…" : t("submit")}
@@ -968,7 +968,7 @@ const Khuzam = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#2F2B25] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#515846] text-white text-base rounded-sm hover:bg-[#515846] transition"
                 >
                   <FaInstagram />
                 </motion.a>
@@ -983,7 +983,7 @@ const Khuzam = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#2F2B25] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#515846] text-white text-base rounded-sm hover:bg-[#515846] transition"
                 >
                   <FaXTwitter />
                 </motion.a>
@@ -998,7 +998,7 @@ const Khuzam = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#2F2B25] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#515846] text-white text-base rounded-sm hover:bg-[#515846] transition"
                 >
                   <FaTiktok />
                 </motion.a>
@@ -1013,7 +1013,7 @@ const Khuzam = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#2F2B25] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#515846] text-white text-base rounded-sm hover:bg-[#515846] transition"
                 >
                   <FaLinkedin />
                 </motion.a>

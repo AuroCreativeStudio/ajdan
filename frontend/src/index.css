@@ -54,16 +54,34 @@
 }
 @font-face {
   font-family: "Denton";
-  src: url('./fonts/DentonCondensedTest-Regular.otf') format('opentype');
+  src: url('../public/fonts/DentonCondensedTest-Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
   font-family: 'Diodrum';
-  src: url('./fonts/diofrum-cyrillic-regular.ttf') format('truetype');
+  src: url('../public/fonts/diodrum-cyrillic-regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }
+@font-face {
+    font-family: 'Laureen';
+    src: url('../public/fonts/Laureen.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+/* Usage with fallback */
+body {
+  font-family: 'Laureen', serif;  /* serif fallback if the font fails to load */
+}
+@font-face {
+  font-family: 'Orleen';
+  src: url('../public/fonts/Orleen\ Regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 
 @tailwind base;
 @tailwind components;

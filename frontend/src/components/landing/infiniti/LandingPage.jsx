@@ -141,7 +141,7 @@ const SuccessPopup = ({ open, onClose, title, body, okLabel = "OK" }) => {
               className="w-full max-w-xs rounded-2xl shadow-2xl ring-1 ring-[#1aa0e0]/40 overflow-hidden"
             >
               <div className="bg-[#DED6CB] p-6 text-center relative">
-                <div className="mx-auto mb-4 h-10 w-10 rounded-lg grid place-items-center bg-[#C1A580]">
+                <div className="mx-auto mb-4 h-10 w-10 rounded-lg grid place-items-center bg-[#9E331A]">
                   <img
                     src={logoTile}
                     alt=""
@@ -507,13 +507,13 @@ const Infiniti = () => {
           }
         `}
       >
-        {i18n.language === "ar" ? "تنزيل الكتيب" : "Download Brochure"}
+        {i18n.language === "ar" ? "تنزيل الكتيب" : "DOWNLOAD BROCHURE"}
       </button>
     </a>
   )}
 
   {/* Ajdan Logo */}
-  <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580] md:bg-none">
+  <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#9E331A] to-[#9E331A] md:bg-none">
     <a
       href="https://ajdan.com/"
       target="_blank"
@@ -966,7 +966,7 @@ const Infiniti = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#1C2940] text-white text-base rounded-sm hover:bg-[#1C2940] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#9E331A] text-white text-base rounded-sm hover:bg-[#9E331A] transition"
                 >
                   <FaInstagram />
                 </motion.a>
@@ -981,7 +981,7 @@ const Infiniti = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#1C2940] text-white text-base rounded-sm hover:bg-[#1C2940] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#9E331A] text-white text-base rounded-sm hover:bg-[#9E331A] transition"
                 >
                   <FaXTwitter />
                 </motion.a>
@@ -996,7 +996,7 @@ const Infiniti = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#1C2940] text-white text-base rounded-sm hover:bg-[#1C2940] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#9E331A] text-white text-base rounded-sm hover:bg-[#9E331A] transition"
                 >
                   <FaTiktok />
                 </motion.a>
@@ -1011,7 +1011,7 @@ const Infiniti = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#1C2940] text-white text-base rounded-sm hover:bg-[#1C2940] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#9E331A] text-white text-base rounded-sm hover:bg-[#9E331A] transition"
                 >
                   <FaLinkedin />
                 </motion.a>

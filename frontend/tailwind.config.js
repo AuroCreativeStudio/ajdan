@@ -18,7 +18,9 @@ module.exports = withMT({
         apollo: ['APOLLO', 'sans-serif'],
         azer: ['29lt-azer', 'sans-serif'],
         denton: ['DentonCondensed', 'sans-serif'],
-        cyrillic:['diodrum-cyrillic-regular']
+        cyrillic: ['diodrum-cyrillic-regular', 'sans-serif'],
+        laureen:  ['Laureen', 'serif'], // or 'sans-serif' if your Laureen file is sans
+        orleen: ['Orleen', 'serif']
       },
       animation: {
         marquee: 'marquee 40s linear infinite',

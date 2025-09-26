@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useTranslation } from 'react-i18next';
-import { getListingByIdentifier } from '../../../services/getListingByIdentifier';
+import { useTranslation } from "react-i18next";
+import { getListingByIdentifier } from "../../../services/getListingByIdentifier";
 import logo from "./images/raseennew.png";
 import mobileBg from "./images/raseenmobile.webp";
 import darklogo from "../../../assets/landing images/ajdan.png";
@@ -9,7 +9,7 @@ import wa from "../../../assets/landing images/whatsapp.png";
 import arrowleft from "../../../assets/landing images/arrow-left.png";
 import arrowright from "../../../assets/landing images/arrow-right.png";
 import saFlag from "../../../assets/landing images/togglear.png";
-import enFlag from "../../../assets/landing images/toggleen.png"; 
+import enFlag from "../../../assets/landing images/toggleen.png";
 import ajdan from "../../../assets/landing images/logoajdan.png";
 import bg from "./images/raseen.webp";
 import { Menu, X } from "lucide-react";
@@ -141,7 +141,7 @@ const SuccessPopup = ({ open, onClose, title, body, okLabel = "OK" }) => {
               className="w-full max-w-xs rounded-2xl shadow-2xl ring-1 ring-[#1aa0e0]/40 overflow-hidden"
             >
               <div className="bg-[#DED6CB] p-6 text-center relative">
-                <div className="mx-auto mb-4 h-10 w-10 rounded-lg grid place-items-center bg-[#C1A580]">
+                <div className="mx-auto mb-4 h-10 w-10 rounded-lg grid place-items-center bg-[#515846]">
                   <img
                     src={logoTile}
                     alt=""
@@ -193,7 +193,11 @@ const Sedra1Page = () => {
 
   // Build options from i18n so labels auto-translate
   const MORE_DETAIL_OPTIONS = [
-    { code: "reserve_villa", value: "Reserve a Villa", label: t("reserve_villa") },
+    {
+      code: "reserve_villa",
+      value: "Reserve a Villa",
+      label: t("reserve_villa"),
+    },
     {
       code: "learn_more",
       value: "Learn more about the project",
@@ -422,46 +426,46 @@ const Sedra1Page = () => {
     <>
       <motion.div className="relative flex items-center justify-center w-full min-h-screen overflow-hidden hero">
         {/* Desktop Background */}
-     {/* Desktop Background Image */}
-<motion.img
-  src={bg}
-  alt="Background"
-  initial={{ scale: 1.1, opacity: 1 }}
-  animate={{ scale: 1, opacity: 1 }}
-  transition={{ duration: 22, ease: "easeOut" }}
-  className="absolute inset-0 hidden sm:block w-full h-full object-cover object-center"
-  style={{
-    transform: i18n.language === "ar" ? "scaleX(-1)" : "scaleX(1)",
-  }}
-/>
+        {/* Desktop Background Image */}
+        <motion.img
+          src={bg}
+          alt="Background"
+          initial={{ scale: 1.1, opacity: 1 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 22, ease: "easeOut" }}
+          className="absolute inset-0 hidden sm:block w-full h-full object-cover object-center"
+          style={{
+            transform: i18n.language === "ar" ? "scaleX(-1)" : "scaleX(1)",
+          }}
+        />
 
-{/* Mobile Background Image */}
-<motion.img
-  src={mobileBg}
-  alt="Background Mobile"
-  initial={{ scale: 1.1, opacity: 1 }}
-  animate={{ scale: 1, opacity: 1 }}
-  transition={{ duration: 22, ease: "easeOut" }}
-  className="absolute inset-0 sm:hidden w-full h-[100vh] object-cover object-left"
- />
+        {/* Mobile Background Image */}
+        <motion.img
+          src={mobileBg}
+          alt="Background Mobile"
+          initial={{ scale: 1.1, opacity: 1 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 22, ease: "easeOut" }}
+          className="absolute inset-0 sm:hidden w-full h-[100vh] object-cover object-left"
+        />
 
-{/* Mobile Gradient Overlay */}
-<div
-  className="absolute inset-0 sm:hidden"
-  style={{
-    background:
-      "linear-gradient(180deg, rgba(46,42,36,0.5) 0%, rgba(137,130,116,0.3) 100%, rgba(228,217,196,0.4) 30%)",
-  }}
-/>
+        {/* Mobile Gradient Overlay */}
+        <div
+          className="absolute inset-0 sm:hidden"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(46,42,36,0.5) 0%, rgba(137,130,116,0.3) 100%, rgba(228,217,196,0.4) 30%)",
+          }}
+        />
 
-{/* Desktop Gradient Overlay */}
-<div
-  className="absolute inset-0 hidden sm:block"
-  style={{
-    background:
-      "linear-gradient(180deg, rgba(47,43,37,0.8) 0%, rgba(138,130,117,0.4) 57%, rgba(230,217,196,0) 84%)",
-  }}
-/>
+        {/* Desktop Gradient Overlay */}
+        <div
+          className="absolute inset-0 hidden sm:block"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(47,43,37,0.8) 0%, rgba(138,130,117,0.4) 57%, rgba(230,217,196,0) 84%)",
+          }}
+        />
 
         <motion.header
           initial={{ y: -50, opacity: 0 }}
@@ -479,7 +483,9 @@ const Sedra1Page = () => {
           {/* Download + Ajdan Logo */}
           <div
             className={`flex items-center gap-2 md:gap-6 ${
-              i18n.language === "ar" ? "justify-start" : "justify-end"
+              i18n.language === "ar"
+                ? "justify-start font-orleen"
+                : "justify-end"
             }`}
           >
             {/* Brochure download buttons */}
@@ -492,32 +498,36 @@ const Sedra1Page = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                             <button
-  style={{
-    lineHeight: "1",
-    paddingTop: 0,
-    paddingBottom: 0,
-    height: 28,
-  }}
-  className={`relative px-3 sm:px-4
+                  <button
+                    style={{
+                      lineHeight: "1",
+                      paddingTop: 0,
+                      paddingBottom: 0,
+                      height: 28,
+                    }}
+                    className={`relative px-3 sm:px-4
     font-regular font-aeoniknormal text-white shadow
-    border-[1.5px] border-[#707A64] rounded-sm bg-transparent
+    border-[1.5px] border-[#515846] rounded-sm bg-transparent
     ${
       i18n.language === "ar"
-        ? "text-[11px] sm:text-[14px]"     // Arabic sizes
-        : "text-[9px]  sm:text-[12px]"    // English sizes
+        ? "text-[11px] sm:text-[14px] font-orleen" // Arabic sizes
+        : "text-[9px]  sm:text-[12px]" // English sizes
     }
   `}
->
-  {i18n.language === "ar"
-    ? `تنزيل الكتيب${data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""}`
-    : `Download Brochure${data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""}`}
-</button>
+                  >
+                    {i18n.language === "ar"
+                      ? `تنزيل الكتيب${
+                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
+                        }`
+                      : `DOWNLOAD BROCHURE${
+                          data.pdf_upload.length > 1 ? ` ${idx + 1}` : ""
+                        }`}
+                  </button>
                 </a>
               ))}
 
             {/* Ajdan Logo */}
-            <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580] md:bg-none">
+            <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#515846] to-[#515846] md:bg-none">
               <a
                 href="https://ajdan.com/"
                 target="_blank"
@@ -543,24 +553,31 @@ const Sedra1Page = () => {
               variants={textVariants}
               className="leading-none text-white font-apollo font-regular"
             >
-                       <span
-  className={`bayfront-heading uppercase block md:text-start text-center
+              <span
+                className={`bayfront-heading uppercase block md:text-start text-center
     text-[30px] md:text-[24px] lg:text-[32px] xl:text-[36px]
-    ${i18n.language === "ar" ? "text-[34px] md:text-[28px] lg:text-[36px] xl:text-[40px]" : ""}
+    ${
+      i18n.language === "ar"
+        ? "text-[34px] md:text-[28px] lg:text-[36px] xl:text-[40px]"
+        : ""
+    }
   `}
->
-  {data?.project_headline}
-</span>
+              >
+                {data?.project_headline}
+              </span>
 
-<span
-  className={`bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap
+              <span
+                className={`bayfront-subheading md:text-start text-center block pt-4 whitespace-nowrap
     text-[24px] md:text-[20px] lg:text-[28px] xl:text-[30px] sm:mt-1 mb-4 md:mb-0 mt-10px-sm
-    ${i18n.language === "ar" ? "text-[28px] md:text-[24px] lg:text-[32px] xl:text-[34px]" : ""}
+    ${
+      i18n.language === "ar"
+        ? "text-[28px] md:text-[24px] lg:text-[32px] xl:text-[34px]"
+        : ""
+    }
   `}
->
-  {data?.project_description}
-</span>
-
+              >
+                {data?.project_description}
+              </span>
             </motion.h1>
 
             <motion.div
@@ -583,12 +600,14 @@ const Sedra1Page = () => {
           >
             <h2
               className={`mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm font-aeoniknormal font-regular text-[#FFFFFF] uppercase register ${
-                i18n.language === "ar" ? "text-start" : "text-start" // Right align for Arabic, left for English
+                i18n.language === "ar"
+                  ? "text-start font-orleen "
+                  : "text-start" // Right align for Arabic, left for English
               }`}
             >
               {t("register_interest")}
             </h2>
-<form
+            <form
               className="flex flex-col gap-2 font-aeoniknormal font-regular"
               onSubmit={handleSubmit}
               noValidate
@@ -611,7 +630,11 @@ const Sedra1Page = () => {
                   className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
                     errors.username ? "border-red-500" : "border-[#DED6CB]"
                   } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#DED6CB] uppercase px-4
-                   ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
+                   ${
+                     i18n.language === "ar"
+                       ? "text-[16px] placeholder:text-[16px] placeholder:font-orleen font-orleen"
+                       : ""
+                   }`}
                   aria-invalid={!!errors.username}
                   aria-describedby="err-username"
                   required
@@ -637,8 +660,12 @@ const Sedra1Page = () => {
                   className={`w-full h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
                     errors.email ? "border-red-500" : "border-[#DED6CB]"
                   } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#DED6CB] px-4
-        [&::placeholder]:font-aeoniknormal
-         ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
+        
+           ${
+             i18n.language === "ar"
+               ? "text-[16px] placeholder:text-[16px] placeholder:font-orleen font-orleen"
+               : ""
+           }`}
                   aria-invalid={!!errors.email}
                   aria-describedby="err-email"
                   required
@@ -661,8 +688,10 @@ const Sedra1Page = () => {
                     onChange={(e) => setDialCode(e.target.value)}
                     className={`w-20 h-11 text-[13px] text-[#DED6CB] font-aeoniknormal custom-select1 rounded-sm bg-[#2E2924] border ${
                       errors.phone ? "border-red-500" : "border-[#DED6CB]"
-                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 font-normal ${
+                    } focus:border-[#ffffff] focus:outline-none appearance-none px-3 ${
                       !dialCode ? "text-[#DED6CB]" : "text-white"
+                    } ${
+                      i18n.language === "ar" ? "text-[16px] font-orleen" : ""
                     }`}
                   >
                     <option value="+966">+966</option>
@@ -682,8 +711,12 @@ const Sedra1Page = () => {
                     className={`flex-1 h-11 text-[10px] text-white bg-[#2E2924] rounded-sm border ${
                       errors.phone ? "border-red-500" : "border-[#DED6CB]"
                     } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#E6D9C4]
-          [&::placeholder]:font-aeoniknormal
-           ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
+          
+           ${
+             i18n.language === "ar"
+               ? "text-[16px] placeholder:text-[16px] placeholder:font-orleen font-orleen"
+               : ""
+           }`}
                     aria-invalid={!!errors.phone}
                     aria-describedby="err-phone"
                     required
@@ -702,42 +735,54 @@ const Sedra1Page = () => {
               {/* Reason */}
               <div>
                 <div className="relative w-full">
-                 <select
-  name="more_details_code"
-  value={moreDetailsCode}
-  onChange={(e) => {
-    setMoreDetailsCode(e.target.value);
-    setErrors((prev) => ({ ...prev, moreDetailsCode: "" }));
-  }}
-  className={`
+                  <select
+                    name="more_details_code"
+                    value={moreDetailsCode}
+                    onChange={(e) => {
+                      setMoreDetailsCode(e.target.value);
+                      setErrors((prev) => ({ ...prev, moreDetailsCode: "" }));
+                    }}
+                    className={`
     w-full h-11 bg-[#2E2924] rounded-sm border custom-select1
     ${errors.moreDetailsCode ? "border-red-500" : "border-[#DED6CB]"}
     focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3
     pl-4 pr-2 min-h-[35px] sm:min-h-auto
     ${moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"}
-    ${i18n.language === "ar" ? "text-[14px]" : "text-[9px] md:text-[9px]"}
+    ${
+      i18n.language === "ar"
+        ? "text-[16px] font-orleen"
+        : "text-[9px] md:text-[9px]"
+    }
   `}
-  aria-invalid={!!errors.moreDetailsCode}
-  aria-describedby="err-reason"
-  required
->
-  <option
-    value=""
-    disabled
-    className={i18n.language === "ar" ? "text-[14px]" : "text-[9px] text-[#E6D9C4]"}
-  >
-    {t("more_details")}
-  </option>
-  {MORE_DETAIL_OPTIONS.map((opt) => (
-    <option
-      key={opt.code}
-      value={opt.code}
-      className={i18n.language === "ar" ? "text-[14px]" : "text-[9px] text-white"}
-    >
-      {opt.label}
-    </option>
-  ))}
-</select>
+                    aria-invalid={!!errors.moreDetailsCode}
+                    aria-describedby="err-reason"
+                    required
+                  >
+                    <option
+                      value=""
+                      disabled
+                      className={
+                        i18n.language === "ar"
+                          ? "text-[16px] placeholder:text-[16px] placeholder:font-orleen font-orleen"
+                          : "text-[9px] text-[#E6D9C4]"
+                      }
+                    >
+                      {t("more_details")}
+                    </option>
+                    {MORE_DETAIL_OPTIONS.map((opt) => (
+                      <option
+                        key={opt.code}
+                        value={opt.code}
+                        className={
+                          i18n.language === "ar"
+                            ? "text-[14px]"
+                            : "text-[9px] text-white"
+                        }
+                      >
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
 
                   <span
                     className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#E6D9C4] pointer-events-none ${
@@ -774,7 +819,7 @@ const Sedra1Page = () => {
                   type="submit"
                   disabled={submitting}
                   className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#515846] to-[#707A64] hover:from-[#707A64] hover:to-[#515846] text-[10px] md:text-[12px] transition-all duration-700 ease-in-out items-center justify-center uppercase
-    ${i18n.language === "ar" ? "text-[12px] md:text-[14px]" : ""}
+    ${i18n.language === "ar" ? "text-[12px] md:text-[14px] font-orleen" : ""}
     ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
                   {submitting ? t("submitting") ?? "Submitting…" : t("submit")}
@@ -795,23 +840,23 @@ const Sedra1Page = () => {
             />
 
             {/* Buttons Row (under form) */}
-           <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
-             {/* WhatsApp Icon */}
-             {socialLinks?.whatsapp && (
-               <a
-                 href={socialLinks.whatsapp}
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 className="transition hover:scale-110 ml-[1px]"
-               >
-                 <img
-                   src={wa}
-                   alt="WhatsApp"
-                   className="object-contain w-8 sm:w-12 sm:h-12 drop-shadow-lg"
-                 />
-               </a>
-             )}
-           </div>
+            <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
+              {/* WhatsApp Icon */}
+              {socialLinks?.whatsapp && (
+                <a
+                  href={socialLinks.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition hover:scale-110 ml-[1px]"
+                >
+                  <img
+                    src={wa}
+                    alt="WhatsApp"
+                    className="object-contain w-8 sm:w-12 sm:h-12 drop-shadow-lg"
+                  />
+                </a>
+              )}
+            </div>
           </motion.div>
 
           {/* Mobile-only subheading spacer */}
@@ -961,7 +1006,7 @@ const Sedra1Page = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#2F2B25] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#515846] text-white text-base rounded-sm hover:bg-[#515846] transition"
                 >
                   <FaInstagram />
                 </motion.a>
@@ -976,7 +1021,7 @@ const Sedra1Page = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#2F2B25] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#515846] text-white text-base rounded-sm hover:bg-[#515846] transition"
                 >
                   <FaXTwitter />
                 </motion.a>
@@ -991,7 +1036,7 @@ const Sedra1Page = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#2F2B25] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#515846] text-white text-base rounded-sm hover:bg-[#515846] transition"
                 >
                   <FaTiktok />
                 </motion.a>
@@ -1006,7 +1051,7 @@ const Sedra1Page = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#2F2B25] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#515846] text-white text-base rounded-sm hover:bg-[#515846] transition"
                 >
                   <FaLinkedin />
                 </motion.a>
@@ -1069,5 +1114,3 @@ const Sedra1Page = () => {
 };
 
 export default Sedra1Page;
-
-
