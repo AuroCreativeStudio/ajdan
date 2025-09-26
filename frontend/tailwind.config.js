@@ -16,7 +16,9 @@ module.exports = withMT({
         commuter: ['"Commuter Sans"', 'sans-serif'],
         aeoniknormal: ['AeonikTRIAL', 'sans-serif'],
         apollo: ['APOLLO', 'sans-serif'],
-         azer: ['29lt-azer', 'sans-serif'],
+        azer: ['29lt-azer', 'sans-serif'],
+        denton: ['DentonCondensed', 'sans-serif'],
+        cyrillic:['diodrum-cyrillic-regular']
       },
       animation: {
         marquee: 'marquee 40s linear infinite',

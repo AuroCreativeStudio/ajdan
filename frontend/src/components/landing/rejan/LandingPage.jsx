@@ -802,21 +802,23 @@ const Rejan = () => {
             />
 
             {/* Buttons Row (under form) */}
-            <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
-              {/* WhatsApp Icon (hidden per your classes) */}
-              <a
-                href="https://wa.me/XXXXXXXXXXX"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden sm:hidden transition hover:scale-110 ml-[1px]"
-              >
-                <img
-                  src={wa}
-                  alt="WhatsApp"
-                  className="object-contain w-8 sm:w-12 sm:h-12 drop-shadow-lg"
-                />
-              </a>
-            </div>
+           <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
+             {/* WhatsApp Icon */}
+             {socialLinks?.whatsapp && (
+               <a
+                 href={socialLinks.whatsapp}
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="transition hover:scale-110 ml-[1px]"
+               >
+                 <img
+                   src={wa}
+                   alt="WhatsApp"
+                   className="object-contain w-8 sm:w-12 sm:h-12 drop-shadow-lg"
+                 />
+               </a>
+             )}
+           </div>
           </motion.div>
 
           {/* Mobile-only subheading spacer */}

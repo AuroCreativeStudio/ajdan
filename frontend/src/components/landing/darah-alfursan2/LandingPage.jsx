@@ -509,7 +509,7 @@ const DarahAlfursan2 = () => {
                     }}
                     className="relative px-3 sm:px-4 text-[9px] sm:text-[12px]
                       text-white shadow
-                     border-[1.5px] border-[#C28560] rounded-sm bg-transparent"
+                     border-[1.5px] border-[#8A421F] rounded-sm bg-transparent"
                   >
                     {i18n.language === "ar"
                       ? `تنزيل الكتيب${
@@ -523,7 +523,7 @@ const DarahAlfursan2 = () => {
               ))}
 
             {/* Ajdan Logo */}
-            <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#C1A580] to-[#C1A580] md:bg-none">
+            <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#8A421F] to-[#8A421F] md:bg-none">
               <a
                 href="https://ajdan.com/"
                 target="_blank"
@@ -825,19 +825,8 @@ const DarahAlfursan2 = () => {
 
             {/* Buttons Row (under form) */}
             <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
-              {/* WhatsApp Icon (hidden per your classes) */}
-              <a
-                href="https://wa.me/XXXXXXXXXXX"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden sm:hidden transition hover:scale-110 ml-[1px]"
-              >
-                <img
-                  src={wa}
-                  alt="WhatsApp"
-                  className="object-contain w-8 sm:w-12 sm:h-12 drop-shadow-lg"
-                />
-              </a>
+              {/* WhatsApp Icon */}
+
             </div>
           </motion.div>
 
@@ -852,18 +841,20 @@ const DarahAlfursan2 = () => {
         >
           <LangToggle />
 
-          <a
-            href="https://wa.me/XXXXXXXXXXX"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block p-2 transition hover:scale-110"
-          >
-            <img
-              src={wa}
-              alt="WhatsApp"
-              className="object-contain w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
-            />
-          </a>
+          {socialLinks?.whatsapp && (
+                <a
+                  href={socialLinks.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition hover:scale-110 ml-[1px]"
+                >
+                  <img
+                    src={wa}
+                    alt="WhatsApp"
+                    className="object-contain w-8 sm:w-12 sm:h-12 drop-shadow-lg"
+                  />
+                </a>
+              )}
         </div>
       </motion.div>
 
@@ -988,7 +979,7 @@ const DarahAlfursan2 = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#012C46] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#8A421F] text-white text-base rounded-sm hover:bg-[#8A421F] transition"
                 >
                   <FaInstagram />
                 </motion.a>
@@ -1003,7 +994,7 @@ const DarahAlfursan2 = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#012C46] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#8A421F] text-white text-base rounded-sm hover:bg-[#8A421F] transition"
                 >
                   <FaXTwitter />
                 </motion.a>
@@ -1018,7 +1009,7 @@ const DarahAlfursan2 = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#012C46] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#8A421F] text-white text-base rounded-sm hover:bg-[#8A421F] transition"
                 >
                   <FaTiktok />
                 </motion.a>
@@ -1033,7 +1024,7 @@ const DarahAlfursan2 = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#012C46] text-white text-base rounded-sm hover:bg-[#2F2B25] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#8A421F] text-white text-base rounded-sm hover:bg-[#8A421F] transition"
                 >
                   <FaLinkedin />
                 </motion.a>

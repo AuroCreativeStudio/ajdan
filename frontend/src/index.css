@@ -47,12 +47,23 @@
 }
 @font-face {
   font-family: 'AeonikTRIAL';
-  src: url('./assets/AeonikTRIAL-Regular.otf') format('opentype');
+  src: url('./fonts/AeonikTRIAL-Regular.otf') format('opentype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
-
+@font-face {
+  font-family: "Denton";
+  src: url('./fonts/DentonCondensedTest-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Diodrum';
+  src: url('./fonts/diofrum-cyrillic-regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
 
 @tailwind base;
 @tailwind components;
@@ -372,6 +383,16 @@ main h2 { font-size: 20px; }
 .custom-select option {
 
   color: #5D8595 !important;
+}
+.custom-select3,
+.custom-select option {
+
+  color: #178791 !important;
+}
+.custom-select4,
+.custom-select option {
+
+  color: #C2995B !important;
 }
 /* Desktop media query */
 @media (min-width: 1024px) {
