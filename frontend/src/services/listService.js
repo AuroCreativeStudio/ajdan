@@ -34,7 +34,8 @@ export const fetchApartmentList = async (locale = 'en') => {
         // ✅ always from main entry (no localization)
         image: item.image?.url || null,
         featured_image: item.featured_image || null,
-        gallery_images: (item.gallery_images || []).map(img => img),
+        gallery_images: (item.gallery_images || []).map(img => img.url),
+
         hero_image_desktop: item.hero_image_desktop?.url || null,
         hero_image_mobile: item.hero_image_mobile?.url || null,
 

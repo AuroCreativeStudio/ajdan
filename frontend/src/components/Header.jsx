@@ -124,7 +124,7 @@ const Header = () => {
             </li>
             <li>
               <button 
-                onClick={() => handleMenuClick('/list')} 
+                onClick={() => handleMenuClick('/project-list')} 
                 className="block w-full px-4 py-2 rounded-md hover:bg-gray-200"
               >
                Project Lists

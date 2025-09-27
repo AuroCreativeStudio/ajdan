@@ -158,8 +158,9 @@ function PublicRoutes() {
   return (
     <Routes>  
       
-      <Route path="/" element={<Home />} />
-      <Route path="/list" element={<List />} />
+      <Route path="/" element={<List />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/project-list" element={<List />} />
       <Route path="/search" element={<Search />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/test" element={<Sample />} />
@@ -448,19 +449,30 @@ function App() {
     '/role-edit'
   ];
 
+  // useEffect(() => {
+  //   console.log('App: useEffect for geo language detection running');
+  //   const path = window.location.pathname;
+  //   const pathMatch = path.match(/^\/(en|ar)(\/|$)/);
+  //   const isCmsRoute = cmsPrefixes.some(prefix => path.toLowerCase().startsWith(prefix));
+  //   if (!pathMatch && !isCmsRoute) {
+  //     setLoading(true); // Start loading
+  //     detectLanguageByLocation().then((detectedLang) => {
+  //       const lang = ['en', 'ar'].includes(detectedLang) ? detectedLang : 'en';
+  //       window.location.replace(`/${lang}${window.location.pathname}${window.location.search}`);
+  //     });
+  //   }
+  // }, []);
+
+
   useEffect(() => {
-    console.log('App: useEffect for geo language detection running');
-    const path = window.location.pathname;
-    const pathMatch = path.match(/^\/(en|ar)(\/|$)/);
-    const isCmsRoute = cmsPrefixes.some(prefix => path.toLowerCase().startsWith(prefix));
-    if (!pathMatch && !isCmsRoute) {
-      setLoading(true); // Start loading
-      detectLanguageByLocation().then((detectedLang) => {
-        const lang = ['en', 'ar'].includes(detectedLang) ? detectedLang : 'en';
-        window.location.replace(`/${lang}${window.location.pathname}${window.location.search}`);
-      });
-    }
-  }, []);
+  const path = window.location.pathname;
+  const pathMatch = path.match(/^\/(en|ar)(\/|$)/);
+  const isCmsRoute = cmsPrefixes.some(prefix => path.toLowerCase().startsWith(prefix));
+
+  if (!pathMatch && !isCmsRoute) {
+    window.location.replace(`/ar${window.location.pathname}${window.location.search}`);
+  }
+}, []);
 
   // Show loading spinner/message if loading and on root path
   if (loading && window.location.pathname === '/') {
