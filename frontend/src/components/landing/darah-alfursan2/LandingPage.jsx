@@ -3,8 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getListingByIdentifier } from "../../../services/getListingByIdentifier";
 import logo from "./images/alfurson.png";
-import mobileBg from "./images/darah2mobile.jpg";
-import bg from "./images/darah2.jpg";
+// import mobileBg from "./images/raseenmobile1.webp";
+// import bg from "./images/raseen.webp";
 import { Menu, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
@@ -531,9 +531,9 @@ const DarahAlfursan2 = () => {
                   fontWeight: 400,
                   height: 28,
                 }} onClick={() => handleDownload(`${STRAPI_URL}${data.pdf_upload}`, 'brochure.pdf')}
-                className="relative px-3 sm:px-4 text-[9px] sm:text-[12px]
+                className={`relative px-3 sm:px-4 ${i18n.language === "ar" ? "text-[11px] sm:text-[13px]" : "text-[9px] sm:text-[12px]"} 
                       text-white shadow
-                     border-[1.5px] border-[#8A421F] rounded-sm bg-transparent"
+                     border-[1.5px] border-[#8A421F] rounded-sm bg-transparent `}
               >
                 {i18n.language === "ar" ? "تنزيل الكتيب" : "DOWNLOAD BROCHURE"}
               </button>
@@ -613,7 +613,8 @@ const DarahAlfursan2 = () => {
               style={{
                 fontFamily: "AzerFont",
                 fontWeight: 400,
-                fontSize: "12px",
+         fontSize: i18n.language === "ar" ? "14px" : "12px",
+
               }}
             >
               {t("register_interest")}
@@ -644,7 +645,7 @@ const DarahAlfursan2 = () => {
                   value={formData.username ?? ""}
                   onChange={handleChange}
                   placeholder={t("full_name")}
-                  className={`w-full h-10 text-[10px] text-white bg-[#012C46] rounded-sm border ${errors.username ? "border-red-500" : "border-[#5D8595]"
+                  className={`w-full h-10 ${i18n.language === "ar" ? "text-[12px] placeholder:text-[12px]" : "text-[10px] placeholder:text-[10px]"}  text-white bg-[#012C46] rounded-sm border ${errors.username ? "border-red-500" : "border-[#5D8595]"
                     } focus:border-[#ffffff] focus:outline-none placeholder:text-[10px] placeholder-[#5D8595] uppercase px-4`}
                   aria-invalid={!!errors.username}
                   aria-describedby="err-username"
@@ -673,7 +674,7 @@ const DarahAlfursan2 = () => {
                   value={formData.email ?? ""}
                   onChange={handleChange}
                   placeholder={t("email_address")}
-                  className={`w-full h-10 text-[10px] text-white bg-[#012C46] rounded-sm border ${errors.email ? "border-red-500" : "border-[#5D8595]"
+                  className={`w-full h-10 ${i18n.language === "ar" ? "text-[12px] placeholder:text-[12px]" : "text-[10px] placeholder:text-[10px]"} text-white bg-[#012C46] rounded-sm border ${errors.email ? "border-red-500" : "border-[#5D8595]"
                     } focus:border-[#ffffff] focus:outline-none placeholder:text-[10px] placeholder:text-[#5D8595] px-4`}
                   aria-invalid={!!errors.email}
                   aria-describedby="err-email"
@@ -791,7 +792,7 @@ const DarahAlfursan2 = () => {
                       setErrors((prev) => ({ ...prev, phone: "" }));
                     }}
                     placeholder={t("mobile_number")}
-                    className={`flex-1 h-10 text-[10px] text-white bg-[#012C46] rounded-sm border ${errors.phone ? "border-red-500" : "border-[#5D8595]"
+                    className={`flex-1 h-10 ${i18n.language === "ar" ? "text-[12px] placeholder:text-[12px]" : "text-[10px] placeholder:text-[10px]"} text-white bg-[#012C46] rounded-sm border ${errors.phone ? "border-red-500" : "border-[#5D8595]"
                       } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[10px] placeholder:text-start placeholder:text-[#5D8595]
           `}
                     aria-invalid={!!errors.phone}
@@ -818,7 +819,7 @@ const DarahAlfursan2 = () => {
                     style={{
                       fontFamily: "AzerFont",
                       fontWeight: 400,
-                      fontSize: "10px",
+                    fontSize: i18n.language === "ar" ? "12px" : "10px",
                     }}
                     onChange={(e) => {
                       setMoreDetailsCode(e.target.value);
@@ -836,7 +837,8 @@ const DarahAlfursan2 = () => {
                     <option
                       value=""
                       disabled
-                      className="text-[9px] text-[#E6D9C4]"
+                      className={`{i18n.language === "ar" ? "text-[11px]" : "text-[9px]"
+                        } text-[#E6D9C4]`}
                     >
                       {t("more_details")}
                     </option>
@@ -844,7 +846,8 @@ const DarahAlfursan2 = () => {
                       <option
                         key={opt.code}
                         value={opt.code}
-                        className="text-[9px] text-white"
+                        className={`${i18n.language === "ar" ? "text-[11px]" : "text-[9px]"
+                          } text-white`}
                       >
                         {opt.label}
                       </option>
@@ -884,7 +887,7 @@ const DarahAlfursan2 = () => {
                   type="submit"
                   style={{ fontFamily: "AzerFont", fontWeight: 400 }}
                   disabled={submitting}
-                  className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#8A421F] to-[#C28560] hover:from-[#C28560] hover:to-[#8A421F] text-[10px] md:text-[12px] transition-all duration-700 ease-in-out items-center justify-center uppercase
+                  className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#8A421F] to-[#C28560] hover:from-[#C28560] hover:to-[#8A421F] ${i18n.language === "ar" ? "text-[12px] md:text-[14px]" : "text-[10px] md:text-[12px]"} transition-all duration-700 ease-in-out items-center justify-center uppercase
     ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
                   {submitting ? t("submitting") ?? "Submitting…" : t("submit")}

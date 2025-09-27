@@ -523,10 +523,12 @@ const AjdanBayfront = () => {
                 style={{ lineHeight: "1", paddingTop: 0, paddingBottom: 0, height: 28 }}
                 className={`relative px-3 sm:px-4
       text-[9px] sm:text-[12px]
-      font-regular font-commuter text-white shadow
+      font-regular  text-white shadow
       border-[1.5px] border-[#C1A580] rounded-sm bg-transparent
       hover:bg-[#C1A580] hover:bg-opacity-20 transition-colors
-      ${i18n.language === "ar" ? "text-[11px] sm:text-[15px]" : ""}
+         ${i18n.language === "ar"
+                    ? "text-[11px] sm:text-[15px] font-adobeArabic"
+                    : "font-commuter"}
     `}
               >
                 {i18n.language === "ar" ? "تنزيل الكتيب" : "Download Brochure"}
@@ -560,7 +562,8 @@ const AjdanBayfront = () => {
               animate="showTop"
               transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
               variants={textVariants}
-              className="leading-none text-white font-chapaza font-regular"
+              className={`leading-none text-white font-regular ${i18n.language === "ar" ? "font-adobeArabic" : "font-chapaza"
+                }`}
             >
               <span
                 className={`bayfront-heading uppercase block md:text-start text-center
@@ -605,9 +608,10 @@ const AjdanBayfront = () => {
             className="w-full max-w-xl xs:w-[95%] sm:p-8 md:p-4 lg:p-12 mx-6 sm:mx-8 md:mx-auto bg-no-repeat sm:mt-0"
           >
             <h2
-              className={`mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm
+              className={`mb-4 ${i18n.language === "ar" ? "text-[14px]" : "text-[12px]"
+                }
     font-commuter font-regular text-[#FFFFFF] uppercase register text-start
-    ${i18n.language === "ar" ? "text-[12px] sm:text-[15px] md:text-base" : ""}
+   
   `}
             >
               {t("register_interest")}
@@ -633,12 +637,12 @@ const AjdanBayfront = () => {
                   value={formData.username ?? ""}
                   onChange={handleChange}
                   placeholder={t("full_name")}
-                  className={`w-full h-11 text-[10px] text-white bg-[#124A63] rounded-sm border
+                  className={`w-full h-11 ${i18n.language === "ar" ? "text-[14px] placeholder:text-[14px]" : "text-[10px] placeholder:text-[10px]"} text-white bg-[#124A63] rounded-sm border
     ${errors.username ? "border-red-500" : "border-[#AFD4E0]"}
     focus:border-[#ffffff] focus:outline-none
     placeholder:text-[9px] placeholder-[#D7E0E2]
     uppercase px-4
-    ${i18n.language === "ar" ? "text-[12px] placeholder:text-[14px]" : ""}
+ 
   `}
                   aria-invalid={!!errors.username}
                   aria-describedby="err-username"
@@ -663,10 +667,10 @@ const AjdanBayfront = () => {
                   value={formData.email ?? ""}
                   onChange={handleChange}
                   placeholder={t("email_address")}
-                  className={`w-full h-11 text-[10px] text-white bg-[#124A63] rounded-sm border ${errors.email ? "border-red-500" : "border-[#AFD4E0]"
+                  className={`w-full h-11 ${i18n.language === "ar" ? "text-[12px] placeholder:text-[12px]" : "text-[10px] placeholder:text-[10px]"} text-white bg-[#124A63] rounded-sm border ${errors.email ? "border-red-500" : "border-[#AFD4E0]"
                     } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#D7E0E2] px-4
-       font-chapaza [&::placeholder]:font-commuter
-        ${i18n.language === "ar" ? "text-[12px] placeholder:text-[14px]" : ""}`}
+       
+      `}
                   aria-invalid={!!errors.email}
                   aria-describedby="err-email"
                   required
@@ -767,10 +771,6 @@ const AjdanBayfront = () => {
                       }),
                     }}
                   />
-
-
-
-
                   <input
                     type="tel"
                     name="phone"
@@ -781,10 +781,9 @@ const AjdanBayfront = () => {
                       setErrors((prev) => ({ ...prev, phone: "" }));
                     }}
                     placeholder={t("mobile_number")}
-                    className={`flex-1 h-11 text-[10px] text-white bg-[#124A63] rounded-sm border ${errors.phone ? "border-red-500" : "border-[#AFD4E0]"
+                    className={`flex-1 h-11 ${i18n.language === "ar" ? "text-[16px] placeholder:text-[12px]" : "text-[10px] placeholder:text-[10px]"} text-white bg-[#124A63] rounded-sm border ${errors.phone ? "border-red-500" : "border-[#AFD4E0]"
                       } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#D7E0E2]
-        font-chapaza [&::placeholder]:font-commuter
-        ${i18n.language === "ar" ? "text-[12px] placeholder:text-[14px]" : ""}`}
+        `}
                     aria-invalid={!!errors.phone}
                     aria-describedby="err-phone"
                     required
@@ -816,7 +815,7 @@ const AjdanBayfront = () => {
     focus:border-[#ffffff] focus:outline-none appearance-none
     px-3 py-2 sm:px-4 sm:py-3 pl-4 pr-2 min-h-[35px]
     ${moreDetailsCode === "" ? "text-[#D7E0E2]" : "text-white"}
-    ${i18n.language === "ar" ? "text-[14px]" : "text-[9px]"}
+    ${i18n.language === "ar" ? "text-[10px]" : "text-[9px]"}
   `}
                     aria-invalid={!!errors.moreDetailsCode}
                     aria-describedby="err-reason"
@@ -825,7 +824,7 @@ const AjdanBayfront = () => {
                     <option
                       value=""
                       disabled
-                      className={`${i18n.language === "ar" ? "text-[14px]" : "text-[9px]"
+                      className={`${i18n.language === "ar" ? "text-[12px]" : "text-[9px]"
                         } text-[#D7E0E2]`}
                     >
                       {t("more_details")}
@@ -835,7 +834,7 @@ const AjdanBayfront = () => {
                       <option
                         key={opt.code}
                         value={opt.code}
-                        className={`${i18n.language === "ar" ? "text-[14px]" : "text-[9px]"
+                        className={`${i18n.language === "ar" ? "text-[12px]" : "text-[9px]"
                           } text-white`}
                       >
                         {opt.label}
@@ -868,10 +867,10 @@ const AjdanBayfront = () => {
                 onChange={handleChange}
                 rows="4"
                 placeholder={t("write_message")}
-                className={`w-full text-[10px] text-white bg-[#124A63] rounded-sm border border-[#AFD4E0]
+                className={`w-full ${i18n.language === "ar" ? "text-[12px] md:text-[14px]" : "text-[10px] md:text-[12px]"} text-white bg-[#124A63] rounded-sm border border-[#AFD4E0]
     focus:border-[#ffffff] focus:outline-none px-4 py-3 resize-none
     placeholder:text-[10px] placeholder-[#D7E0E2]
-    ${i18n.language === "ar" ? "text-[12px] placeholder:text-[14px]" : ""}
+   
   `}
               />
 
@@ -881,10 +880,8 @@ const AjdanBayfront = () => {
                   type="submit"
                   disabled={submitting}
                   className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#A4763E] to-[#BFA057] 
-                    hover:from-[#BFA057] hover:to-[#A4763E] text-[10px] md:text-[12px] transition-all
+                    hover:from-[#BFA057] hover:to-[#A4763E] ${i18n.language === "ar" ? "text-[12px] md:text-[14px]" : "text-[10px] md:text-[12px]"} transition-all
                      duration-700 ease-in-out items-center justify-center uppercase
- 
-    ${i18n.language === "ar" ? "text-[12px] md:text-[14px]" : ""}
     ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
                   {submitting ? t("submitting") ?? "Submitting…" : t("submit")}

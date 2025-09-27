@@ -925,20 +925,20 @@ const Khuzam = () => {
             } bottom-2 sm:bottom-6`}
         >
           <LangToggle />
-{socialLinks?.whatsapp && (
-          <a
-            href={socialLinks.whatsapp}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block p-2 transition hover:scale-110"
-          >
-            <img
-              src={wa}
-              alt="WhatsApp"
-              className="object-contain w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
-            />
-          </a>
-               )}
+          {socialLinks?.whatsapp && (
+            <a
+              href={socialLinks.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block p-2 transition hover:scale-110"
+            >
+              <img
+                src={wa}
+                alt="WhatsApp"
+                className="object-contain w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
+              />
+            </a>
+          )}
         </div>
       </motion.div>
 

@@ -1,2 +1,5 @@
-- [x] Fix featured_image fetching in listService.js: correct field name to 'featured_image' and return full object instead of .url
-- [ ] Test the List component to ensure images load properly
+- [x] Fix @font-face src for Orleen font to '/fonts/Orleen Regular.otf'
+- [x] Add .font-orleen utility class in index.css
+- [x] Update LangToggle in sedra-1/LandingPage.jsx to set fontFamily to 'Orleen, sans-serif' for Arabic
+- [ ] Update LangToggle in khuzam/LandingPage.jsx similarly if needed
+- [ ] Test font loading in Arabic mode

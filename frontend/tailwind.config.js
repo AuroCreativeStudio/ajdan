@@ -12,6 +12,7 @@ module.exports = withMT({
         headline: ['"Gurmukhi MN"', 'sans-serif'],
         body: ['"Proxima Nova"', 'sans-serif'],
         univers: ['"Univers Next Arabic Regular"', 'sans-serif'],
+        adobeArabic: ['AdobeArabic', 'serif'],
         chapaza: ['"Chapaza"', 'sans-serif'],
         commuter: ['"Commuter Sans"', 'sans-serif'],
         aeoniknormal: ['AeonikTRIAL', 'sans-serif'],

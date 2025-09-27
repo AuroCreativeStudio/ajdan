@@ -23,7 +23,7 @@ import Select from "react-select";
 
 import { getSocialLinks } from "../../../services/socialiconService";
 
-const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://192.168.0.102:1337";
+const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://localhost:1337";
 const STRAPI_TOKEN = import.meta.env.VITE_STRAPI_TOKEN || "";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^\d{7,15}$/;
@@ -88,9 +88,10 @@ const LangToggle = () => {
       i18n.changeLanguage(newLang);
     }
 
-    // Update document direction
+    // Update document direction and font
     document.documentElement.dir = newDirection;
     document.documentElement.lang = newLang;
+    document.body.style.fontFamily = newLang === "ar" ? "'Orleen', sans-serif" : "inherit";
 
     // Update URL routing
     const newPath = location.pathname.replace(/^\/(en|ar)/, `/${newLang}`);
@@ -516,8 +517,8 @@ const Sedra1Page = () => {
           {/* Download + Ajdan Logo */}
           <div
             className={`flex items-center gap-2 md:gap-6 ${i18n.language === "ar"
-                ? "justify-start font-orleen"
-                : "justify-end"
+              ? "justify-start font-orleen"
+              : "justify-end"
               }`}
           >
             {/* Brochure download buttons */}
@@ -534,8 +535,8 @@ const Sedra1Page = () => {
     font-regular font-aeoniknormal text-white shadow
     border-[1.5px] border-[#515846] rounded-sm bg-transparent
     ${i18n.language === "ar"
-                    ? "text-[11px] sm:text-[14px] font-orleen" // Arabic sizes
-                    : "text-[9px]  sm:text-[12px]" // English sizes
+                    ? "text-[11px] sm:text-[14px] font-orleen"
+                    : "text-[9px]  sm:text-[12px]"
                   }
   `}
               >
@@ -615,8 +616,8 @@ const Sedra1Page = () => {
           >
             <h2
               className={`mb-4 text-[10px] xs:text-[10px] sm:text-[12px] md:text-sm font-aeoniknormal font-regular text-[#FFFFFF] uppercase register ${i18n.language === "ar"
-                  ? "text-start font-orleen "
-                  : "text-start" // Right align for Arabic, left for English
+                ? "text-start font-orleen"
+                : "text-start"
                 }`}
             >
               {t("register_interest")}
@@ -950,20 +951,20 @@ const Sedra1Page = () => {
         >
           <LangToggle />
 
-        {socialLinks?.whatsapp && (
-                  <a
-                    href={socialLinks.whatsapp}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block p-2 transition hover:scale-110"
-                  >
-                    <img
-                      src={wa}
-                      alt="WhatsApp"
-                      className="object-contain w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
-                    />
-                  </a>
-                       )}
+          {socialLinks?.whatsapp && (
+            <a
+              href={socialLinks.whatsapp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block p-2 transition hover:scale-110"
+            >
+              <img
+                src={wa}
+                alt="WhatsApp"
+                className="object-contain w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
+              />
+            </a>
+          )}
         </div>
       </motion.div>
 
