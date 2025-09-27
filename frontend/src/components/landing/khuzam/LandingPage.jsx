@@ -897,8 +897,8 @@ const Khuzam = () => {
             />
 
             {/* Buttons Row (under form) */}
-            <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
-              {/* WhatsApp Icon */}
+            {/* <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
+            
               {socialLinks?.whatsapp && (
                 <a
                   href={socialLinks.whatsapp}
@@ -913,7 +913,7 @@ const Khuzam = () => {
                   />
                 </a>
               )}
-            </div>
+            </div> */}
           </motion.div>
 
           {/* Mobile-only subheading spacer */}
@@ -925,9 +925,9 @@ const Khuzam = () => {
             } bottom-2 sm:bottom-6`}
         >
           <LangToggle />
-
+{socialLinks?.whatsapp && (
           <a
-            href="https://wa.me/XXXXXXXXXXX"
+            href={socialLinks.whatsapp}
             target="_blank"
             rel="noopener noreferrer"
             className="block p-2 transition hover:scale-110"
@@ -938,6 +938,7 @@ const Khuzam = () => {
               className="object-contain w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
             />
           </a>
+               )}
         </div>
       </motion.div>
 

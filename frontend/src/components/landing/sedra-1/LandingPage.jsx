@@ -921,8 +921,8 @@ const Sedra1Page = () => {
             />
 
             {/* Buttons Row (under form) */}
-            <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
-              {/* WhatsApp Icon */}
+            {/* <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
+            
               {socialLinks?.whatsapp && (
                 <a
                   href={socialLinks.whatsapp}
@@ -937,7 +937,7 @@ const Sedra1Page = () => {
                   />
                 </a>
               )}
-            </div>
+            </div> */}
           </motion.div>
 
           {/* Mobile-only subheading spacer */}
@@ -950,18 +950,20 @@ const Sedra1Page = () => {
         >
           <LangToggle />
 
-          <a
-            href="https://wa.me/XXXXXXXXXXX"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block p-2 transition hover:scale-110"
-          >
-            <img
-              src={wa}
-              alt="WhatsApp"
-              className="object-contain w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
-            />
-          </a>
+        {socialLinks?.whatsapp && (
+                  <a
+                    href={socialLinks.whatsapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block p-2 transition hover:scale-110"
+                  >
+                    <img
+                      src={wa}
+                      alt="WhatsApp"
+                      className="object-contain w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
+                    />
+                  </a>
+                       )}
         </div>
       </motion.div>
 
