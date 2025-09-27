@@ -20,7 +20,8 @@ module.exports = withMT({
         denton: ['DentonCondensed', 'sans-serif'],
         cyrillic: ['diodrum-cyrillic-regular', 'sans-serif'],
         laureen:  ['Laureen', 'serif'], // or 'sans-serif' if your Laureen file is sans
-        orleen: ['Orleen', 'serif']
+        orleen: ['Orleen', 'serif'],
+        ivy: ['IvyModeThin', 'sans-serif'],
       },
       animation: {
         marquee: 'marquee 40s linear infinite',

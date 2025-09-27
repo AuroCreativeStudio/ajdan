@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { getListingByIdentifier } from '../../../services/getListingByIdentifier';
 import ContactForm from '../PopupContactForm';
 import logo from "./images/infinity.png";
-import mobileBg from "./images/infinitymobile.webp";
-import bg from "./images/infinity.webp";
+import mobileBg from "./images/waterfrontmobile.jpg";
+import bg from "./images/waterfront.jpg";
 import { Menu, X } from "lucide-react";
 import toast from "react-hot-toast";
 import darklogo from "../../../assets/landing images/ajdan.png";
@@ -141,7 +141,7 @@ const SuccessPopup = ({ open, onClose, title, body, okLabel = "OK" }) => {
               className="w-full max-w-xs rounded-2xl shadow-2xl ring-1 ring-[#1aa0e0]/40 overflow-hidden"
             >
               <div className="bg-[#DED6CB] p-6 text-center relative">
-                <div className="mx-auto mb-4 h-10 w-10 rounded-lg grid place-items-center bg-[#9E331A]">
+                <div className="mx-auto mb-4 h-10 w-10 rounded-lg grid place-items-center bg-[#CD7A3E]">
                   <img
                     src={logoTile}
                     alt=""
@@ -151,7 +151,7 @@ const SuccessPopup = ({ open, onClose, title, body, okLabel = "OK" }) => {
                 </div>
 
                 <h3 className="sr-only">{title}</h3>
-                <p className="text-[13px] leading-5 font-aeoniknormal text-[#1C2940]">
+                <p className="text-[13px] leading-5 font-aeoniknormal text-[#002B36]">
                   {body}
                 </p>
 
@@ -159,8 +159,8 @@ const SuccessPopup = ({ open, onClose, title, body, okLabel = "OK" }) => {
                   <button
                     onClick={onClose}
                     className="w-24 h-9 rounded-md text-white text-[12px] font-aeoniknormal
-                               bg-gradient-to-r from-[#9E331A] to-[#BA4F21]
-                               hover:from-[#BA4F21] hover:to-[#9E331A]
+                               bg-gradient-to-r from-[#CD7A3E] from-[80%] to-[#E6E0D2] to-[20%]
+                               hover:from-[#E6E0D2] hover:to-[#CD7A3E]
                                transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-white/50"
                   >
                     {okLabel}
@@ -499,7 +499,7 @@ const Waterfront = () => {
         }}
         className={`relative px-3 sm:px-4
           font-regular font-aeoniknormal text-white shadow
-          border-[1.5px] border-[#BA4F21] rounded-sm bg-transparent
+          border-[1.5px] border-[#E6E0D2] rounded-sm bg-transparent
           ${
             i18n.language === "ar"
               ? "text-[11px] sm:text-[14px]" // Arabic sizes
@@ -513,7 +513,7 @@ const Waterfront = () => {
   )}
 
   {/* Ajdan Logo */}
-  <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#9E331A] to-[#9E331A] md:bg-none">
+  <div className="h-7 w-7 flex items-center justify-center rounded-sm bg-gradient-to-r from-[#CD7A3E] to-[#CD7A3E] md:bg-none">
     <a
       href="https://ajdan.com/"
       target="_blank"
@@ -538,7 +538,7 @@ const Waterfront = () => {
               animate="showTop"
               transition={{ duration: 1.5, ease: "easeOut", delay: 0.5 }}
               variants={textVariants}
-              className="leading-none text-white font-denton font-regular"
+              className="leading-none text-white font-ivy font-regular"
             >
               <span
   className={`bayfront-heading uppercase block md:text-start text-center
@@ -611,9 +611,9 @@ const Waterfront = () => {
                   value={formData.username ?? ""}
                   onChange={handleChange}
                   placeholder={t("full_name")}
-                  className={`w-full h-11 text-[10px] text-white bg-[#1C2940] rounded-sm border ${
-                    errors.username ? "border-red-500" : "border-[#178791]"
-                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#178791] uppercase px-4
+                  className={`w-full h-11 text-[10px] text-white bg-[#002B36] rounded-sm border ${
+                    errors.username ? "border-red-500" : "border-[#819BA2]"
+                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder-[#819BA2] uppercase px-4
                    ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
                   aria-invalid={!!errors.username}
                   aria-describedby="err-username"
@@ -637,9 +637,9 @@ const Waterfront = () => {
                   value={formData.email ?? ""}
                   onChange={handleChange}
                   placeholder={t("email_address")}
-                  className={`w-full h-11 text-[10px] text-white bg-[#1C2940] rounded-sm border ${
-                    errors.email ? "border-red-500" : "border-[#178791]"
-                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#178791] px-4
+                  className={`w-full h-11 text-[10px] text-white bg-[#002B36] rounded-sm border ${
+                    errors.email ? "border-red-500" : "border-[#819BA2]"
+                  } focus:border-[#ffffff] focus:outline-none placeholder:text-[9px] placeholder:text-[#819BA2] px-4
         [&::placeholder]:font-aeoniknormal
          ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
                   aria-invalid={!!errors.email}
@@ -662,10 +662,10 @@ const Waterfront = () => {
                   <select
                     value={dialCode ?? "+966"}
                     onChange={(e) => setDialCode(e.target.value)}
-                    className={`w-20 h-11 text-[13px] text-[#DED6CB] font-aeoniknormal custom-select3 rounded-sm bg-[#1C2940] border ${
-                      errors.phone ? "border-red-500" : "border-[#178791]"
+                    className={`w-20 h-11 text-[13px] text-[#DED6CB] font-aeoniknormal custom-select6 rounded-sm bg-[#002B36] border ${
+                      errors.phone ? "border-red-500" : "border-[#819BA2]"
                     } focus:border-[#ffffff] focus:outline-none appearance-none px-3 font-normal ${
-                      !dialCode ? "text-[#178791]" : "text-white"
+                      !dialCode ? "text-[#819BA2]" : "text-white"
                     }`}
                   >
                     <option value="+966">+966</option>
@@ -682,9 +682,9 @@ const Waterfront = () => {
                       setErrors((prev) => ({ ...prev, phone: "" }));
                     }}
                     placeholder={t("mobile_number")}
-                    className={`flex-1 h-11 text-[10px] text-white bg-[#1C2940] rounded-sm border ${
-                      errors.phone ? "border-red-500" : "border-[#178791]"
-                    } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#178791]
+                    className={`flex-1 h-11 text-[10px] text-white bg-[#002B36] rounded-sm border ${
+                      errors.phone ? "border-red-500" : "border-[#819BA2]"
+                    } focus:border-[#ffffff] focus:outline-none px-4 placeholder:text-[9px] placeholder:text-start placeholder:text-[#819BA2]
           [&::placeholder]:font-aeoniknormal
            ${i18n.language === "ar" ? "text-[12px] placeholder:text-[15px]" : ""}`}
                     aria-invalid={!!errors.phone}
@@ -713,11 +713,11 @@ const Waterfront = () => {
     setErrors((prev) => ({ ...prev, moreDetailsCode: "" }));
   }}
   className={`
-    w-full h-11 bg-[#1C2940] rounded-sm border custom-select3
-    ${errors.moreDetailsCode ? "border-red-500" : "border-[#178791]"}
+    w-full h-11 bg-[#002B36] rounded-sm border custom-select6
+    ${errors.moreDetailsCode ? "border-red-500" : "border-[#819BA2]"}
     focus:border-[#ffffff] focus:outline-none appearance-none px-3 py-2 sm:px-4 sm:py-3
     pl-4 pr-2 min-h-[35px] sm:min-h-auto
-    ${moreDetailsCode === "" ? "text-[#178791]" : "text-white"}
+    ${moreDetailsCode === "" ? "text-[#819BA2]" : "text-white"}
     ${i18n.language === "ar" ? "text-[14px]" : "text-[9px] md:text-[9px]"}
   `}
   aria-invalid={!!errors.moreDetailsCode}
@@ -727,7 +727,7 @@ const Waterfront = () => {
   <option
     value=""
     disabled
-    className={i18n.language === "ar" ? "text-[14px]" : "text-[9px] text-[#178791]"}
+    className={i18n.language === "ar" ? "text-[14px]" : "text-[9px] text-[#819BA2]"}
   >
     {t("more_details")}
   </option>
@@ -743,7 +743,7 @@ const Waterfront = () => {
 </select>
 
                   <span
-                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#178791] pointer-events-none ${
+                    className={`absolute top-1/2 -translate-y-1/2 text-[10px] text-[#819BA2] pointer-events-none ${
                       i18n.language === "ar" ? "left-3" : "right-3" // Left for Arabic, right for English
                     }`}
                   >
@@ -772,11 +772,11 @@ const Waterfront = () => {
               /> */}
 
               {/* Submit */}
-              <div className="p-[1px] rounded-sm bg-gradient-to-r from-[#9E331A] to-[#BA4F21] hover:bg-gradient-to-l transition-all duration-700 ease-in-out bg-clip-padding box-border">
+              <div className="p-[1px] rounded-sm bg-gradient-to-r from-[#CD7A3E] to-[#E6E0D2] hover:bg-gradient-to-l transition-all duration-700 ease-in-out bg-clip-padding box-border">
                 <button
                   type="submit"
                   disabled={submitting}
-                  className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#9E331A] to-[#BA4F21] hover:from-[#BA4F21] hover:to-[#9E331A] text-[10px] md:text-[12px] transition-all duration-700 ease-in-out items-center justify-center uppercase
+                  className={`w-full font-regular text-white rounded-sm bg-gradient-to-r from-[#CD7A3E] to-[#E6E0D2] hover:from-[#E6E0D2] hover:to-[#CD7A3E] text-[10px] md:text-[12px] transition-all duration-700 ease-in-out items-center justify-center uppercase
     ${i18n.language === "ar" ? "text-[12px] md:text-[14px]" : ""}
     ${submitting ? "opacity-70 cursor-not-allowed" : ""}`}
                 >
@@ -799,8 +799,8 @@ const Waterfront = () => {
 
             {/* Buttons Row (under form) */}
            
-<div className="flex items-center justify-between w-full mt-4 sm:mt-6">
-  {/* WhatsApp Icon */}
+{/* <div className="flex items-center justify-between w-full mt-4 sm:mt-6">
+
   {socialLinks?.whatsapp && (
     <a
       href={socialLinks.whatsapp}
@@ -815,7 +815,7 @@ const Waterfront = () => {
       />
     </a>
   )}
-</div>
+</div> */}
 
           </motion.div>
 
@@ -830,8 +830,9 @@ const Waterfront = () => {
         >
           <LangToggle />
 
+        {socialLinks?.whatsapp && (
           <a
-            href="https://wa.me/XXXXXXXXXXX"
+            href={socialLinks.whatsapp}
             target="_blank"
             rel="noopener noreferrer"
             className="block p-2 transition hover:scale-110"
@@ -842,6 +843,7 @@ const Waterfront = () => {
               className="object-contain w-10 h-10 sm:w-12 sm:h-12 drop-shadow-lg"
             />
           </a>
+               )}
         </div>
       </motion.div>
 
@@ -966,7 +968,7 @@ const Waterfront = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#9E331A] text-white text-base rounded-sm hover:bg-[#9E331A] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#CD7A3E] text-white text-base rounded-sm hover:bg-[#CD7A3E] transition"
                 >
                   <FaInstagram />
                 </motion.a>
@@ -981,7 +983,7 @@ const Waterfront = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#9E331A] text-white text-base rounded-sm hover:bg-[#9E331A] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#CD7A3E] text-white text-base rounded-sm hover:bg-[#CD7A3E] transition"
                 >
                   <FaXTwitter />
                 </motion.a>
@@ -996,7 +998,7 @@ const Waterfront = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#9E331A] text-white text-base rounded-sm hover:bg-[#9E331A] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#CD7A3E] text-white text-base rounded-sm hover:bg-[#CD7A3E] transition"
                 >
                   <FaTiktok />
                 </motion.a>
@@ -1011,7 +1013,7 @@ const Waterfront = () => {
                   whileInView={{ opacity: 1 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 1, ease: "easeOut" }}
-                  className="flex items-center justify-center w-6 h-6 bg-[#9E331A] text-white text-base rounded-sm hover:bg-[#9E331A] transition"
+                  className="flex items-center justify-center w-6 h-6 bg-[#CD7A3E] text-white text-base rounded-sm hover:bg-[#CD7A3E] transition"
                 >
                   <FaLinkedin />
                 </motion.a>
@@ -1037,7 +1039,7 @@ const Waterfront = () => {
           </div>
         </div>
 
-        <div className="bg-[#1C2940] py-4">
+        <div className="bg-[#002B36] py-4">
           <div className="max-w-[1340px] mx-auto px-6 flex items-center justify-center">
             {i18n.language === "ar" ? (
               <p className="text-[9px] text-center text-white font-aeoniknormal md:text-[10px]">

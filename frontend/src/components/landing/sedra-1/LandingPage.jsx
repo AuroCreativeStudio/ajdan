@@ -23,7 +23,7 @@ import Select from "react-select";
 
 import { getSocialLinks } from "../../../services/socialiconService";
 
-const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://localhost:1337";
+const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://192.168.0.102:1337";
 const STRAPI_TOKEN = import.meta.env.VITE_STRAPI_TOKEN || "";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_RE = /^\d{7,15}$/;
